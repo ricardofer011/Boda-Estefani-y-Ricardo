@@ -286,7 +286,7 @@ export function Envelope({ onOpenComplete, coupleNames }: EnvelopeProps) {
           />
 
           {/* ================================================================== */}
-          {/* SELLO DE CERA: TOTALMENTE EN EL CENTRO DEL SOBRE, SENCILLO Y ELEGANTE */}
+          {/* SELLO DE CERA ARTESANAL: EN EL CENTRO EXACTO, REALISTA Y ELEGANTE */}
           {/* ================================================================== */}
           <div
             className="absolute left-1/2 top-1/2 z-40 transition-all duration-300 ease-out flex items-center justify-center pointer-events-auto"
@@ -295,8 +295,7 @@ export function Envelope({ onOpenComplete, coupleNames }: EnvelopeProps) {
             }}
           >
             <WaxSeal
-              size={80}
-              initials="E & R"
+              size={92}
               isBroken={stage !== 'idle'}
               onClick={handleOpenClick}
             />
