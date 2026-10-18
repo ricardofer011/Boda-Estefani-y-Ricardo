@@ -22,6 +22,7 @@ export interface GuestInvite {
   max_guests: number;
   status: 'pending' | 'confirmed' | 'declined';
   confirmed_count?: number;
+  group?: string | null;
   notes?: string | null;
   created_at: string;
   updated_at?: string;

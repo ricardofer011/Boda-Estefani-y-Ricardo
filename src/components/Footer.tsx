@@ -30,6 +30,18 @@ export function Footer() {
         <p className="font-serif-luxury text-xs text-[#6B5B4D] italic">
           “Lo que Dios ha unido, que no lo separe el hombre”.
         </p>
+
+        {/* Acceso para los novios */}
+        <div className="mt-8 pt-4 border-t border-[#DFC088]/20 flex items-center justify-center">
+          <Link
+            href="/admin"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#B89355]/40 bg-white/70 hover:bg-white text-xs font-sans-clean text-[#8C6A35] hover:text-[#2A2118] transition-all shadow-xs"
+            title="Panel de gestión de invitados y confirmaciones para los novios"
+          >
+            <Lock className="w-3.5 h-3.5 text-[#B89355]" />
+            <span className="font-medium tracking-wide">Acceso Novios</span>
+          </Link>
+        </div>
       </div>
     </footer>
   );

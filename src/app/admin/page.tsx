@@ -29,6 +29,9 @@ import {
   Share2,
   Trash2,
   MessageCircle,
+  Edit2,
+  X,
+  Tag,
 } from 'lucide-react';
 
 export default function AdminPage() {
@@ -37,8 +40,8 @@ export default function AdminPage() {
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  // Pestaña activa: 'rsvps' | 'guests'
-  const [activeTab, setActiveTab] = useState<'rsvps' | 'guests'>('rsvps');
+  // Pestaña activa: 'guests' (por defecto) o 'rsvps'
+  const [activeTab, setActiveTab] = useState<'guests' | 'rsvps'>('guests');
 
   // Datos de confirmaciones (RSVP)
   const [rsvps, setRsvps] = useState<RSVPRecord[]>([]);
@@ -51,13 +54,22 @@ export default function AdminPage() {
   // Datos de invitados y asignación de pases
   const [guests, setGuests] = useState<GuestInvite[]>([]);
   const [isLoadingGuests, setIsLoadingGuests] = useState(false);
+  const [guestSearchTerm, setGuestSearchTerm] = useState('');
+  const [guestGroupFilter, setGuestGroupFilter] = useState<string>('all');
+
+  // Formulario nuevo invitado
   const [newGuestName, setNewGuestName] = useState('');
   const [newGuestPasses, setNewGuestPasses] = useState(2);
+  const [newGuestGroup, setNewGuestGroup] = useState('Familia');
   const [newGuestPhone, setNewGuestPhone] = useState('');
   const [newGuestNotes, setNewGuestNotes] = useState('');
   const [isAddingGuest, setIsAddingGuest] = useState(false);
   const [guestFeedback, setGuestFeedback] = useState<string | null>(null);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+
+  // Modal para editar invitado existente
+  const [editingGuest, setEditingGuest] = useState<GuestInvite | null>(null);
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
 
   useEffect(() => {
     checkSession();
@@ -161,6 +173,7 @@ export default function AdminPage() {
         body: JSON.stringify({
           full_name: newGuestName.trim(),
           max_guests: newGuestPasses,
+          group: newGuestGroup.trim() || undefined,
           phone: newGuestPhone.trim() || undefined,
           notes: newGuestNotes.trim() || undefined,
         }),
@@ -173,13 +186,44 @@ export default function AdminPage() {
         setNewGuestPasses(2);
         setNewGuestPhone('');
         setNewGuestNotes('');
-        setGuestFeedback('¡Invitado agregado con éxito y enlace generado!');
-        setTimeout(() => setGuestFeedback(null), 4000);
+        setGuestFeedback(`¡Invitación para ${data.data.full_name} creada con ${data.data.max_guests} pases asignados!`);
+        setTimeout(() => setGuestFeedback(null), 5000);
       }
     } catch {
       setGuestFeedback('Error al guardar el invitado.');
     } finally {
       setIsAddingGuest(false);
+    }
+  };
+
+  const handleUpdateGuest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingGuest || !editingGuest.full_name.trim()) return;
+
+    setIsSavingEdit(true);
+    try {
+      const res = await fetch('/api/admin/guests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: editingGuest.id,
+          full_name: editingGuest.full_name.trim(),
+          max_guests: Number(editingGuest.max_guests) || 1,
+          group: editingGuest.group || undefined,
+          phone: editingGuest.phone || undefined,
+          notes: editingGuest.notes || undefined,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setGuests((prev) => prev.map((g) => (g.id === editingGuest.id ? data.data : g)));
+        setEditingGuest(null);
+      }
+    } catch (err) {
+      console.error('Error actualizando invitado:', err);
+    } finally {
+      setIsSavingEdit(false);
     }
   };
 
@@ -234,6 +278,7 @@ export default function AdminPage() {
     );
 
     const totalAssignedPasses = guests.reduce((sum, g) => sum + (Number(g.max_guests) || 1), 0);
+    const pendingGuests = guests.filter((g) => g.status === 'pending');
 
     return {
       totalResponses,
@@ -243,10 +288,35 @@ export default function AdminPage() {
       withDietaryCount: withDietaryRestrictions.length,
       totalAssignedPasses,
       totalInvitedGuests: guests.length,
+      pendingGuestsCount: pendingGuests.length,
     };
   }, [rsvps, guests]);
 
-  // Filtrado de confirmaciones
+  // Grupos únicos disponibles
+  const availableGroups = useMemo(() => {
+    const set = new Set<string>();
+    guests.forEach((g) => {
+      if (g.group && g.group.trim()) set.add(g.group.trim());
+    });
+    return Array.from(set);
+  }, [guests]);
+
+  // Filtrado de invitados pre-registrados
+  const filteredGuests = useMemo(() => {
+    return guests.filter((g) => {
+      const matchesSearch =
+        g.full_name.toLowerCase().includes(guestSearchTerm.toLowerCase()) ||
+        (g.phone && g.phone.includes(guestSearchTerm)) ||
+        (g.notes && g.notes.toLowerCase().includes(guestSearchTerm.toLowerCase()));
+
+      if (!matchesSearch) return false;
+      if (guestGroupFilter !== 'all' && g.group !== guestGroupFilter) return false;
+
+      return true;
+    });
+  }, [guests, guestSearchTerm, guestGroupFilter]);
+
+  // Filtrado de confirmaciones (RSVPs)
   const filteredRsvps = useMemo(() => {
     return rsvps.filter((r) => {
       const matchesSearch =
@@ -266,7 +336,6 @@ export default function AdminPage() {
     });
   }, [rsvps, searchTerm, statusFilter]);
 
-  // Generador de enlaces individuales y WhatsApp por invitado
   const getPersonalizedUrl = (code: string) => {
     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://boda-estefani-ricardo.vercel.app';
     return `${origin}/?invitacion=${encodeURIComponent(code)}`;
@@ -314,10 +383,10 @@ export default function AdminPage() {
             Boda Estefani & Ricardo
           </span>
           <h1 className="font-serif-luxury text-2xl sm:text-3xl text-[#2A2118] font-normal mt-1 mb-2">
-            Panel de Novios Privado
+            Panel de Novios
           </h1>
           <p className="font-sans-clean text-xs sm:text-sm text-[#6B5B4D] mb-6">
-            Acceso exclusivo para administrar las confirmaciones de asistencia y la asignación de pases.
+            Ingresa tu contraseña para asignar los pases y gestionar las confirmaciones de tus invitados.
           </p>
 
           <form onSubmit={handleLogin} className="space-y-4">
@@ -357,7 +426,7 @@ export default function AdminPage() {
               className="inline-flex items-center gap-1.5 text-xs text-[#8C6A35] hover:text-[#2A2118] font-sans-clean"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Volver a la invitación pública</span>
+              <span>Volver a la invitación</span>
             </Link>
           </div>
         </div>
@@ -377,7 +446,7 @@ export default function AdminPage() {
             <Link
               href="/"
               className="p-1.5 rounded-lg text-[#6B5B4D] hover:text-[#2A2118] hover:bg-[#F3EDE2] transition-colors"
-              title="Ver invitación pública"
+              title="Volver a la invitación"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
@@ -386,7 +455,7 @@ export default function AdminPage() {
                 Panel de Novios — Estefani & Ricardo
               </h1>
               <p className="text-[11px] text-[#8C6A35] font-sans-clean">
-                Privado • Boda: 12 de diciembre de 2026
+                Gestión de Invitados • Sábado 12 de diciembre de 2026
               </p>
             </div>
           </div>
@@ -399,7 +468,7 @@ export default function AdminPage() {
               }}
               disabled={isLoadingRsvps || isLoadingGuests}
               className="p-2 rounded-lg text-[#6B5B4D] hover:text-[#2A2118] hover:bg-[#F3EDE2] transition-colors cursor-pointer"
-              title="Refrescar datos"
+              title="Actualizar datos"
             >
               <RefreshCw className={`w-4 h-4 ${isLoadingRsvps || isLoadingGuests ? 'animate-spin' : ''}`} />
             </button>
@@ -415,19 +484,9 @@ export default function AdminPage() {
         </div>
       </header>
 
-      {/* Navegación por pestañas principales */}
+      {/* Selector de Pestañas */}
       <div className="bg-[#FCFAF6] border-b border-[#DFC088]/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-4">
-          <button
-            onClick={() => setActiveTab('rsvps')}
-            className={`py-3.5 px-3 font-serif-luxury text-sm tracking-wide border-b-2 transition-all cursor-pointer ${
-              activeTab === 'rsvps'
-                ? 'border-[#B89355] text-[#2A2118] font-semibold'
-                : 'border-transparent text-[#6B5B4D] hover:text-[#2A2118]'
-            }`}
-          >
-            Confirmaciones Recibidas ({rsvps.length})
-          </button>
           <button
             onClick={() => setActiveTab('guests')}
             className={`py-3.5 px-3 font-serif-luxury text-sm tracking-wide border-b-2 transition-all cursor-pointer ${
@@ -437,6 +496,16 @@ export default function AdminPage() {
             }`}
           >
             Control de Pases y Enlaces de Invitados ({guests.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('rsvps')}
+            className={`py-3.5 px-3 font-serif-luxury text-sm tracking-wide border-b-2 transition-all cursor-pointer ${
+              activeTab === 'rsvps'
+                ? 'border-[#B89355] text-[#2A2118] font-semibold'
+                : 'border-transparent text-[#6B5B4D] hover:text-[#2A2118]'
+            }`}
+          >
+            Confirmaciones Recibidas ({rsvps.length})
           </button>
         </div>
       </div>
@@ -449,14 +518,14 @@ export default function AdminPage() {
             <div>
               <p className="font-semibold mb-0.5">Almacenamiento Local Seguro Activo</p>
               <p className="text-amber-700 leading-relaxed">
-                Tus respuestas e invitados se están guardando localmente en tu servidor. Cuando desees conectar Supabase en la nube, solo agrega tus claves en <code>.env.local</code>.
+                Tus invitados y confirmaciones se están guardando de forma segura en tu servidor. Al conectar Supabase, se sincronizarán directamente en la nube.
               </p>
             </div>
           </div>
         ) : (
           <div className="mb-6 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>Conectado a la base de datos Supabase con seguridad Row Level Security (RLS).</span>
+            <span>Conectado a la base de datos Supabase con seguridad activa.</span>
           </div>
         )}
 
@@ -467,7 +536,7 @@ export default function AdminPage() {
           <div className="col-span-2 lg:col-span-1 p-4 rounded-xl bg-[#FCFAF6] border border-[#DFC088]/40 shadow-xs">
             <div className="flex items-center justify-between text-[#8C6A35] mb-2">
               <span className="text-xs uppercase font-sans-clean font-semibold tracking-wider">
-                Total Personas
+                Total Asistirán
               </span>
               <Users className="w-4 h-4" />
             </div>
@@ -475,14 +544,14 @@ export default function AdminPage() {
               {stats.totalConfirmedPeople}
             </div>
             <p className="text-[11px] text-[#6B5B4D] mt-1 font-sans-clean">
-              Confirmados en total
+              Personas confirmadas
             </p>
           </div>
 
           <div className="p-4 rounded-xl bg-[#FCFAF6] border border-emerald-200 shadow-xs">
             <div className="flex items-center justify-between text-emerald-700 mb-2">
               <span className="text-xs uppercase font-sans-clean font-semibold tracking-wider">
-                Asistirán
+                Confirmados (Sí)
               </span>
               <UserCheck className="w-4 h-4 text-emerald-600" />
             </div>
@@ -490,7 +559,37 @@ export default function AdminPage() {
               {stats.attendingCount}
             </div>
             <p className="text-[11px] text-[#6B5B4D] mt-1 font-sans-clean">
-              Respuestas afirmativas
+              Invitaciones que dijeron Sí
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-[#FCFAF6] border border-amber-200 shadow-xs">
+            <div className="flex items-center justify-between text-amber-700 mb-2">
+              <span className="text-xs uppercase font-sans-clean font-semibold tracking-wider">
+                Pendientes
+              </span>
+              <Clock className="w-4 h-4 text-amber-600" />
+            </div>
+            <div className="font-serif-luxury text-3xl font-semibold text-amber-800">
+              {stats.pendingGuestsCount}
+            </div>
+            <p className="text-[11px] text-[#6B5B4D] mt-1 font-sans-clean">
+              Aún no han respondido
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-[#FCFAF6] border border-[#DFC088]/40 shadow-xs">
+            <div className="flex items-center justify-between text-[#8C6A35] mb-2">
+              <span className="text-xs uppercase font-sans-clean font-semibold tracking-wider">
+                Pases Asignados
+              </span>
+              <Tag className="w-4 h-4" />
+            </div>
+            <div className="font-serif-luxury text-3xl font-semibold text-[#2A2118]">
+              {stats.totalAssignedPasses}
+            </div>
+            <p className="text-[11px] text-[#6B5B4D] mt-1 font-sans-clean">
+              En {stats.totalInvitedGuests} invitaciones
             </p>
           </div>
 
@@ -505,43 +604,280 @@ export default function AdminPage() {
               {stats.declinedCount}
             </div>
             <p className="text-[11px] text-[#6B5B4D] mt-1 font-sans-clean">
-              Respuestas declinadas
-            </p>
-          </div>
-
-          <div className="p-4 rounded-xl bg-[#FCFAF6] border border-[#DFC088]/40 shadow-xs">
-            <div className="flex items-center justify-between text-[#8C6A35] mb-2">
-              <span className="text-xs uppercase font-sans-clean font-semibold tracking-wider">
-                Pases Asignados
-              </span>
-              <Clock className="w-4 h-4" />
-            </div>
-            <div className="font-serif-luxury text-3xl font-semibold text-[#2A2118]">
-              {stats.totalAssignedPasses}
-            </div>
-            <p className="text-[11px] text-[#6B5B4D] mt-1 font-sans-clean">
-              {stats.totalInvitedGuests} invitaciones creadas
-            </p>
-          </div>
-
-          <div className="p-4 rounded-xl bg-[#FCFAF6] border border-amber-200 shadow-xs">
-            <div className="flex items-center justify-between text-amber-700 mb-2">
-              <span className="text-xs uppercase font-sans-clean font-semibold tracking-wider">
-                Restricciones
-              </span>
-              <Utensils className="w-4 h-4 text-amber-600" />
-            </div>
-            <div className="font-serif-luxury text-3xl font-semibold text-amber-800">
-              {stats.withDietaryCount}
-            </div>
-            <p className="text-[11px] text-[#6B5B4D] mt-1 font-sans-clean">
-              Dietas o alergias
+              Declinaron
             </p>
           </div>
         </section>
 
         {/* ==================================================================== */}
-        {/* PESTAÑA 1: GESTIÓN DE RESPUESTAS (RSVPS) */}
+        {/* PESTAÑA 1: GESTIÓN DE INVITADOS Y ASIGNACIÓN DE PASES */}
+        {/* ==================================================================== */}
+        {activeTab === 'guests' && (
+          <section className="space-y-8">
+            {/* Formulario para añadir invitado con pases asignados */}
+            <div className="bg-[#FCFAF6] border border-[#DFC088]/40 rounded-2xl p-6 shadow-xs">
+              <h3 className="font-serif-luxury text-xl text-[#2A2118] font-medium mb-1">
+                Asignar pases a un nuevo invitado
+              </h3>
+              <p className="font-sans-clean text-xs text-[#6B5B4D] mb-5">
+                Ingresa el nombre de la persona o familia y cuántos pases llevará su invitación. Al guardarlo, se crea su enlace único para que no puedan solicitar más asientos de los autorizados.
+              </p>
+
+              {guestFeedback && (
+                <div className="p-3 mb-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-sans-clean flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>{guestFeedback}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleAddGuest} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+                <div className="lg:col-span-2">
+                  <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
+                    Nombre o Familia del Invitado <span className="text-[#8C6A35]">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newGuestName}
+                    onChange={(e) => setNewGuestName(e.target.value)}
+                    placeholder="Ej. Familia Rodríguez o Dr. Carlos Peña"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#DFC088]/50 bg-white text-xs sm:text-sm font-sans-clean focus:outline-none focus:ring-1 focus:ring-[#B89355]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
+                    Pases asignados <span className="text-[#8C6A35]">*</span>
+                  </label>
+                  <select
+                    value={newGuestPasses}
+                    onChange={(e) => setNewGuestPasses(Number(e.target.value))}
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#DFC088]/50 bg-white text-xs sm:text-sm font-sans-clean focus:outline-none focus:ring-1 focus:ring-[#B89355]"
+                  >
+                    <option value={1}>1 pase (Individual)</option>
+                    <option value={2}>2 pases (Pareja)</option>
+                    <option value={3}>3 pases</option>
+                    <option value={4}>4 pases (Familia)</option>
+                    <option value={5}>5 pases</option>
+                    <option value={6}>6 pases</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
+                    Grupo / Mesa
+                  </label>
+                  <input
+                    type="text"
+                    value={newGuestGroup}
+                    onChange={(e) => setNewGuestGroup(e.target.value)}
+                    placeholder="Ej. Familia Novia, Amigos, etc."
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#DFC088]/50 bg-white text-xs sm:text-sm font-sans-clean focus:outline-none focus:ring-1 focus:ring-[#B89355]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
+                    Teléfono (opcional)
+                  </label>
+                  <input
+                    type="tel"
+                    value={newGuestPhone}
+                    onChange={(e) => setNewGuestPhone(e.target.value)}
+                    placeholder="Ej. +1 809 555 1234"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#DFC088]/50 bg-white text-xs sm:text-sm font-sans-clean focus:outline-none focus:ring-1 focus:ring-[#B89355]"
+                  />
+                </div>
+
+                <div className="sm:col-span-2 lg:col-span-4">
+                  <input
+                    type="text"
+                    value={newGuestNotes}
+                    onChange={(e) => setNewGuestNotes(e.target.value)}
+                    placeholder="Notas internas (ej. Padrinos, mesa 4, requiere transporte...)"
+                    className="w-full px-3.5 py-2 rounded-lg border border-[#DFC088]/30 bg-white text-xs text-[#6B5B4D] font-sans-clean focus:outline-none"
+                  />
+                </div>
+
+                <div className="flex items-end">
+                  <button
+                    type="submit"
+                    disabled={isAddingGuest}
+                    className="gold-button w-full py-2.5 rounded-lg font-serif-luxury text-xs tracking-wider uppercase inline-flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                  >
+                    <UserPlus className="w-4 h-4" />
+                    <span>Guardar Invitado</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Listado de invitados con buscador y filtros */}
+            <div className="bg-[#FCFAF6] border border-[#DFC088]/40 rounded-2xl p-6 shadow-xs">
+              <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-5">
+                <h3 className="font-serif-luxury text-xl text-[#2A2118] font-medium">
+                  Lista de Invitados y Enlaces Generados
+                </h3>
+
+                <div className="flex items-center gap-3">
+                  {/* Buscador */}
+                  <div className="relative w-full sm:w-64">
+                    <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#8C6A35]" />
+                    <input
+                      type="text"
+                      value={guestSearchTerm}
+                      onChange={(e) => setGuestSearchTerm(e.target.value)}
+                      placeholder="Buscar por nombre o teléfono..."
+                      className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-[#DFC088]/40 bg-white text-xs font-sans-clean focus:outline-none focus:ring-1 focus:ring-[#B89355]"
+                    />
+                  </div>
+
+                  {/* Filtro por grupo */}
+                  {availableGroups.length > 0 && (
+                    <select
+                      value={guestGroupFilter}
+                      onChange={(e) => setGuestGroupFilter(e.target.value)}
+                      className="px-2.5 py-1.5 rounded-lg border border-[#DFC088]/40 bg-white text-xs font-sans-clean"
+                    >
+                      <option value="all">Todos los grupos</option>
+                      {availableGroups.map((grp) => (
+                        <option key={grp} value={grp}>
+                          {grp}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs sm:text-sm font-sans-clean">
+                  <thead>
+                    <tr className="border-b border-[#DFC088]/30 text-[#8C6A35] font-serif-luxury text-xs uppercase tracking-wider">
+                      <th className="py-3 px-3">Invitado</th>
+                      <th className="py-3 px-3">Grupo / Mesa</th>
+                      <th className="py-3 px-3 text-center">Pases Asignados</th>
+                      <th className="py-3 px-3">Estado</th>
+                      <th className="py-3 px-3">Notas</th>
+                      <th className="py-3 px-3 text-right">Compartir / Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#DFC088]/20">
+                    {filteredGuests.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="py-8 text-center text-[#6B5B4D] italic">
+                          No hay invitados registrados con esos criterios.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredGuests.map((g) => {
+                        const isConfirmed = g.status === 'confirmed';
+                        const isDeclined = g.status === 'declined';
+
+                        return (
+                          <tr key={g.id} className="hover:bg-[#FAF7F2] transition-colors">
+                            <td className="py-3.5 px-3 font-medium text-[#2A2118]">
+                              {g.full_name}
+                              {g.phone && <span className="block text-[11px] text-[#8C6A35]">{g.phone}</span>}
+                            </td>
+
+                            <td className="py-3.5 px-3">
+                              {g.group ? (
+                                <span className="inline-block px-2 py-0.5 rounded-md bg-[#FAF4E6] border border-[#DFC088]/30 text-[#8C6A35] text-[11px] font-medium">
+                                  {g.group}
+                                </span>
+                              ) : (
+                                <span className="text-[#A69584]">—</span>
+                              )}
+                            </td>
+
+                            <td className="py-3.5 px-3 text-center">
+                              <span className="inline-block px-2.5 py-1 rounded-full bg-[#FAF4E6] border border-[#B89355]/40 text-[#8C6A35] font-semibold text-xs">
+                                {g.max_guests} {g.max_guests === 1 ? 'pase' : 'pases'}
+                              </span>
+                            </td>
+
+                            <td className="py-3.5 px-3">
+                              {isConfirmed ? (
+                                <span className="inline-flex items-center gap-1 text-xs text-emerald-700 font-medium">
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                                  <span>Confirmó ({g.confirmed_count || g.max_guests})</span>
+                                </span>
+                              ) : isDeclined ? (
+                                <span className="inline-flex items-center gap-1 text-xs text-stone-500 font-medium">
+                                  <UserX className="w-3.5 h-3.5" />
+                                  <span>No asistirá</span>
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 text-xs text-amber-700 font-medium">
+                                  <Clock className="w-3.5 h-3.5" />
+                                  <span>Pendiente</span>
+                                </span>
+                              )}
+                            </td>
+
+                            <td className="py-3.5 px-3 text-[#8C6A35] italic text-xs max-w-xs truncate">
+                              {g.notes || '—'}
+                            </td>
+
+                            <td className="py-3.5 px-3 text-right">
+                              <div className="flex items-center justify-end gap-1.5">
+                                {/* Botón Enviar WhatsApp */}
+                                <a
+                                  href={getGuestWhatsAppInviteUrl(g)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors"
+                                  title="Enviar invitación personalizada por WhatsApp"
+                                >
+                                  <MessageCircle className="w-4 h-4" />
+                                </a>
+
+                                {/* Botón Copiar Enlace */}
+                                <button
+                                  onClick={() => handleCopyPersonalizedLink(g.code)}
+                                  className="p-1.5 rounded-lg bg-stone-100 text-[#2A2118] hover:bg-stone-200 transition-colors cursor-pointer"
+                                  title="Copiar enlace personalizado"
+                                >
+                                  {copiedCode === g.code ? (
+                                    <Check className="w-4 h-4 text-emerald-600" />
+                                  ) : (
+                                    <Copy className="w-4 h-4" />
+                                  )}
+                                </button>
+
+                                {/* Botón Editar */}
+                                <button
+                                  onClick={() => setEditingGuest(g)}
+                                  className="p-1.5 rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors cursor-pointer"
+                                  title="Editar pases o datos"
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </button>
+
+                                {/* Botón Eliminar */}
+                                <button
+                                  onClick={() => handleDeleteGuest(g.id)}
+                                  className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
+                                  title="Eliminar de la lista"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ==================================================================== */}
+        {/* PESTAÑA 2: CONFIRMACIONES Y ASISTENCIA (RSVPS) */}
         {/* ==================================================================== */}
         {activeTab === 'rsvps' && (
           <section className="bg-[#FCFAF6] border border-[#DFC088]/40 rounded-2xl p-4 sm:p-6 shadow-xs mb-8">
@@ -564,7 +900,7 @@ export default function AdminPage() {
                   className="gold-button px-4 py-2.5 rounded-lg font-serif-luxury text-xs tracking-wider uppercase inline-flex items-center justify-center gap-2 cursor-pointer shadow-xs"
                 >
                   <Download className="w-4 h-4" />
-                  <span>Exportar a CSV (Excel)</span>
+                  <span>Exportar a Excel (CSV)</span>
                 </a>
               </div>
             </div>
@@ -739,206 +1075,115 @@ export default function AdminPage() {
             </div>
           </section>
         )}
-
-        {/* ==================================================================== */}
-        {/* PESTAÑA 2: CONTROL DE INVITADOS Y ASIGNACIÓN DE PASES */}
-        {/* ==================================================================== */}
-        {activeTab === 'guests' && (
-          <section className="space-y-8">
-            {/* Formulario para añadir invitado con pases asignados */}
-            <div className="bg-[#FCFAF6] border border-[#DFC088]/40 rounded-2xl p-6 shadow-xs">
-              <h3 className="font-serif-luxury text-xl text-[#2A2118] font-medium mb-1">
-                Registrar nuevo invitado y asignar pases
-              </h3>
-              <p className="font-sans-clean text-xs text-[#6B5B4D] mb-5">
-                Ustedes deciden cuántos pases tiene cada persona o familia. Al registrarlo, se genera un enlace personalizado que bloquea el número máximo de asistentes en su invitación.
-              </p>
-
-              {guestFeedback && (
-                <div className="p-3 mb-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-sans-clean">
-                  {guestFeedback}
-                </div>
-              )}
-
-              <form onSubmit={handleAddGuest} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="lg:col-span-2">
-                  <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
-                    Nombre o Familia del Invitado <span className="text-[#8C6A35]">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={newGuestName}
-                    onChange={(e) => setNewGuestName(e.target.value)}
-                    placeholder="Ej. Familia Rodríguez o Dr. Carlos Peña"
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#DFC088]/50 bg-white text-xs sm:text-sm font-sans-clean focus:outline-none focus:ring-1 focus:ring-[#B89355]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
-                    Pases asignados (Cupos) <span className="text-[#8C6A35]">*</span>
-                  </label>
-                  <select
-                    value={newGuestPasses}
-                    onChange={(e) => setNewGuestPasses(Number(e.target.value))}
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#DFC088]/50 bg-white text-xs sm:text-sm font-sans-clean focus:outline-none focus:ring-1 focus:ring-[#B89355]"
-                  >
-                    <option value={1}>1 pase (Individual)</option>
-                    <option value={2}>2 pases (Pareja)</option>
-                    <option value={3}>3 pases</option>
-                    <option value={4}>4 pases (Familia)</option>
-                    <option value={5}>5 pases</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
-                    Teléfono (opcional para WhatsApp)
-                  </label>
-                  <input
-                    type="tel"
-                    value={newGuestPhone}
-                    onChange={(e) => setNewGuestPhone(e.target.value)}
-                    placeholder="Ej. +1 809 555 1234"
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#DFC088]/50 bg-white text-xs sm:text-sm font-sans-clean focus:outline-none focus:ring-1 focus:ring-[#B89355]"
-                  />
-                </div>
-
-                <div className="sm:col-span-2 lg:col-span-3">
-                  <input
-                    type="text"
-                    value={newGuestNotes}
-                    onChange={(e) => setNewGuestNotes(e.target.value)}
-                    placeholder="Notas internas (ej. Amigo de infancia, mesa de honor...)"
-                    className="w-full px-3.5 py-2 rounded-lg border border-[#DFC088]/30 bg-white text-xs text-[#6B5B4D] font-sans-clean focus:outline-none"
-                  />
-                </div>
-
-                <div className="flex items-end">
-                  <button
-                    type="submit"
-                    disabled={isAddingGuest}
-                    className="gold-button w-full py-2.5 rounded-lg font-serif-luxury text-xs tracking-wider uppercase inline-flex items-center justify-center gap-1.5 cursor-pointer"
-                  >
-                    <UserPlus className="w-4 h-4" />
-                    <span>Guardar Invitado</span>
-                  </button>
-                </div>
-              </form>
-            </div>
-
-            {/* Tabla de invitados pre-aprobados */}
-            <div className="bg-[#FCFAF6] border border-[#DFC088]/40 rounded-2xl p-6 shadow-xs">
-              <h3 className="font-serif-luxury text-xl text-[#2A2118] font-medium mb-4">
-                Lista de Invitados y Enlaces Individuales
-              </h3>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse text-xs sm:text-sm font-sans-clean">
-                  <thead>
-                    <tr className="border-b border-[#DFC088]/30 text-[#8C6A35] font-serif-luxury text-xs uppercase tracking-wider">
-                      <th className="py-3 px-3">Invitado</th>
-                      <th className="py-3 px-3 text-center">Pases Autorizados</th>
-                      <th className="py-3 px-3">Estado</th>
-                      <th className="py-3 px-3">Código</th>
-                      <th className="py-3 px-3">Notas</th>
-                      <th className="py-3 px-3 text-right">Compartir / Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#DFC088]/20">
-                    {guests.map((g) => {
-                      const isConfirmed = g.status === 'confirmed';
-                      const isDeclined = g.status === 'declined';
-
-                      return (
-                        <tr key={g.id} className="hover:bg-[#FAF7F2] transition-colors">
-                          <td className="py-3.5 px-3 font-medium text-[#2A2118]">
-                            {g.full_name}
-                            {g.phone && <span className="block text-[11px] text-[#8C6A35]">{g.phone}</span>}
-                          </td>
-
-                          <td className="py-3.5 px-3 text-center">
-                            <span className="inline-block px-2.5 py-1 rounded-full bg-[#FAF4E6] border border-[#B89355]/40 text-[#8C6A35] font-semibold text-xs">
-                              {g.max_guests} {g.max_guests === 1 ? 'pase' : 'pases'}
-                            </span>
-                          </td>
-
-                          <td className="py-3.5 px-3">
-                            {isConfirmed ? (
-                              <span className="inline-flex items-center gap-1 text-xs text-emerald-700 font-medium">
-                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                                <span>Confirmó ({g.confirmed_count || g.max_guests})</span>
-                              </span>
-                            ) : isDeclined ? (
-                              <span className="inline-flex items-center gap-1 text-xs text-stone-500 font-medium">
-                                <UserX className="w-3.5 h-3.5" />
-                                <span>No asistirá</span>
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1 text-xs text-amber-700 font-medium">
-                                <Clock className="w-3.5 h-3.5" />
-                                <span>Pendiente</span>
-                              </span>
-                            )}
-                          </td>
-
-                          <td className="py-3.5 px-3 text-[#6B5B4D] font-mono text-xs">
-                            {g.code}
-                          </td>
-
-                          <td className="py-3.5 px-3 text-[#8C6A35] italic text-xs max-w-xs truncate">
-                            {g.notes || '—'}
-                          </td>
-
-                          <td className="py-3.5 px-3 text-right">
-                            <div className="flex items-center justify-end gap-2">
-                              {/* Botón para enviar por WhatsApp personalizado */}
-                              <a
-                                href={getGuestWhatsAppInviteUrl(g)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors"
-                                title="Enviar invitación por WhatsApp"
-                              >
-                                <MessageCircle className="w-4 h-4" />
-                              </a>
-
-                              {/* Botón copiar enlace */}
-                              <button
-                                onClick={() => handleCopyPersonalizedLink(g.code)}
-                                className="p-1.5 rounded-lg bg-stone-100 text-[#2A2118] hover:bg-stone-200 transition-colors cursor-pointer"
-                                title="Copiar enlace personalizado"
-                              >
-                                {copiedCode === g.code ? (
-                                  <Check className="w-4 h-4 text-emerald-600" />
-                                ) : (
-                                  <Copy className="w-4 h-4" />
-                                )}
-                              </button>
-
-                              {/* Botón eliminar */}
-                              <button
-                                onClick={() => handleDeleteGuest(g.id)}
-                                className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
-                                title="Eliminar de la lista"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </section>
-        )}
       </main>
 
-      {/* Modal de Detalle Completo de Invitado */}
+      {/* Modal para Editar Invitado y sus Pases Asignados */}
+      {editingGuest && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in">
+          <div className="bg-[#FCFAF6] border border-[#DFC088]/50 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative">
+            <div className="flex items-center justify-between mb-4 border-b border-[#DFC088]/30 pb-3">
+              <h3 className="font-serif-luxury text-xl text-[#2A2118] font-medium">
+                Editar Pases de Invitación
+              </h3>
+              <button
+                onClick={() => setEditingGuest(null)}
+                className="text-[#6B5B4D] hover:text-[#2A2118] p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateGuest} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
+                  Nombre del Invitado o Familia
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editingGuest.full_name}
+                  onChange={(e) => setEditingGuest({ ...editingGuest, full_name: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#DFC088]/50 bg-white text-xs sm:text-sm font-sans-clean"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
+                  Cantidad de pases asignados
+                </label>
+                <select
+                  value={editingGuest.max_guests}
+                  onChange={(e) => setEditingGuest({ ...editingGuest, max_guests: Number(e.target.value) })}
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#DFC088]/50 bg-white text-xs sm:text-sm font-sans-clean"
+                >
+                  <option value={1}>1 pase (Individual)</option>
+                  <option value={2}>2 pases (Pareja)</option>
+                  <option value={3}>3 pases</option>
+                  <option value={4}>4 pases (Familia)</option>
+                  <option value={5}>5 pases</option>
+                  <option value={6}>6 pases</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
+                  Grupo / Mesa
+                </label>
+                <input
+                  type="text"
+                  value={editingGuest.group || ''}
+                  onChange={(e) => setEditingGuest({ ...editingGuest, group: e.target.value })}
+                  placeholder="Ej. Familia Novia, Amigos, etc."
+                  className="w-full px-3.5 py-2 rounded-lg border border-[#DFC088]/50 bg-white text-xs font-sans-clean"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
+                  Teléfono
+                </label>
+                <input
+                  type="tel"
+                  value={editingGuest.phone || ''}
+                  onChange={(e) => setEditingGuest({ ...editingGuest, phone: e.target.value })}
+                  className="w-full px-3.5 py-2 rounded-lg border border-[#DFC088]/50 bg-white text-xs font-sans-clean"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
+                  Notas
+                </label>
+                <input
+                  type="text"
+                  value={editingGuest.notes || ''}
+                  onChange={(e) => setEditingGuest({ ...editingGuest, notes: e.target.value })}
+                  className="w-full px-3.5 py-2 rounded-lg border border-[#DFC088]/30 bg-white text-xs font-sans-clean"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingGuest(null)}
+                  className="px-4 py-2 rounded-full border border-stone-300 text-xs font-sans-clean text-[#6B5B4D]"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingEdit}
+                  className="gold-button px-5 py-2 rounded-full font-serif-luxury text-xs tracking-wider uppercase"
+                >
+                  {isSavingEdit ? 'Guardando...' : 'Guardar Cambios'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Detalle Completo de Respuesta */}
       {selectedRsvpForDetail && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in">
           <div className="bg-[#FCFAF6] border border-[#DFC088]/50 rounded-2xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative">

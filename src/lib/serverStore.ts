@@ -191,6 +191,7 @@ export async function saveGuestInvite(
             phone: guest.phone || null,
             max_guests: guest.max_guests,
             status: guest.status || 'pending',
+            group: guest.group || null,
             notes: guest.notes || null,
           })
           .eq('id', guest.id)
@@ -208,6 +209,7 @@ export async function saveGuestInvite(
               phone: guest.phone || null,
               max_guests: guest.max_guests,
               status: guest.status || 'pending',
+              group: guest.group || null,
               notes: guest.notes || null,
             },
           ])
@@ -230,6 +232,7 @@ export async function saveGuestInvite(
         phone: guest.phone || null,
         max_guests: guest.max_guests,
         status: guest.status || guests[idx].status,
+        group: guest.group !== undefined ? guest.group : guests[idx].group,
         notes: guest.notes || null,
         updated_at: now,
       };
@@ -245,6 +248,7 @@ export async function saveGuestInvite(
     phone: guest.phone || null,
     max_guests: guest.max_guests,
     status: guest.status || 'pending',
+    group: guest.group || null,
     notes: guest.notes || null,
     created_at: now,
   };
