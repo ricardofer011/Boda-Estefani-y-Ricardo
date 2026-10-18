@@ -128,6 +128,25 @@
   transform-style: preserve-3d;
 }
 
+/* Animaciones personalizadas */
+@keyframes shimmer {
+  0% { transform: translateX(-150%) skewX(-20deg); }
+  100% { transform: translateX(250%) skewX(-20deg); }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.6s ease-out;
+}
+
+@keyframes gentle-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-float {
+  animation: gentle-float 4s ease-in-out infinite;
+}
+
 /* Respeta la preferencia del usuario sobre reducción de movimiento */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {

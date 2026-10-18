@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import confetti from 'canvas-confetti';
 import { WaxSeal } from './WaxSeal';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { Sparkles, ArrowRight, Heart } from 'lucide-react';
 
 interface EnvelopeProps {
   onOpenComplete: () => void;
@@ -10,137 +11,246 @@ interface EnvelopeProps {
 }
 
 export function Envelope({ onOpenComplete, coupleNames }: EnvelopeProps) {
-  // Estados de animación: 'idle' | 'breaking-seal' | 'opening-flap' | 'sliding-card' | 'revealing-full'
-  const [animStage, setAnimStage] = useState<'idle' | 'breaking-seal' | 'opening-flap' | 'sliding-card' | 'revealing-full'>('idle');
+  // Estados de animación:
+  // 'idle' | 'sparkle-seal' | 'untie-ribbon' | 'opening-flap' | 'rising-card' | 'transition-out'
+  const [stage, setStage] = useState<
+    'idle' | 'sparkle-seal' | 'untie-ribbon' | 'opening-flap' | 'rising-card' | 'transition-out'
+  >('idle');
+
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [isReducedMotion, setIsReducedMotion] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Detectar si el usuario tiene activada la preferencia de reducción de movimiento
     if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       setIsReducedMotion(true);
     }
   }, []);
 
+  // Efecto 3D de inclinación interactiva con el movimiento del ratón / toque
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (stage !== 'idle' || isReducedMotion) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    // Inclinación máxima de 10 grados
+    setTilt({
+      x: -(y / (rect.height / 2)) * 8,
+      y: (x / (rect.width / 2)) * 8,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setTilt({ x: 0, y: 0 });
+  };
+
+  // Sonido suave de apertura con Web Audio API (sin dependencias ni descargas)
+  const playOpenChime = () => {
+    try {
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const ctx = new AudioCtx();
+      const now = ctx.currentTime;
+
+      // Acorde armónico de arpa celestial: Re, Fa#, La, Re alto
+      const notes = [587.33, 739.99, 880.0, 1174.66];
+      notes.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+
+        gain.gain.setValueAtTime(0.001, now + idx * 0.1);
+        gain.gain.linearRampToValueAtTime(0.03, now + idx * 0.1 + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.1 + 1.2);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + idx * 0.1);
+        osc.stop(now + idx * 0.1 + 1.3);
+      });
+    } catch {
+      // Ignorar si el navegador bloquea audio sin interacción previa
+    }
+  };
+
   const handleOpenClick = () => {
-    if (animStage !== 'idle') return;
+    if (stage !== 'idle') return;
 
     if (isReducedMotion) {
       onOpenComplete();
       return;
     }
 
-    // Paso 1: El sello de cera se desvanece
-    setAnimStage('breaking-seal');
+    playOpenChime();
 
-    // Paso 2: La solapa superior se abre en 3D
+    // Ráfaga de chispas doradas desde el centro del sello
+    try {
+      confetti({
+        particleCount: 55,
+        spread: 60,
+        origin: { y: 0.52, x: 0.5 },
+        colors: ['#D4AF37', '#EED99E', '#B89355', '#FFFFFF'],
+        ticks: 200,
+        gravity: 0.8,
+        scalar: 0.9,
+      });
+    } catch {
+      // Ignorar
+    }
+
+    // Fase 1: Deshacer sello
+    setStage('sparkle-seal');
+
+    // Fase 2: Desatar cinta de seda
     setTimeout(() => {
-      setAnimStage('opening-flap');
-    }, 400);
+      setStage('untie-ribbon');
+    }, 350);
 
-    // Paso 3: La tarjeta emerge del sobre
+    // Fase 3: Apertura 3D de la solapa
     setTimeout(() => {
-      setAnimStage('sliding-card');
-    }, 1000);
+      setStage('opening-flap');
+    }, 700);
 
-    // Paso 4: Transición progresiva al contenido principal completo
+    // Fase 4: La tarjeta asciende con destello dorado
     setTimeout(() => {
-      setAnimStage('revealing-full');
-    }, 1800);
+      setStage('rising-card');
+    }, 1300);
 
-    // Paso 5: Finalizar transición
+    // Fase 5: Transición cinemática al contenido completo
+    setTimeout(() => {
+      setStage('transition-out');
+    }, 2200);
+
+    // Finalizar
     setTimeout(() => {
       onOpenComplete();
-    }, 2400);
+    }, 2900);
   };
 
-  const handleSkip = () => {
-    onOpenComplete();
-  };
-
-  const isFlapOpen = animStage === 'opening-flap' || animStage === 'sliding-card' || animStage === 'revealing-full';
-  const isCardSliding = animStage === 'sliding-card' || animStage === 'revealing-full';
+  const isFlapOpen = stage === 'opening-flap' || stage === 'rising-card' || stage === 'transition-out';
+  const isCardEmerging = stage === 'rising-card' || stage === 'transition-out';
+  const isRibbonGone = stage !== 'idle' && stage !== 'sparkle-seal';
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col items-center justify-center p-4 bg-[#FAF7F2] transition-opacity duration-700 ${
-        animStage === 'revealing-full' ? 'opacity-0 pointer-events-none' : 'opacity-100'
+      className={`fixed inset-0 z-50 flex flex-col items-center justify-center p-4 bg-[#FAF7F2] select-none overflow-hidden transition-all duration-1000 ${
+        stage === 'transition-out' ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'
       }`}
     >
-      {/* Fondo con textura sutil y viñeta delicada */}
+      {/* 1. Fondo de papel fino con partículas y destellos tenues */}
+      <div className="absolute inset-0 paper-texture pointer-events-none opacity-90" aria-hidden="true" />
       <div
-        className="absolute inset-0 paper-texture pointer-events-none opacity-90"
+        className="absolute inset-0 bg-radial from-transparent via-[#EDE4D4]/50 to-[#DFD3BF]/70 pointer-events-none"
         aria-hidden="true"
       />
-      <div
-        className="absolute inset-0 bg-radial from-transparent via-[#EFE6D8]/40 to-[#E5DAC8]/60 pointer-events-none"
-        aria-hidden="true"
-      />
+
+      {/* Partículas luminosas flotantes */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div className="absolute top-1/4 left-1/6 w-2 h-2 rounded-full bg-[#DFC088]/40 blur-[1px] animate-pulse" />
+        <div className="absolute top-1/3 right-1/5 w-3 h-3 rounded-full bg-[#B89355]/30 blur-[2px] animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-1/4 left-1/4 w-2.5 h-2.5 rounded-full bg-[#EED99E]/40 blur-[1px] animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute bottom-1/3 right-1/4 w-2 h-2 rounded-full bg-[#DFC088]/40 blur-[1px] animate-pulse" style={{ animationDelay: '1.5s' }} />
+      </div>
 
       {/* Contenedor central */}
       <div className="relative z-10 w-full max-w-sm sm:max-w-md flex flex-col items-center">
-        {/* Mensaje superior */}
-        <div className="text-center mb-6 sm:mb-8 animate-fade-in">
-          <p className="font-serif-luxury text-xs sm:text-sm tracking-[0.3em] uppercase text-[#8C6A35] font-semibold mb-1">
-            Una invitación especial para ti
-          </p>
-          <h1 className="font-serif-luxury text-3xl sm:text-4xl text-[#2A2118] font-normal tracking-wide">
+        {/* Encabezado ceremonial con tipografía de lujo */}
+        <div className="text-center mb-6 sm:mb-8 transition-transform duration-700">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF4E6] border border-[#DFC088]/50 mb-2.5 shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-[#B89355] animate-pulse" />
+            <span className="font-serif-luxury text-[11px] sm:text-xs tracking-[0.28em] uppercase text-[#8C6A35] font-semibold">
+              Una invitación especial para ti
+            </span>
+          </div>
+
+          <h1 className="font-serif-luxury text-3xl sm:text-4xl text-[#2A2118] font-normal tracking-wide gold-text-gradient">
             {coupleNames}
           </h1>
-          <div className="h-[1px] w-16 mx-auto mt-2 bg-gradient-to-r from-transparent via-[#B89355]/60 to-transparent" />
+          <div className="h-[1px] w-20 mx-auto mt-2 bg-gradient-to-r from-transparent via-[#B89355]/60 to-transparent" />
         </div>
 
         {/* ==================================================================== */}
-        {/* ESTRUCTURA DEL SOBRE 3D */}
+        {/* ESTRUCTURA DEL SOBRE 3D INTERACTIVO */}
         {/* ==================================================================== */}
         <div
-          className="relative w-[300px] h-[200px] sm:w-[380px] sm:h-[250px] cursor-pointer select-none"
+          ref={containerRef}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
           onClick={handleOpenClick}
           role="button"
           tabIndex={0}
-          aria-label="Abrir sobre de invitación"
+          aria-label="Tocar para abrir la invitación de Estefani y Ricardo"
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
               handleOpenClick();
             }
           }}
-          style={{ perspective: '1200px' }}
+          className="relative w-[320px] h-[215px] sm:w-[390px] sm:h-[260px] cursor-pointer"
+          style={{
+            perspective: '1400px',
+            transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+            transition: stage === 'idle' ? 'transform 0.15s ease-out' : 'transform 0.7s ease-in-out',
+          }}
         >
-          {/* Sombra suave de profundidad sobre la superficie */}
+          {/* Sombra de contacto realista en la superficie */}
           <div
-            className="absolute inset-x-4 -bottom-4 h-8 bg-[#2A2118]/15 blur-md rounded-full pointer-events-none"
+            className="absolute inset-x-6 -bottom-5 h-8 bg-[#2A2118]/25 blur-lg rounded-full pointer-events-none transition-all duration-700"
+            style={{
+              transform: isCardEmerging ? 'scale(1.15) translateY(10px)' : 'scale(1)',
+              opacity: isCardEmerging ? 0.35 : 0.2,
+            }}
             aria-hidden="true"
           />
 
           {/* CUERPO TRASERO DEL SOBRE */}
-          <div className="absolute inset-0 rounded-lg bg-[#ECE3D4] border border-[#DFC088]/40 shadow-envelope overflow-hidden">
-            {/* Forro interior de lujo con filigrana dorada */}
-            <div className="absolute inset-2 rounded bg-[#FAF7F2] border border-[#DFC088]/30 flex items-center justify-center">
-              <span className="font-serif-luxury text-4xl sm:text-5xl text-[#DFC088]/35 font-light tracking-widest select-none">
-                E & R
-              </span>
+          <div className="absolute inset-0 rounded-xl bg-[#EFE7D8] border border-[#DFC088]/60 shadow-2xl overflow-hidden">
+            {/* Forro interior de lujo: diseño damasco botánico dorado */}
+            <div
+              className="absolute inset-2 rounded-lg bg-[#FCFAF6] border border-[#DFC088]/40 flex items-center justify-center overflow-hidden"
+              style={{
+                backgroundImage: `radial-gradient(circle at 50% 50%, rgba(184, 147, 85, 0.08) 2px, transparent 2px)`,
+                backgroundSize: '16px 16px',
+              }}
+            >
+              <div className="w-16 h-16 rounded-full border border-[#DFC088]/40 flex items-center justify-center opacity-30">
+                <span className="font-serif-luxury text-2xl text-[#8C6A35] font-light tracking-widest">
+                  E&R
+                </span>
+              </div>
             </div>
           </div>
 
-          {/* TARJETA INTERIOR DESLIZANTE */}
+          {/* TARJETA INTERIOR QUE EMERGE CON DESTELLO DE LUZ */}
           <div
-            className={`absolute inset-x-3 bottom-2 h-[180px] sm:h-[230px] rounded-md bg-[#FCFAF6] border border-[#B89355]/40 shadow-md p-4 transition-all duration-700 ease-out ${
-              isCardSliding
-                ? '-translate-y-24 sm:-translate-y-36 scale-105 z-30 shadow-2xl'
+            className={`absolute inset-x-3.5 bottom-2.5 h-[195px] sm:h-[240px] rounded-lg bg-[#FCFAF6] border border-[#B89355]/50 shadow-xl p-4 transition-all duration-1000 ease-out card-paper-texture ${
+              isCardEmerging
+                ? '-translate-y-36 sm:-translate-y-48 scale-105 z-30 shadow-2xl'
                 : 'translate-y-0 z-10'
             }`}
           >
-            {/* Filo dorado doble en la tarjeta */}
-            <div className="w-full h-full border border-[#B89355]/25 rounded flex flex-col items-center justify-center p-3 text-center">
-              <span className="text-[#B89355] text-xs font-serif-luxury tracking-widest uppercase mb-1">
-                Nuestra Boda
+            {/* Filo dorado doble */}
+            <div className="w-full h-full border border-[#B89355]/30 rounded-md flex flex-col items-center justify-center p-3 text-center relative overflow-hidden">
+              {/* Brillo de luz reflectante barriendo la tarjeta al salir */}
+              {isCardEmerging && (
+                <div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none animate-shimmer"
+                  style={{ transform: 'skewX(-20deg)' }}
+                />
+              )}
+
+              <span className="text-[#8C6A35] text-[10px] font-serif-luxury tracking-[0.25em] uppercase mb-1 font-semibold">
+                Nuestra Boda Católica
               </span>
-              <p className="font-serif-luxury text-xl sm:text-2xl text-[#2A2118] font-normal leading-tight">
+              <p className="font-serif-luxury text-xl sm:text-2xl text-[#2A2118] font-normal gold-text-gradient leading-tight">
                 Estefani & Ricardo
               </p>
-              <div className="w-8 h-[1px] bg-[#B89355]/50 my-1.5" />
-              <p className="font-sans-clean text-[10px] sm:text-xs text-[#6B5B4D] tracking-wider">
-                12 • DICIEMBRE • 2026
+              <div className="w-10 h-[1px] bg-[#B89355]/60 my-2" />
+              <p className="font-sans-clean text-[10px] sm:text-xs text-[#6B5B4D] tracking-widest uppercase">
+                12 • Diciembre • 2026
+              </p>
+              <p className="font-serif-luxury text-[11px] text-[#8C6A35] mt-1">
+                Iglesia Las Mercedes • Santo Domingo
               </p>
             </div>
           </div>
@@ -148,85 +258,119 @@ export function Envelope({ onOpenComplete, coupleNames }: EnvelopeProps) {
           {/* SOLAPAS LATERALES Y BOLSILLO DELANTERO DEL SOBRE */}
           {/* Triángulo inferior del bolsillo */}
           <div
-            className="absolute inset-x-0 bottom-0 h-[120px] sm:h-[150px] z-20 pointer-events-none"
+            className="absolute inset-x-0 bottom-0 h-[130px] sm:h-[160px] z-20 pointer-events-none"
             style={{
-              clipPath: 'polygon(0% 100%, 50% 30%, 100% 100%)',
-              background: 'linear-gradient(to top, #F0E8DC, #F6F0E6)',
-              borderBottom: '1px solid rgba(184, 147, 85, 0.4)',
-              boxShadow: '0 -2px 10px rgba(42, 33, 24, 0.05)',
+              clipPath: 'polygon(0% 100%, 50% 28%, 100% 100%)',
+              background: 'linear-gradient(to top, #E8DFCE, #F7F1E6)',
+              borderBottom: '1px solid rgba(184, 147, 85, 0.45)',
+              boxShadow: '0 -4px 15px rgba(42, 33, 24, 0.08)',
             }}
           />
 
           {/* Triángulo lateral izquierdo */}
           <div
-            className="absolute inset-y-0 left-0 w-[160px] sm:w-[200px] z-20 pointer-events-none"
+            className="absolute inset-y-0 left-0 w-[170px] sm:w-[210px] z-20 pointer-events-none"
             style={{
               clipPath: 'polygon(0% 0%, 100% 50%, 0% 100%)',
-              background: 'linear-gradient(to right, #ECE3D4, #F4ECE0)',
-              borderLeft: '1px solid rgba(184, 147, 85, 0.3)',
+              background: 'linear-gradient(to right, #E5DC CB, #F3ECE0)',
+              borderLeft: '1px solid rgba(184, 147, 85, 0.35)',
             }}
           />
 
           {/* Triángulo lateral derecho */}
           <div
-            className="absolute inset-y-0 right-0 w-[160px] sm:w-[200px] z-20 pointer-events-none"
+            className="absolute inset-y-0 right-0 w-[170px] sm:w-[210px] z-20 pointer-events-none"
             style={{
               clipPath: 'polygon(100% 0%, 0% 50%, 100% 100%)',
-              background: 'linear-gradient(to left, #ECE3D4, #F4ECE0)',
-              borderRight: '1px solid rgba(184, 147, 85, 0.3)',
+              background: 'linear-gradient(to left, #E5DCCB, #F3ECE0)',
+              borderRight: '1px solid rgba(184, 147, 85, 0.35)',
             }}
           />
 
-          {/* SOLAPA SUPERIOR TRIANGULAR QUE SE ABRE */}
+          {/* CINTA DE SEDA HORIZONTAL (Ribbon belly band) */}
           <div
-            className="absolute inset-x-0 top-0 h-[115px] sm:h-[145px] transition-transform duration-700 ease-in-out pointer-events-none"
+            className={`absolute inset-x-0 top-1/2 -translate-y-1/2 h-10 z-22 transition-all duration-700 ease-in-out pointer-events-none ${
+              isRibbonGone
+                ? 'opacity-0 scale-x-125 filter blur-xs'
+                : 'opacity-100 scale-x-100 shadow-md'
+            }`}
+            style={{
+              background: 'linear-gradient(to bottom, #FAF5EB, #E8DAC2, #FAF5EB)',
+              borderTop: '1px solid rgba(184, 147, 85, 0.5)',
+              borderBottom: '1px solid rgba(184, 147, 85, 0.5)',
+            }}
+          >
+            {/* Hilos dorados en los bordes de la cinta */}
+            <div className="absolute inset-x-0 top-0.5 h-[1px] bg-[#D4AF37]/40" />
+            <div className="absolute inset-x-0 bottom-0.5 h-[1px] bg-[#D4AF37]/40" />
+          </div>
+
+          {/* SOLAPA SUPERIOR TRIANGULAR QUE SE ABRE EN 3D */}
+          <div
+            className="absolute inset-x-0 top-0 h-[125px] sm:h-[155px] transition-transform duration-800 ease-in-out pointer-events-none"
             style={{
               clipPath: 'polygon(0% 0%, 100% 0%, 50% 100%)',
               background: isFlapOpen
-                ? 'linear-gradient(to bottom, #ECE3D4, #F4ECE0)'
-                : 'linear-gradient(to bottom, #F7F1E7, #EDE4D5)',
+                ? 'linear-gradient(to bottom, #E8DFCE, #F5EFE4)'
+                : 'linear-gradient(to bottom, #FAF5EB, #EFE6D6)',
               transformOrigin: 'top center',
               transform: isFlapOpen ? 'rotateX(180deg)' : 'rotateX(0deg)',
               zIndex: isFlapOpen ? 5 : 25,
-              borderTop: '1px solid rgba(184, 147, 85, 0.4)',
-              boxShadow: isFlapOpen ? 'none' : '0 4px 10px rgba(42, 33, 24, 0.1)',
+              borderTop: '1px solid rgba(184, 147, 85, 0.5)',
+              boxShadow: isFlapOpen ? 'none' : '0 6px 14px rgba(42, 33, 24, 0.12)',
             }}
           />
 
-          {/* SELLO DE CERA CENTRADO EN LA PUNTA DE LA SOLAPA */}
+          {/* SELLO DE CERA ARTESANAL EN 3D CON AURA PULSANTE */}
           <div
-            className="absolute left-1/2 -translate-x-1/2 z-30 transition-all duration-500 ease-out"
+            className="absolute left-1/2 -translate-x-1/2 z-30 transition-all duration-600 ease-out"
             style={{
-              top: '90px',
+              top: '95px',
+              transform: `translateX(-50%) ${stage !== 'idle' ? 'scale(0.8) opacity(0)' : 'scale(1)'}`,
             }}
           >
+            {/* Halo dorado pulsante alrededor del sello */}
+            <div
+              className="absolute -inset-2.5 rounded-full bg-gradient-to-r from-[#D4AF37]/30 to-[#EED99E]/40 blur-sm animate-pulse pointer-events-none"
+              aria-hidden="true"
+            />
+
             <WaxSeal
-              size={64}
+              size={68}
               initials="E & R"
-              isBroken={animStage !== 'idle'}
+              isBroken={stage !== 'idle'}
               onClick={handleOpenClick}
             />
+
+            {/* Pequeña etiqueta invitando a tocar */}
+            <div
+              className={`absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] tracking-wider uppercase font-sans-clean font-semibold text-[#8C6A35] transition-opacity duration-300 ${
+                stage === 'idle' ? 'opacity-90' : 'opacity-0'
+              }`}
+            >
+              Toca el sello
+            </div>
           </div>
         </div>
 
         {/* ==================================================================== */}
         {/* BOTONES DE ACCIÓN: ABRIR O SALTAR */}
         {/* ==================================================================== */}
-        <div className="mt-8 sm:mt-10 flex flex-col items-center gap-3 w-full">
+        <div className="mt-10 sm:mt-12 flex flex-col items-center gap-3 w-full">
           <button
             onClick={handleOpenClick}
-            disabled={animStage !== 'idle'}
-            className="gold-button w-full sm:w-auto px-8 py-3.5 rounded-full font-serif-luxury text-base tracking-widest uppercase flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-95 transition-transform"
+            disabled={stage !== 'idle'}
+            className="gold-button w-full sm:w-auto px-10 py-4 rounded-full font-serif-luxury text-base tracking-[0.2em] uppercase flex items-center justify-center gap-2.5 cursor-pointer shadow-xl active:scale-95 transition-all group"
           >
-            <span>{animStage === 'idle' ? 'Abrir invitación' : 'Abriendo...'}</span>
-            <Sparkles className="w-4 h-4 text-amber-200" />
+            <span>{stage === 'idle' ? 'Abrir invitación' : 'Abriendo sobre...'}</span>
+            <Sparkles className="w-4 h-4 text-amber-200 group-hover:rotate-12 transition-transform" />
           </button>
 
           <button
-            onClick={handleSkip}
-            className="text-xs sm:text-sm font-sans-clean text-[#6B5B4D] hover:text-[#2A2118] tracking-wider underline underline-offset-4 decoration-[#B89355]/40 hover:decoration-[#B89355] transition-colors pt-1 cursor-pointer"
+            onClick={onOpenComplete}
+            className="text-xs font-sans-clean text-[#6B5B4D] hover:text-[#2A2118] tracking-wider underline underline-offset-4 decoration-[#B89355]/40 hover:decoration-[#B89355] transition-colors pt-1 cursor-pointer"
           >
-            Saltar animación y ver invitación
+            Saltar animación y ver invitación directamente
           </button>
         </div>
       </div>
