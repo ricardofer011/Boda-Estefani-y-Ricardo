@@ -11,8 +11,7 @@ interface EnvelopeProps {
 }
 
 export function Envelope({ onOpenComplete, coupleNames }: EnvelopeProps) {
-  // Estados de animación rápida y fluida:
-  // 'idle' | 'sparkle-seal' | 'opening-flap' | 'rising-card' | 'transition-out'
+  // Estados de animación rápida y fluida (1.2 segundos total)
   const [stage, setStage] = useState<
     'idle' | 'sparkle-seal' | 'opening-flap' | 'rising-card' | 'transition-out'
   >('idle');
@@ -67,11 +66,11 @@ export function Envelope({ onOpenComplete, coupleNames }: EnvelopeProps) {
         osc.stop(now + idx * 0.08 + 1.0);
       });
     } catch {
-      // Ignorar si el navegador bloquea audio
+      // Ignorar si el navegador bloquea audio sin interacción previa
     }
   };
 
-  // Animación rápida, dinámica y elegante (1.2 segundos total)
+  // Apertura rápida, limpia y cinematográfica
   const handleOpenClick = () => {
     if (stage !== 'idle') return;
 
@@ -97,10 +96,10 @@ export function Envelope({ onOpenComplete, coupleNames }: EnvelopeProps) {
       // Ignorar
     }
 
-    // 1. Sello y cinta se desvanecen inmediatamente
+    // 1. Desvanecer sello suavemente (0ms)
     setStage('sparkle-seal');
 
-    // 2. La solapa superior se abre en 3D (140ms)
+    // 2. Solapa superior se abre en 3D (140ms)
     setTimeout(() => {
       setStage('opening-flap');
     }, 140);
@@ -123,7 +122,6 @@ export function Envelope({ onOpenComplete, coupleNames }: EnvelopeProps) {
 
   const isFlapOpen = stage === 'opening-flap' || stage === 'rising-card' || stage === 'transition-out';
   const isCardEmerging = stage === 'rising-card' || stage === 'transition-out';
-  const isRibbonGone = stage !== 'idle';
 
   return (
     <div
@@ -131,7 +129,7 @@ export function Envelope({ onOpenComplete, coupleNames }: EnvelopeProps) {
         stage === 'transition-out' ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'
       }`}
     >
-      {/* 1. Fondo de papel fino con partículas y destellos */}
+      {/* 1. Fondo de papel fino con partículas y destellos tenues */}
       <div className="absolute inset-0 paper-texture pointer-events-none opacity-90" aria-hidden="true" />
       <div
         className="absolute inset-0 bg-radial from-transparent via-[#EDE4D4]/50 to-[#DFD3BF]/70 pointer-events-none"
@@ -164,7 +162,7 @@ export function Envelope({ onOpenComplete, coupleNames }: EnvelopeProps) {
         </div>
 
         {/* ==================================================================== */}
-        {/* ESTRUCTURA DEL SOBRE TOTALMENTE CERRADO Y REALISTA */}
+        {/* ESTRUCTURA DEL SOBRE TOTALMENTE CERRADO Y PERFECTAMENTE SIMÉTRICO */}
         {/* ==================================================================== */}
         <div
           ref={containerRef}
@@ -177,7 +175,7 @@ export function Envelope({ onOpenComplete, coupleNames }: EnvelopeProps) {
             transition: stage === 'idle' ? 'transform 0.15s ease-out' : 'transform 0.5s ease-in-out',
           }}
         >
-          {/* Sombra de contacto suave en la superficie */}
+          {/* Sombra de contacto realista en la superficie */}
           <div
             className="absolute inset-x-6 -bottom-5 h-8 bg-[#2A2118]/25 blur-lg rounded-full pointer-events-none transition-all duration-500"
             style={{
@@ -187,8 +185,8 @@ export function Envelope({ onOpenComplete, coupleNames }: EnvelopeProps) {
             aria-hidden="true"
           />
 
-          {/* CUERPO PRINCIPAL DEL SOBRE (Base sólida de papel marfil) */}
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-b from-[#FBF8F2] to-[#EFE7D8] border border-[#DFC088]/60 shadow-2xl overflow-hidden pointer-events-none">
+          {/* CUERPO PRINCIPAL DEL SOBRE (Base de papel marfil con filo dorado) */}
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-b from-[#FCF9F3] to-[#EFE7D8] border border-[#DFC088]/60 shadow-2xl overflow-hidden pointer-events-none">
             {/* Forro interior dorado visible solo cuando la solapa se abre */}
             <div
               className={`absolute inset-2 rounded-lg bg-[#FCFAF6] border border-[#DFC088]/40 flex items-center justify-center transition-opacity duration-300 ${
@@ -240,61 +238,64 @@ export function Envelope({ onOpenComplete, coupleNames }: EnvelopeProps) {
             </div>
           </div>
 
-          {/* BOLSILLO DELANTERO DEL SOBRE (Cubre de forma sólida y continua la mitad inferior) */}
+          {/* SOLAPAS DEL SOBRE CERRADO: GEOMETRÍA SIMÉTRICA DE 4 PUNTOS */}
+          {/* 1. Solapa Izquierda */}
           <div
-            className="absolute inset-x-0 bottom-0 h-[125px] sm:h-[155px] z-20 pointer-events-none"
+            className="absolute inset-0 z-20 pointer-events-none"
             style={{
-              clipPath: 'polygon(0% 100%, 0% 0%, 50% 32%, 100% 0%, 100% 100%)',
-              background: 'linear-gradient(to top, #E8DFCE, #FAF6EE)',
-              borderBottom: '1px solid rgba(184, 147, 85, 0.45)',
-              filter: 'drop-shadow(0 -3px 8px rgba(42, 33, 24, 0.08))',
+              clipPath: 'polygon(0% 0%, 51% 50%, 0% 100%)',
+              background: 'linear-gradient(to right, #EDE5D6, #FAF6EE)',
+              borderLeft: '1px solid rgba(184, 147, 85, 0.35)',
             }}
           />
 
-          {/* CINTA DE SEDA DORADA (Belly Band) */}
+          {/* 2. Solapa Derecha */}
           <div
-            className={`absolute inset-x-0 top-1/2 -translate-y-1/2 h-10 z-22 transition-all duration-300 ease-in-out pointer-events-none ${
-              isRibbonGone
-                ? 'opacity-0 scale-x-125 filter blur-xs'
-                : 'opacity-100 scale-x-100 shadow-md'
-            }`}
+            className="absolute inset-0 z-20 pointer-events-none"
             style={{
-              background: 'linear-gradient(to bottom, #FAF5EB, #E8DAC2, #FAF5EB)',
-              borderTop: '1px solid rgba(184, 147, 85, 0.5)',
-              borderBottom: '1px solid rgba(184, 147, 85, 0.5)',
+              clipPath: 'polygon(100% 0%, 49% 50%, 100% 100%)',
+              background: 'linear-gradient(to left, #EDE5D6, #FAF6EE)',
+              borderRight: '1px solid rgba(184, 147, 85, 0.35)',
             }}
-          >
-            <div className="absolute inset-x-0 top-0.5 h-[1px] bg-[#D4AF37]/45" />
-            <div className="absolute inset-x-0 bottom-0.5 h-[1px] bg-[#D4AF37]/45" />
-          </div>
+          />
 
-          {/* SOLAPA SUPERIOR TRIANGULAR QUE SE ABRE EN 3D */}
+          {/* 3. Solapa Inferior */}
           <div
-            className="absolute inset-x-0 top-0 h-[125px] sm:h-[152px] transition-transform duration-500 ease-in-out pointer-events-none"
+            className="absolute inset-0 z-21 pointer-events-none"
+            style={{
+              clipPath: 'polygon(0% 100%, 50% 48%, 100% 100%)',
+              background: 'linear-gradient(to top, #E8DFCE, #FAF6EE)',
+              filter: 'drop-shadow(0 -3px 6px rgba(42, 33, 24, 0.07))',
+            }}
+          />
+
+          {/* 4. Solapa Superior Triangular (Se abre en 3D hacia arriba) */}
+          <div
+            className="absolute inset-x-0 top-0 h-[112px] sm:h-[135px] transition-transform duration-500 ease-in-out pointer-events-none"
             style={{
               clipPath: 'polygon(0% 0%, 100% 0%, 50% 100%)',
               background: isFlapOpen
                 ? 'linear-gradient(to bottom, #E8DFCE, #F5EFE4)'
-                : 'linear-gradient(to bottom, #FAF6EE, #EFE6D6)',
+                : 'linear-gradient(to bottom, #FAF6EE, #EDE4D5)',
               transformOrigin: 'top center',
               transform: isFlapOpen ? 'rotateX(180deg)' : 'rotateX(0deg)',
               zIndex: isFlapOpen ? 5 : 25,
               borderTop: '1px solid rgba(184, 147, 85, 0.5)',
-              filter: isFlapOpen ? 'none' : 'drop-shadow(0 5px 10px rgba(42, 33, 24, 0.12))',
+              filter: isFlapOpen ? 'none' : 'drop-shadow(0 4px 8px rgba(42, 33, 24, 0.12))',
             }}
           />
 
           {/* ================================================================== */}
-          {/* SELLO DE CERA REAL: EN EL MEDIO, ULTRA ELEGANTE, ACTÚA COMO EL BOTÓN */}
+          {/* SELLO DE CERA: TOTALMENTE EN EL CENTRO DEL SOBRE, SENCILLO Y ELEGANTE */}
           {/* ================================================================== */}
           <div
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-40 transition-all duration-300 ease-out flex items-center justify-center pointer-events-auto"
+            className="absolute left-1/2 top-1/2 z-40 transition-all duration-300 ease-out flex items-center justify-center pointer-events-auto"
             style={{
               transform: `translate(-50%, -50%) ${stage !== 'idle' ? 'scale(1.1) opacity(0)' : 'scale(1)'}`,
             }}
           >
             <WaxSeal
-              size={82}
+              size={80}
               initials="E & R"
               isBroken={stage !== 'idle'}
               onClick={handleOpenClick}
@@ -303,7 +304,7 @@ export function Envelope({ onOpenComplete, coupleNames }: EnvelopeProps) {
         </div>
 
         {/* ==================================================================== */}
-        {/* INDICACIÓN ELEGANTE Y ENLACE DE ACCESIBILIDAD */}
+        {/* INDICACIÓN SENCILLA Y ENLACE DE ACCESIBILIDAD */}
         {/* ==================================================================== */}
         <div className="mt-6 sm:mt-7 flex flex-col items-center gap-2.5 w-full">
           <div
