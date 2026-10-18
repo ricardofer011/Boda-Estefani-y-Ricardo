@@ -258,12 +258,12 @@ export function Envelope({ onOpenComplete, coupleNames }: EnvelopeProps) {
           {/* SOLAPAS LATERALES Y BOLSILLO DELANTERO DEL SOBRE */}
           {/* Triángulo inferior del bolsillo */}
           <div
-            className="absolute inset-x-0 bottom-0 h-[130px] sm:h-[160px] z-20 pointer-events-none"
+            className="absolute inset-x-0 bottom-0 h-[125px] sm:h-[155px] z-20 pointer-events-none"
             style={{
-              clipPath: 'polygon(0% 100%, 50% 28%, 100% 100%)',
+              clipPath: 'polygon(0% 100%, 50% 25%, 100% 100%)',
               background: 'linear-gradient(to top, #E8DFCE, #F7F1E6)',
               borderBottom: '1px solid rgba(184, 147, 85, 0.45)',
-              boxShadow: '0 -4px 15px rgba(42, 33, 24, 0.08)',
+              filter: 'drop-shadow(0 -3px 6px rgba(42, 33, 24, 0.06))',
             }}
           />
 
@@ -272,7 +272,7 @@ export function Envelope({ onOpenComplete, coupleNames }: EnvelopeProps) {
             className="absolute inset-y-0 left-0 w-[170px] sm:w-[210px] z-20 pointer-events-none"
             style={{
               clipPath: 'polygon(0% 0%, 100% 50%, 0% 100%)',
-              background: 'linear-gradient(to right, #E5DC CB, #F3ECE0)',
+              background: 'linear-gradient(to right, #E5DCCB, #F3ECE0)',
               borderLeft: '1px solid rgba(184, 147, 85, 0.35)',
             }}
           />
@@ -307,7 +307,7 @@ export function Envelope({ onOpenComplete, coupleNames }: EnvelopeProps) {
 
           {/* SOLAPA SUPERIOR TRIANGULAR QUE SE ABRE EN 3D */}
           <div
-            className="absolute inset-x-0 top-0 h-[125px] sm:h-[155px] transition-transform duration-800 ease-in-out pointer-events-none"
+            className="absolute inset-x-0 top-0 h-[115px] sm:h-[138px] transition-transform duration-800 ease-in-out pointer-events-none"
             style={{
               clipPath: 'polygon(0% 0%, 100% 0%, 50% 100%)',
               background: isFlapOpen
@@ -317,39 +317,29 @@ export function Envelope({ onOpenComplete, coupleNames }: EnvelopeProps) {
               transform: isFlapOpen ? 'rotateX(180deg)' : 'rotateX(0deg)',
               zIndex: isFlapOpen ? 5 : 25,
               borderTop: '1px solid rgba(184, 147, 85, 0.5)',
-              boxShadow: isFlapOpen ? 'none' : '0 6px 14px rgba(42, 33, 24, 0.12)',
+              filter: isFlapOpen ? 'none' : 'drop-shadow(0 4px 8px rgba(42, 33, 24, 0.1))',
             }}
           />
 
-          {/* SELLO DE CERA ARTESANAL EN 3D CON AURA PULSANTE */}
+          {/* SELLO DE CERA ARTESANAL EN 3D — CENTRADO, COMPLETO Y TOTALMENTE VISIBLE */}
           <div
-            className="absolute left-1/2 -translate-x-1/2 z-30 transition-all duration-600 ease-out"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-40 transition-all duration-600 ease-out flex items-center justify-center pointer-events-auto"
             style={{
-              top: '95px',
-              transform: `translateX(-50%) ${stage !== 'idle' ? 'scale(0.8) opacity(0)' : 'scale(1)'}`,
+              transform: `translate(-50%, -50%) ${stage !== 'idle' ? 'scale(0.75) opacity(0)' : 'scale(1)'}`,
             }}
           >
-            {/* Halo dorado pulsante alrededor del sello */}
+            {/* Halo dorado sutil y elegante */}
             <div
-              className="absolute -inset-2.5 rounded-full bg-gradient-to-r from-[#D4AF37]/30 to-[#EED99E]/40 blur-sm animate-pulse pointer-events-none"
+              className="absolute -inset-2.5 rounded-full bg-gradient-to-r from-[#D4AF37]/25 to-[#EED99E]/35 blur-sm animate-pulse pointer-events-none"
               aria-hidden="true"
             />
 
             <WaxSeal
-              size={68}
+              size={76}
               initials="E & R"
               isBroken={stage !== 'idle'}
               onClick={handleOpenClick}
             />
-
-            {/* Pequeña etiqueta invitando a tocar */}
-            <div
-              className={`absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] tracking-wider uppercase font-sans-clean font-semibold text-[#8C6A35] transition-opacity duration-300 ${
-                stage === 'idle' ? 'opacity-90' : 'opacity-0'
-              }`}
-            >
-              Toca el sello
-            </div>
           </div>
         </div>
 
