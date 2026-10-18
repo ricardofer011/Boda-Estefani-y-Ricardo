@@ -21,8 +21,10 @@ export interface GuestInvite {
   phone?: string | null;
   max_guests: number;
   status: 'pending' | 'confirmed' | 'declined';
+  confirmed_count?: number;
   notes?: string | null;
   created_at: string;
+  updated_at?: string;
 }
 
 export interface RSVPFormData {

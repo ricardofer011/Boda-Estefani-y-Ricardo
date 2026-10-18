@@ -10,6 +10,7 @@ export interface WeddingConfig {
     names: string;
     initials: string;
     monogram: string;
+    notificationPhone?: string;
   };
   ceremony: {
     type: string;
@@ -67,6 +68,8 @@ export const WEDDING_CONFIG: WeddingConfig = {
     names: "Estefani & Ricardo",
     initials: "E & R",
     monogram: "E&R",
+    // Número de WhatsApp para recibir notificaciones directas de confirmación (puedes cambiarlo)
+    notificationPhone: process.env.NEXT_PUBLIC_COUPLE_PHONE || "+1 809 000 0000",
   },
   ceremony: {
     type: "Matrimonio Católico",
