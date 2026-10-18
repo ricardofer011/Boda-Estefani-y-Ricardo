@@ -188,9 +188,12 @@ export default function AdminPage() {
         setNewGuestNotes('');
         setGuestFeedback(`¡Invitación para ${data.data.full_name} creada con ${data.data.max_guests} pases asignados!`);
         setTimeout(() => setGuestFeedback(null), 5000);
+      } else {
+        setGuestFeedback(data.error || 'Error al guardar el invitado.');
       }
-    } catch {
-      setGuestFeedback('Error al guardar el invitado.');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error al guardar el invitado.';
+      setGuestFeedback(msg);
     } finally {
       setIsAddingGuest(false);
     }
@@ -624,8 +627,18 @@ export default function AdminPage() {
               </p>
 
               {guestFeedback && (
-                <div className="p-3 mb-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-sans-clean flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <div
+                  className={`p-3 mb-4 rounded-lg text-xs font-sans-clean flex items-center gap-2 ${
+                    guestFeedback.includes('Error') || guestFeedback.includes('No se pudo')
+                      ? 'bg-red-50 border border-red-200 text-red-800'
+                      : 'bg-emerald-50 border border-emerald-200 text-emerald-800'
+                  }`}
+                >
+                  {guestFeedback.includes('Error') || guestFeedback.includes('No se pudo') ? (
+                    <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
+                  ) : (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  )}
                   <span>{guestFeedback}</span>
                 </div>
               )}

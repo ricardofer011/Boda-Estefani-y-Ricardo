@@ -3,18 +3,46 @@ import path from 'path';
 import { getSupabaseAdmin, isSupabaseConfigured } from './supabase';
 import { RSVPFormData, RSVPRecord, GuestInvite } from './types';
 
-const LOCAL_DATA_FILE = path.join(process.cwd(), 'data', 'local_rsvps.json');
-const LOCAL_GUESTS_FILE = path.join(process.cwd(), 'data', 'local_guests.json');
+// Determinar directorio de almacenamiento seguro (en Vercel sólo /tmp es escribible)
+function getStorageDirectory(): string {
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || (process.env.NODE_ENV === 'production' && !process.cwd().includes('Users'))) {
+    return '/tmp';
+  }
+  return path.join(process.cwd(), 'data');
+}
+
+function getRsvpsFilePath(): string {
+  return path.join(getStorageDirectory(), 'local_rsvps.json');
+}
+
+function getGuestsFilePath(): string {
+  return path.join(getStorageDirectory(), 'local_guests.json');
+}
+
+// Variables en memoria global para que persistan entre invocaciones de la misma instancia
+declare global {
+  // eslint-disable-next-line no-var
+  var __weddingRsvps: RSVPRecord[] | undefined;
+  // eslint-disable-next-line no-var
+  var __weddingGuests: GuestInvite[] | undefined;
+}
 
 // ============================================================================
-// ALMACENAMIENTO LOCAL DE RSVPs
+// ALMACENAMIENTO DE RSVPs
 // ============================================================================
 async function ensureLocalDataFile(): Promise<RSVPRecord[]> {
+  if (globalThis.__weddingRsvps && globalThis.__weddingRsvps.length > 0) {
+    return globalThis.__weddingRsvps;
+  }
+
+  const filePath = getRsvpsFilePath();
   try {
-    const dir = path.dirname(LOCAL_DATA_FILE);
+    const dir = path.dirname(filePath);
     await fs.mkdir(dir, { recursive: true });
-    const content = await fs.readFile(LOCAL_DATA_FILE, 'utf-8');
-    return JSON.parse(content);
+    const content = await fs.readFile(filePath, 'utf-8');
+    const parsed = JSON.parse(content);
+    globalThis.__weddingRsvps = parsed;
+    return parsed;
   } catch {
     const initialData: RSVPRecord[] = [
       {
@@ -31,32 +59,46 @@ async function ensureLocalDataFile(): Promise<RSVPRecord[]> {
         updated_at: new Date(Date.now() - 86400000 * 2).toISOString(),
       },
     ];
+    globalThis.__weddingRsvps = initialData;
     try {
-      const dir = path.dirname(LOCAL_DATA_FILE);
+      const dir = path.dirname(filePath);
       await fs.mkdir(dir, { recursive: true });
-      await fs.writeFile(LOCAL_DATA_FILE, JSON.stringify(initialData, null, 2), 'utf-8');
+      await fs.writeFile(filePath, JSON.stringify(initialData, null, 2), 'utf-8');
     } catch (e) {
-      console.error('Error al inicializar archivo local de RSVPs:', e);
+      console.warn('Almacenando RSVPs en memoria:', e);
     }
     return initialData;
   }
 }
 
 async function saveLocalData(records: RSVPRecord[]): Promise<void> {
-  const dir = path.dirname(LOCAL_DATA_FILE);
-  await fs.mkdir(dir, { recursive: true });
-  await fs.writeFile(LOCAL_DATA_FILE, JSON.stringify(records, null, 2), 'utf-8');
+  globalThis.__weddingRsvps = records;
+  const filePath = getRsvpsFilePath();
+  try {
+    const dir = path.dirname(filePath);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(filePath, JSON.stringify(records, null, 2), 'utf-8');
+  } catch (e) {
+    console.warn('Persistencia en disco secundaria:', e);
+  }
 }
 
 // ============================================================================
-// ALMACENAMIENTO DE LISTA DE INVITADOS PRE-APROBADOS Y CONTROL DE PASES
+// ALMACENAMIENTO DE LISTA DE INVITADOS
 // ============================================================================
 async function ensureGuestsFile(): Promise<GuestInvite[]> {
+  if (globalThis.__weddingGuests && globalThis.__weddingGuests.length > 0) {
+    return globalThis.__weddingGuests;
+  }
+
+  const filePath = getGuestsFilePath();
   try {
-    const dir = path.dirname(LOCAL_GUESTS_FILE);
+    const dir = path.dirname(filePath);
     await fs.mkdir(dir, { recursive: true });
-    const content = await fs.readFile(LOCAL_GUESTS_FILE, 'utf-8');
-    return JSON.parse(content);
+    const content = await fs.readFile(filePath, 'utf-8');
+    const parsed = JSON.parse(content);
+    globalThis.__weddingGuests = parsed;
+    return parsed;
   } catch {
     const defaultGuests: GuestInvite[] = [
       {
@@ -67,6 +109,7 @@ async function ensureGuestsFile(): Promise<GuestInvite[]> {
         max_guests: 2,
         status: 'confirmed',
         confirmed_count: 2,
+        group: 'Familia',
         notes: 'Familia cercana',
         created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
       },
@@ -77,39 +120,37 @@ async function ensureGuestsFile(): Promise<GuestInvite[]> {
         phone: '+1 829 555 0341',
         max_guests: 2,
         status: 'pending',
+        group: 'Amigos',
         notes: 'Amigos de la universidad',
         created_at: new Date().toISOString(),
       },
-      {
-        id: 'guest-3',
-        code: 'david-ortiz',
-        full_name: 'David Ortiz Peña',
-        phone: '+1 809 555 0876',
-        max_guests: 1,
-        status: 'pending',
-        notes: 'Pase individual',
-        created_at: new Date().toISOString(),
-      },
     ];
+    globalThis.__weddingGuests = defaultGuests;
     try {
-      const dir = path.dirname(LOCAL_GUESTS_FILE);
+      const dir = path.dirname(filePath);
       await fs.mkdir(dir, { recursive: true });
-      await fs.writeFile(LOCAL_GUESTS_FILE, JSON.stringify(defaultGuests, null, 2), 'utf-8');
+      await fs.writeFile(filePath, JSON.stringify(defaultGuests, null, 2), 'utf-8');
     } catch (e) {
-      console.error('Error al inicializar archivo local de invitados:', e);
+      console.warn('Almacenando invitados en memoria:', e);
     }
     return defaultGuests;
   }
 }
 
 async function saveGuestsData(records: GuestInvite[]): Promise<void> {
-  const dir = path.dirname(LOCAL_GUESTS_FILE);
-  await fs.mkdir(dir, { recursive: true });
-  await fs.writeFile(LOCAL_GUESTS_FILE, JSON.stringify(records, null, 2), 'utf-8');
+  globalThis.__weddingGuests = records;
+  const filePath = getGuestsFilePath();
+  try {
+    const dir = path.dirname(filePath);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(filePath, JSON.stringify(records, null, 2), 'utf-8');
+  } catch (e) {
+    console.warn('Persistencia en disco secundaria:', e);
+  }
 }
 
 /**
- * Obtener todos los invitados pre-aprobados (Para el panel privado /admin)
+ * Obtener todos los invitados pre-aprobados
  */
 export async function getAllGuests(): Promise<{ records: GuestInvite[]; isDemoMode: boolean }> {
   if (isSupabaseConfigured()) {
@@ -123,15 +164,16 @@ export async function getAllGuests(): Promise<{ records: GuestInvite[]; isDemoMo
       if (!error && data) {
         return { records: data as GuestInvite[], isDemoMode: false };
       }
+      console.error('Error al consultar Supabase guests:', error);
     }
   }
 
   const records = await ensureGuestsFile();
-  return { records, isDemoMode: true };
+  return { records, isDemoMode: !isSupabaseConfigured() };
 }
 
 /**
- * Buscar un invitado por su código de invitación o por coincidencia de nombre
+ * Buscar un invitado por código o nombre
  */
 export async function findGuestByCodeOrName(query: string): Promise<GuestInvite | null> {
   const clean = query.trim().toLowerCase();
@@ -140,7 +182,6 @@ export async function findGuestByCodeOrName(query: string): Promise<GuestInvite 
   if (isSupabaseConfigured()) {
     const supabase = getSupabaseAdmin();
     if (supabase) {
-      // Buscar primero por código exacto
       const { data: byCode } = await supabase
         .from('guests')
         .select('*')
@@ -149,7 +190,6 @@ export async function findGuestByCodeOrName(query: string): Promise<GuestInvite 
 
       if (byCode && byCode.length > 0) return byCode[0] as GuestInvite;
 
-      // Buscar por nombre
       const { data: byName } = await supabase
         .from('guests')
         .select('*')
@@ -171,13 +211,14 @@ export async function findGuestByCodeOrName(query: string): Promise<GuestInvite 
 }
 
 /**
- * Crear o actualizar un invitado desde el panel administrativo
+ * Crear o actualizar un invitado
  */
 export async function saveGuestInvite(
   guest: Omit<GuestInvite, 'id' | 'created_at'> & { id?: string }
 ): Promise<{ record: GuestInvite; isDemoMode: boolean }> {
   const now = new Date().toISOString();
   const cleanCode = (guest.code || guest.full_name.toLowerCase().replace(/[^a-z0-9]/g, '-')).toLowerCase();
+  const isDemo = !isSupabaseConfigured();
 
   if (isSupabaseConfigured()) {
     const supabase = getSupabaseAdmin();
@@ -191,7 +232,7 @@ export async function saveGuestInvite(
             phone: guest.phone || null,
             max_guests: guest.max_guests,
             status: guest.status || 'pending',
-            group: guest.group || null,
+            group_name: guest.group || null,
             notes: guest.notes || null,
           })
           .eq('id', guest.id)
@@ -199,6 +240,7 @@ export async function saveGuestInvite(
           .single();
 
         if (!error && data) return { record: data as GuestInvite, isDemoMode: false };
+        if (error) console.error('Error actualizando en Supabase:', error);
       } else {
         const { data, error } = await supabase
           .from('guests')
@@ -209,7 +251,7 @@ export async function saveGuestInvite(
               phone: guest.phone || null,
               max_guests: guest.max_guests,
               status: guest.status || 'pending',
-              group: guest.group || null,
+              group_name: guest.group || null,
               notes: guest.notes || null,
             },
           ])
@@ -217,10 +259,12 @@ export async function saveGuestInvite(
           .single();
 
         if (!error && data) return { record: data as GuestInvite, isDemoMode: false };
+        if (error) console.error('Error insertando en Supabase:', error);
       }
     }
   }
 
+  // Almacenamiento local / en memoria
   const guests = await ensureGuestsFile();
   if (guest.id) {
     const idx = guests.findIndex((g) => g.id === guest.id);
@@ -255,11 +299,11 @@ export async function saveGuestInvite(
 
   guests.unshift(newGuest);
   await saveGuestsData(guests);
-  return { record: newGuest, isDemoMode: true };
+  return { record: newGuest, isDemoMode: isDemo };
 }
 
 /**
- * Eliminar un invitado desde el panel administrativo
+ * Eliminar un invitado
  */
 export async function deleteGuestInvite(id: string): Promise<boolean> {
   if (isSupabaseConfigured()) {
@@ -277,7 +321,7 @@ export async function deleteGuestInvite(id: string): Promise<boolean> {
 }
 
 // ============================================================================
-// DISPATCH DE NOTIFICACIÓN A PLATAFORMA EXTERNA (Webhook, Google Sheets, etc.)
+// DISPATCH NOTIFICACIÓN EXTERNA
 // ============================================================================
 async function sendExternalNotification(rsvp: RSVPRecord) {
   const webhookUrl = process.env.NOTIFICATION_WEBHOOK_URL;
@@ -303,7 +347,7 @@ async function sendExternalNotification(rsvp: RSVPRecord) {
       body: JSON.stringify(payload),
     });
   } catch (err) {
-    console.warn('Webhook notification skipped or failed:', err);
+    console.warn('Webhook notification error:', err);
   }
 }
 
@@ -356,7 +400,6 @@ export async function saveRSVP(formData: RSVPFormData): Promise<{ record: RSVPRe
 
     savedRecord = data as RSVPRecord;
 
-    // Actualizar estado en tabla guests si coincide
     if (formData.invitation_code) {
       await supabase
         .from('guests')
@@ -367,7 +410,6 @@ export async function saveRSVP(formData: RSVPFormData): Promise<{ record: RSVPRe
         .eq('code', formData.invitation_code.trim());
     }
   } else {
-    // Modo local
     const currentRecords = await ensureLocalDataFile();
     const newRecord: RSVPRecord = {
       id: `local-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
@@ -387,7 +429,6 @@ export async function saveRSVP(formData: RSVPFormData): Promise<{ record: RSVPRe
     await saveLocalData(currentRecords);
     savedRecord = newRecord;
 
-    // Actualizar lista local de invitados si coincide código o nombre
     try {
       const guests = await ensureGuestsFile();
       const guestMatch = guests.find(
@@ -405,9 +446,7 @@ export async function saveRSVP(formData: RSVPFormData): Promise<{ record: RSVPRe
     }
   }
 
-  // Notificar en segundo plano a la plataforma externa (si está configurada)
   sendExternalNotification(savedRecord).catch(() => {});
-
   return { record: savedRecord, isDemoMode: isDemo };
 }
 
@@ -428,7 +467,7 @@ export async function getAllRSVPs(): Promise<{ records: RSVPRecord[]; isDemoMode
   }
 
   const records = await ensureLocalDataFile();
-  return { records, isDemoMode: true };
+  return { records, isDemoMode: !isSupabaseConfigured() };
 }
 
 export async function updateRSVPStatus(

@@ -39,6 +39,8 @@ CREATE TABLE IF NOT EXISTS public.guests (
     phone TEXT,
     max_guests INTEGER NOT NULL DEFAULT 2 CHECK (max_guests >= 1 AND max_guests <= 10),
     status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'declined')),
+    confirmed_count INTEGER DEFAULT 0,
+    group_name TEXT,
     notes TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
 );
