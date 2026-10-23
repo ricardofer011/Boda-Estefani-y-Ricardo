@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { WEDDING_CONFIG } from '@/config/wedding';
 import { Envelope } from '@/components/Envelope';
 import { InvitationCard } from '@/components/InvitationCard';
+import { CouplePhotoSection } from '@/components/CouplePhotoSection';
 import { Countdown } from '@/components/Countdown';
 import { CeremonySection } from '@/components/CeremonySection';
 import { CalendarSection } from '@/components/CalendarSection';
@@ -57,6 +58,9 @@ export default function WeddingInvitationPage() {
         <div className="relative z-10 flex flex-col items-center">
           {/* Tarjeta de invitación oficial */}
           <InvitationCard />
+
+          {/* Retrato oficial de los novios */}
+          <CouplePhotoSection />
 
           {/* Cuenta regresiva en tiempo real */}
           <Countdown />
