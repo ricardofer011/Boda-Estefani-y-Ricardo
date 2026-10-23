@@ -81,19 +81,48 @@ export function Envelope({ onOpenComplete, coupleNames }: EnvelopeProps) {
 
     playOpenChime();
 
-    // Ráfaga de confeti dorado desde el centro
+    // Ráfaga celestial de crucecitas doradas y perla al abrir el sello
     try {
+      // Silueta de cruz latina católica con proporciones sagradas clásicas (1:3)
+      const crossPath =
+        'M 10 0 L 14 0 L 14 7 L 22 7 L 22 11 L 14 11 L 14 32 L 10 32 L 10 11 L 2 11 L 2 7 L 10 7 Z';
+
+      const crossShape =
+        typeof (confetti as unknown as { shapeFromPath?: (opt: { path: string }) => unknown }).shapeFromPath === 'function'
+          ? (confetti as unknown as { shapeFromPath: (opt: { path: string }) => unknown }).shapeFromPath({ path: crossPath })
+          : null;
+
+      // 1. Primera ráfaga: crucecitas doradas y perla brotando desde el centro del sello
       confetti({
         particleCount: 45,
-        spread: 60,
+        spread: 65,
         origin: { y: 0.5, x: 0.5 },
-        colors: ['#D4AF37', '#EED99E', '#B89355', '#FFFFFF'],
-        ticks: 150,
-        gravity: 0.9,
-        scalar: 0.85,
+        colors: ['#D4AF37', '#F3E5AB', '#B89355', '#FFFFFF', '#EED99E'],
+        ticks: 180,
+        gravity: 0.75,
+        scalar: 1.25,
+        shapes: crossShape ? [crossShape as confetti.Shape] : undefined,
       });
+
+      // 2. Segunda lluvia sutil: crucecitas adicionales flotando suavemente mientras se abre la solapa
+      setTimeout(() => {
+        try {
+          confetti({
+            particleCount: 25,
+            spread: 80,
+            origin: { y: 0.48, x: 0.5 },
+            colors: ['#D4AF37', '#FFF8E7', '#DFC088'],
+            ticks: 200,
+            gravity: 0.65,
+            scalar: 1.05,
+            shapes: crossShape ? [crossShape as confetti.Shape] : undefined,
+          });
+        } catch {
+          // Ignorar
+        }
+      }, 160);
     } catch {
-      // Ignorar
+      // Ignorar si el navegador no tiene soporte de canvas
     }
 
     // 1. Desvanecer sello suavemente (0ms)
