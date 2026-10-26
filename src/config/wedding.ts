@@ -45,6 +45,17 @@ export interface WeddingConfig {
     estimatedGuestsMax: number;
     deadlineFormatted: string;
   };
+  gifts: {
+    badge: string;
+    title: string;
+    message: string;
+    bankName: string;
+    accountType: string;
+    accountNumber: string;
+    holders: string;
+    currency: string;
+    thanksMessage: string;
+  };
   share: {
     whatsappTemplate: (url: string) => string;
   };
@@ -106,6 +117,18 @@ export const WEDDING_CONFIG: WeddingConfig = {
     estimatedGuestsMin: 50,
     estimatedGuestsMax: 100,
     deadlineFormatted: "15 de noviembre de 2026",
+  },
+  gifts: {
+    badge: "Muestra de Cariño",
+    title: "Lluvia de Sobres",
+    message:
+      "El regalo más hermoso para nosotros es contar con tu presencia y bendición en el inicio de nuestro matrimonio. Si deseas tener un detalle para acompañar la construcción de nuestro nuevo hogar, puedes hacerlo a través de nuestra cuenta en común:",
+    bankName: "Asociación Popular de Ahorros y Préstamos (APAP)",
+    accountType: "Cuenta de Ahorros",
+    accountNumber: "1029946485",
+    holders: "Estefani & Ricardo",
+    currency: "DOP (Pesos Dominicanos)",
+    thanksMessage: "¡Muchas gracias por acompañarnos con tanto cariño en este nuevo capítulo de nuestras vidas!",
   },
   share: {
     whatsappTemplate: (url: string) =>

@@ -8,6 +8,7 @@ import { CouplePhotoSection } from '@/components/CouplePhotoSection';
 import { Countdown } from '@/components/Countdown';
 import { CeremonySection } from '@/components/CeremonySection';
 import { CalendarSection } from '@/components/CalendarSection';
+import { GiftsSection } from '@/components/GiftsSection';
 import { RsvpForm } from '@/components/RsvpForm';
 import { ShareSection } from '@/components/ShareSection';
 import { MusicPlayer } from '@/components/MusicPlayer';
@@ -70,6 +71,9 @@ export default function WeddingInvitationPage() {
 
           {/* Guardar en Google Calendar & Apple Calendar */}
           <CalendarSection />
+
+          {/* Muestra de cariño / Lluvia de sobres */}
+          <GiftsSection />
 
           {/* Formulario real de confirmación (RSVP) */}
           <RsvpForm />
