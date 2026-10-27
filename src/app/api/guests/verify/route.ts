@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
         success: true,
         data: {
           code: 'novios',
-          full_name: 'Ricardo Fernandez & Estefani Cedeño',
+          full_name: 'Estefani Cedeño & Ricardo Fernandez',
           max_guests: 2,
           status: 'confirmed',
           gift_type: 'both',
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
         {
           success: false,
           error:
-            'No encontramos una invitación registrada con ese nombre o código. Por favor comunícate directamente con Ricardo y Estefani.',
+            'No encontramos una invitación registrada con ese nombre o código. Por favor comunícate directamente con Estefani y Ricardo.',
         },
         { status: 404 }
       );

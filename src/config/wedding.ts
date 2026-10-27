@@ -95,9 +95,9 @@ export const WEDDING_CONFIG: WeddingConfig = {
   couple: {
     bride: "Estefani Cedeño",
     groom: "Ricardo Fernandez",
-    names: "Ricardo Fernandez & Estefani Cedeño",
-    initials: "R & E",
-    monogram: "R&E",
+    names: "Estefani Cedeño & Ricardo Fernandez",
+    initials: "E & R",
+    monogram: "E&R",
     // Número de WhatsApp para recibir notificaciones directas de confirmación (puedes cambiarlo)
     notificationPhone: process.env.NEXT_PUBLIC_COUPLE_PHONE || "+1 809 000 0000",
   },
@@ -126,8 +126,8 @@ export const WEDDING_CONFIG: WeddingConfig = {
     googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Salon+Vista+Marina,+Av.+Espa%C3%B1a+70,+Santo+Domingo+Este+10080",
   },
   calendar: {
-    title: "Boda de Ricardo Fernandez & Estefani Cedeño",
-    description: "Invitación a la ceremonia católica de Ricardo Fernandez & Estefani Cedeño.",
+    title: "Boda de Estefani Cedeño & Ricardo Fernandez",
+    description: "Invitación a la ceremonia católica de Estefani Cedeño & Ricardo Fernandez.",
     location: "Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo, República Dominicana",
     // 11:00 AM AST (UTC-4) = 15:00 UTC
     startTimeUTC: "20261212T150000Z",
@@ -147,7 +147,7 @@ export const WEDDING_CONFIG: WeddingConfig = {
     bankName: "Asociación Popular de Ahorros y Préstamos (APAP)",
     accountType: "Cuenta de Ahorros",
     accountNumber: "1029946485",
-    holders: "Ricardo Fernandez & Estefani Cedeño",
+    holders: "Estefani Cedeño & Ricardo Fernandez",
     currency: "DOP (Pesos Dominicanos)",
     thanksMessage: "¡Muchas gracias por acompañarnos con tanto cariño en este nuevo capítulo de nuestras vidas!",
     registry: {
@@ -158,20 +158,20 @@ export const WEDDING_CONFIG: WeddingConfig = {
       stores: [
         {
           name: "Casa Cuesta",
-          description: "Mesa de Bodas • Boda Ricardo Fernandez & Estefani Cedeño",
-          code: "Ricardo Fernandez & Estefani Cedeño",
+          description: "Mesa de Bodas • Boda Estefani Cedeño & Ricardo Fernandez",
+          code: "Estefani Cedeño & Ricardo Fernandez",
           link: "https://casacuesta.com",
         },
         {
           name: "Ilumel",
           description: "Colección Muebles & Decoración",
-          code: "Ricardo & Estefani",
+          code: "Estefani & Ricardo",
           link: "https://ilumel.com",
         },
         {
           name: "Amazon Wedding Registry",
           description: "Mesa de Regalos Online",
-          code: "Ricardo Fernandez & Estefani Cedeño",
+          code: "Estefani Cedeño & Ricardo Fernandez",
           link: "https://www.amazon.com/wedding",
         },
       ],
@@ -180,7 +180,7 @@ export const WEDDING_CONFIG: WeddingConfig = {
   },
   share: {
     whatsappTemplate: (url: string) =>
-      `¡Hola! 💌 Nos hace mucha ilusión compartir contigo una fecha muy especial. Te invitamos a celebrar el matrimonio de Ricardo Fernandez & Estefani Cedeño el sábado 12 de diciembre de 2026 a las 11:00 a. m., en la Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo. Puedes ver tu invitación personal y confirmar tu asistencia aquí: ${url}`,
+      `¡Hola! 💌 Nos hace mucha ilusión compartir contigo una fecha muy especial. Te invitamos a celebrar el matrimonio de Estefani Cedeño & Ricardo Fernandez el sábado 12 de diciembre de 2026 a las 11:00 a. m., en la Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo. Puedes ver tu invitación personal y confirmar tu asistencia aquí: ${url}`,
   },
   theme: {
     colors: {

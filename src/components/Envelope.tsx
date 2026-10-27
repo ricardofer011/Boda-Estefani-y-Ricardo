@@ -5,7 +5,6 @@ import confetti from 'canvas-confetti';
 import { WaxSeal } from './WaxSeal';
 import { Sparkles } from 'lucide-react';
 import { VerifiedGuest } from './RsvpForm';
-import { FloralPetalsBackground } from './FloralPetalsBackground';
 
 interface EnvelopeProps {
   onOpenComplete: () => void;
@@ -173,9 +172,6 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
         aria-hidden="true"
       />
 
-      {/* Lluvia poética de pétalos de rosa y florecillas en caída suave */}
-      <FloralPetalsBackground className="z-2" />
-
       {/* Partículas luminosas tenues */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/4 left-1/6 w-2 h-2 rounded-full bg-[#DFC6E3]/60 blur-[1px] animate-pulse" />
@@ -290,11 +286,11 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
                 Nuestra Boda Católica
               </span>
               <p className="font-serif-luxury text-lg sm:text-xl text-[#2A1C28] font-medium royal-text-gradient leading-tight">
-                Ricardo Fernandez
+                Estefani Cedeño
               </p>
               <span className="font-script-romantic text-xl text-[#9B709E] block my-0.5">&</span>
               <p className="font-serif-luxury text-lg sm:text-xl text-[#2A1C28] font-medium royal-text-gradient leading-tight">
-                Estefani Cedeño
+                Ricardo Fernandez
               </p>
               <div className="w-10 h-[1px] bg-[#9B709E]/50 my-1.5" />
               <p className="font-sans-clean text-[10px] sm:text-xs text-[#6A5365] tracking-widest uppercase">

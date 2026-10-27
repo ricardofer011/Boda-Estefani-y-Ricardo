@@ -44,13 +44,13 @@ export function InvitationCard({ guest }: InvitationCardProps) {
           {/* Nombres de los novios con protagonismo absoluto */}
           <div className="my-4">
             <h1 className="font-serif-luxury text-3xl sm:text-5xl text-[#2A1C28] font-normal tracking-wide royal-text-gradient leading-tight">
-              Ricardo Fernandez
+              Estefani Cedeño
             </h1>
             <span className="font-script-romantic text-3xl sm:text-4xl text-[#9B709E] my-1 block">
               &
             </span>
             <h1 className="font-serif-luxury text-3xl sm:text-5xl text-[#2A1C28] font-normal tracking-wide royal-text-gradient leading-tight">
-              Estefani Cedeño
+              Ricardo Fernandez
             </h1>
           </div>
 

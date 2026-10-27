@@ -61,8 +61,8 @@ export default function WeddingInvitationPage() {
         {/* Textura sutil y viñeta en el fondo */}
         <div className="fixed inset-0 paper-texture pointer-events-none opacity-80 z-0" aria-hidden="true" />
 
-        {/* Lluvia poética continua de pétalos de rosa y florecillas en caída suave */}
-        <FloralPetalsBackground className="z-1" />
+        {/* Lluvia poética continua de pétalos de rosa y florecillas solo cuando se abre el sobre */}
+        {isOpened && <FloralPetalsBackground className="z-1" />}
 
         {/* Reproductor de música ambiental flotante */}
         <MusicPlayer />

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { WEDDING_CONFIG } from '@/config/wedding';
-import { CardCornerFlourish, OrnamentalDivider } from './Ornaments';
+import { FloralCornerFlourish, OrnamentalDivider } from './Ornaments';
 import { Gift, Copy, Check, Building2, Heart, Sparkles, ExternalLink, ShoppingBag } from 'lucide-react';
 import { GiftPreferenceType } from '@/lib/types';
 
@@ -55,11 +55,11 @@ export function GiftsSection({ giftType = 'bank' }: GiftsSectionProps) {
     <section className="w-full max-w-xl mx-auto my-8 px-4" id="regalos">
       {/* Tarjeta de papelería nupcial con acabado artesanal */}
       <div className="relative bg-[#FCF9FD] border-2 border-[#AB86B1]/40 rounded-3xl p-6 sm:p-10 shadow-card-elevated text-center overflow-hidden card-paper-texture">
-        {/* Esquinas ornamentales en filigrana dorada/malva */}
-        <CardCornerFlourish position="top-left" />
-        <CardCornerFlourish position="top-right" />
-        <CardCornerFlourish position="bottom-left" />
-        <CardCornerFlourish position="bottom-right" />
+        {/* Esquinas botánicas con capullos de rosas y hojitas en lila, malva y oro */}
+        <FloralCornerFlourish position="top-left" />
+        <FloralCornerFlourish position="top-right" />
+        <FloralCornerFlourish position="bottom-left" />
+        <FloralCornerFlourish position="bottom-right" />
 
         {/* Encabezado elegante y sutil */}
         <div className="flex flex-col items-center mb-5">

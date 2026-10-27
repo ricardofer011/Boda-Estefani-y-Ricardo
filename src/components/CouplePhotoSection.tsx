@@ -16,7 +16,7 @@ const COUPLE_PHOTOS: PhotoItem[] = [
   {
     id: '1',
     url: '/images/couple.jpg',
-    title: 'Ricardo Fernandez & Estefani Cedeño',
+    title: 'Estefani Cedeño & Ricardo Fernandez',
     caption: '“Por encima de todo, vístanse de amor, que es el vínculo de la unidad perfecta”. — Colosenses 3:14',
   },
 ];
@@ -47,7 +47,7 @@ export function CouplePhotoSection() {
           </div>
 
           <h2 className="font-serif-luxury text-2xl sm:text-4xl text-[#2A1C28] font-normal tracking-wide royal-text-gradient leading-tight">
-            Ricardo Fernandez & Estefani Cedeño
+            Estefani Cedeño & Ricardo Fernandez
           </h2>
 
           <OrnamentalDivider className="w-32 mx-auto my-2.5 text-[#9B709E]" />
@@ -68,7 +68,7 @@ export function CouplePhotoSection() {
             {/* Fotografía oficial de los novios */}
             <Image
               src={activePhoto.url}
-              alt="Ricardo Fernandez y Estefani Cedeño - Retrato oficial de los novios"
+              alt="Estefani Cedeño y Ricardo Fernandez - Retrato oficial de los novios"
               fill
               sizes="(max-width: 640px) 100vw, 600px"
               priority
@@ -94,7 +94,7 @@ export function CouplePhotoSection() {
               <div className="px-3.5 py-1.5 rounded-full bg-[#FCF9FD]/90 backdrop-blur-md border border-[#AB86B1]/40 shadow-md">
                 <span className="font-serif-luxury text-xs text-[#2A1C28] font-medium tracking-wide flex items-center gap-1.5">
                   <Sparkles className="w-3 h-3 text-[#9B709E]" />
-                  <span>Ricardo & Estefani</span>
+                  <span>Estefani & Ricardo</span>
                 </span>
               </div>
 
