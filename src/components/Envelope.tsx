@@ -5,7 +5,7 @@ import confetti from 'canvas-confetti';
 import { WaxSeal } from './WaxSeal';
 import { Sparkles } from 'lucide-react';
 import { VerifiedGuest } from './RsvpForm';
-import { startWeddingMusic } from './MusicPlayer';
+import { startWeddingMusic, BRIDESMAID_AUDIO_SRC, GENERAL_AUDIO_SRC } from './MusicPlayer';
 
 interface EnvelopeProps {
   onOpenComplete: () => void;
@@ -95,8 +95,9 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
   const handleOpenClick = () => {
     if (stage !== 'idle') return;
 
-    // Iniciar inmediatamente la hermosa melodía instrumental en el gesto del usuario
-    startWeddingMusic();
+    // Iniciar inmediatamente la melodía acorde al tipo de invitación (Chopin para damas, Canon in D para general)
+    const isBridesmaid = guest?.invitation_role === 'bridesmaid';
+    startWeddingMusic(isBridesmaid ? BRIDESMAID_AUDIO_SRC : GENERAL_AUDIO_SRC);
 
     if (isReducedMotion) {
       onOpenComplete();
@@ -264,18 +265,18 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
                   <span className="text-[#784A67] text-[10px] font-serif-luxury tracking-[0.25em] uppercase mb-0.5 font-semibold">
                     🌸 Corte de Honor • Damas
                   </span>
-                  <p className="font-serif-luxury text-[11px] text-[#784A67] uppercase tracking-wider">
-                    Una invitación hecha
+                  <p className="font-serif-luxury text-[11px] text-[#784A67] tracking-wider">
+                    ¿Quieres ser una de mis
                   </p>
                   <p className="font-script-romantic text-2xl sm:text-3xl text-[#5C3759] leading-tight my-0.5">
-                    desde el corazón
+                    Damas de Boda?
                   </p>
                   <div className="w-10 h-[1px] bg-[#9B709E]/50 my-1" />
-                  <p className="font-sans-clean text-[10px] sm:text-xs text-[#6A5365] tracking-widest uppercase">
-                    12 • Diciembre • 2026 • 11:00 a. m.
+                  <p className="font-serif-luxury text-[11px] text-[#784A67] font-medium">
+                    Estefani Cedeño
                   </p>
-                  <p className="font-serif-luxury text-[11px] text-[#784A67] mt-0.5 font-medium">
-                    Iglesia Las Mercedes • Santo Domingo
+                  <p className="font-sans-clean text-[10px] text-[#6A5365] tracking-widest uppercase mt-0.5">
+                    12 • Diciembre • 2026 • 11:00 a. m.
                   </p>
                 </>
               ) : (
@@ -384,7 +385,8 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
 
           <button
             onClick={() => {
-              startWeddingMusic();
+              const isBridesmaid = guest?.invitation_role === 'bridesmaid';
+              startWeddingMusic(isBridesmaid ? BRIDESMAID_AUDIO_SRC : GENERAL_AUDIO_SRC);
               onOpenComplete();
             }}
             className="text-[11px] font-sans-clean text-[#784A67] hover:text-[#5C3759] tracking-wider underline underline-offset-4 decoration-[#9B709E]/40 hover:decoration-[#5C3759] transition-colors cursor-pointer pt-1"

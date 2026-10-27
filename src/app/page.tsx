@@ -59,7 +59,10 @@ export default function WeddingInvitationPage() {
   return (
     <main className="min-h-screen bg-[#FAF6FA] relative overflow-x-hidden selection:bg-[#DFC6E3] selection:text-[#5C3759]">
       {/* Reproductor de música instrumental flotante (siempre montado para precarga y reproducción continua) */}
-      <MusicPlayer isEnvelopeOpen={isOpened} />
+      <MusicPlayer
+        isEnvelopeOpen={isOpened}
+        isBridesmaid={guest?.invitation_role === 'bridesmaid'}
+      />
 
       {/* 1. SOBRE ANIMADO INICIAL */}
       {!isOpened && (

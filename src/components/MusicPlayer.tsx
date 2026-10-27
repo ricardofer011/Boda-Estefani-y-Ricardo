@@ -4,13 +4,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Volume2, VolumeX, Music, Play, Pause } from 'lucide-react';
 
 export const WEDDING_AUDIO_ID = 'wedding-audio';
-export const WEDDING_AUDIO_SRC = '/audio/canon-in-d.mp3';
+export const GENERAL_AUDIO_SRC = '/audio/canon-in-d.mp3';
+export const BRIDESMAID_AUDIO_SRC = '/audio/damas-nocturne.mp3';
 
 /**
  * Inicia la reproducción de la música instrumental con un suave fade-in.
- * Debe invocarse de forma síncrona o directa ante un evento de interacción del usuario (como tocar el sello del sobre).
+ * Si se especifica desiredSrc, se asegura de que el elemento de audio apunte a esa melodía.
  */
-export function startWeddingMusic(): Promise<void> {
+export function startWeddingMusic(desiredSrc?: string): Promise<void> {
   if (typeof window === 'undefined') return Promise.resolve();
 
   const audio = document.getElementById(WEDDING_AUDIO_ID) as HTMLAudioElement | null;
@@ -19,7 +20,13 @@ export function startWeddingMusic(): Promise<void> {
     return Promise.resolve();
   }
 
-  // Si ya está sonando, no reiniciar
+  // Si se solicitó una pista específica y no coincide con la actual, actualizar
+  if (desiredSrc && !audio.src.endsWith(desiredSrc)) {
+    audio.src = desiredSrc;
+    audio.load();
+  }
+
+  // Si ya está sonando la pista correcta, no reiniciar
   if (!audio.paused && audio.currentTime > 0) {
     return Promise.resolve();
   }
@@ -69,11 +76,41 @@ export function pauseWeddingMusic() {
 
 interface MusicPlayerProps {
   isEnvelopeOpen?: boolean;
+  isBridesmaid?: boolean;
+  audioSrc?: string;
+  trackTitle?: string;
+  trackSubtitle?: string;
 }
 
-export function MusicPlayer({ isEnvelopeOpen = true }: MusicPlayerProps) {
+export function MusicPlayer({
+  isEnvelopeOpen = true,
+  isBridesmaid = false,
+  audioSrc,
+  trackTitle,
+  trackSubtitle,
+}: MusicPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Determinar la pista y títulos según el rol
+  const effectiveSrc = audioSrc || (isBridesmaid ? BRIDESMAID_AUDIO_SRC : GENERAL_AUDIO_SRC);
+  const effectiveTitle = trackTitle || (isBridesmaid ? 'Nocturno de Chopin' : 'Canon en Re Mayor');
+  const effectiveSubtitle = trackSubtitle || (isBridesmaid ? 'Melodía Damas' : 'Instrumental');
+
+  // Actualizar la fuente del audio si cambia dinámicamente
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (!audio.src.endsWith(effectiveSrc)) {
+      const wasPlaying = !audio.paused;
+      audio.src = effectiveSrc;
+      audio.load();
+      if (wasPlaying) {
+        audio.play().catch(() => {});
+      }
+    }
+  }, [effectiveSrc]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -121,7 +158,7 @@ export function MusicPlayer({ isEnvelopeOpen = true }: MusicPlayerProps) {
       <audio
         id={WEDDING_AUDIO_ID}
         ref={audioRef}
-        src={WEDDING_AUDIO_SRC}
+        src={effectiveSrc}
         preload="auto"
         loop
         className="hidden"
@@ -136,8 +173,8 @@ export function MusicPlayer({ isEnvelopeOpen = true }: MusicPlayerProps) {
         <button
           onClick={toggleMusic}
           type="button"
-          aria-label={isPlaying ? 'Pausar música instrumental' : 'Reproducir música instrumental'}
-          title={isPlaying ? 'Pausar música: Johann Pachelbel - Canon in D' : 'Reproducir música instrumental'}
+          aria-label={isPlaying ? `Pausar música: ${effectiveTitle}` : `Reproducir música: ${effectiveTitle}`}
+          title={isPlaying ? `Pausar música: ${effectiveTitle}` : `Reproducir música: ${effectiveTitle}`}
           className={`group relative flex items-center gap-2.5 px-4 py-2.5 rounded-full backdrop-blur-md border shadow-xl transition-all duration-300 cursor-pointer active:scale-95 ${
             isPlaying
               ? 'bg-[#FCF9FD]/95 border-[#9B709E]/50 text-[#5C3759] shadow-[#5C3759]/15 ring-2 ring-[#DFC6E3]/60'
@@ -175,10 +212,10 @@ export function MusicPlayer({ isEnvelopeOpen = true }: MusicPlayerProps) {
               {/* Texto de la melodía */}
               <div className="flex flex-col text-left">
                 <span className="font-serif-luxury text-[11px] font-semibold text-[#5C3759] leading-tight">
-                  Canon en Re Mayor
+                  {effectiveTitle}
                 </span>
                 <span className="font-sans-clean text-[9px] text-[#9B709E] tracking-wider uppercase leading-none hidden sm:inline">
-                  Instrumental
+                  {effectiveSubtitle}
                 </span>
               </div>
 
@@ -193,7 +230,7 @@ export function MusicPlayer({ isEnvelopeOpen = true }: MusicPlayerProps) {
 
               <div className="flex flex-col text-left">
                 <span className="font-serif-luxury text-[11px] font-medium text-[#6A5365] leading-tight">
-                  Música de fondo
+                  {effectiveTitle}
                 </span>
                 <span className="font-sans-clean text-[9px] text-[#9B709E] tracking-wider uppercase leading-none hidden sm:inline">
                   Tocar para escuchar
