@@ -29,14 +29,24 @@ export function InvitationCard({ guest }: InvitationCardProps) {
         {/* Marco interior sutil con línea doble */}
         <div className="border border-[#AB86B1]/25 rounded-xl p-5 sm:p-10 flex flex-col items-center">
           {/* Elemento ornamental católico: Cruz sutil */}
-          <div className="mb-4 text-[#784A67] flex justify-center">
+          <div className="mb-3 text-[#784A67] flex justify-center">
             <CatholicCrossOrnament className="w-7 h-11 text-[#784A67]" />
           </div>
 
+          {/* Cita bíblica sagrada: Job 42:5 */}
+          <div className="mb-4 max-w-md mx-auto text-center">
+            <p className="font-serif-luxury text-base sm:text-lg italic text-[#2A1C28] leading-relaxed font-normal">
+              «De oídas te había oído; mas ahora mis ojos te ven.»
+            </p>
+            <span className="inline-block mt-1.5 px-3.5 py-0.5 rounded-full bg-[#FBF5FC] border border-[#AB86B1]/40 font-serif-luxury text-[11px] sm:text-xs text-[#784A67] tracking-[0.22em] uppercase font-semibold shadow-2xs">
+              Job 42:5
+            </span>
+          </div>
+
           {/* Texto sagrado oficial */}
-          <p className="font-serif-luxury text-sm sm:text-base italic text-[#6A5365] max-w-md mx-auto leading-relaxed mb-5 font-normal">
-            “Con la bendición de Dios y el amor de nuestras familias, tenemos la alegría de invitarte a celebrar
-            nuestra unión en el sacramento del matrimonio”.
+          <p className="font-serif-luxury text-xs sm:text-sm italic text-[#6A5365] max-w-md mx-auto leading-relaxed mb-4 font-normal">
+            Con la bendición de Dios y el amor de nuestras familias, tenemos la alegría de invitarte a celebrar
+            nuestra unión en el sacramento del matrimonio.
           </p>
 
           <OrnamentalDivider className="w-36 mx-auto my-2 text-[#9B709E]" />

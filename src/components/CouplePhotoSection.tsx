@@ -17,7 +17,7 @@ const COUPLE_PHOTOS: PhotoItem[] = [
     id: '1',
     url: '/images/couple.jpg',
     title: 'Estefani Cedeño & Ricardo Fernandez',
-    caption: '“Por encima de todo, vístanse de amor, que es el vínculo de la unidad perfecta”. — Colosenses 3:14',
+    caption: '«De oídas te había oído; mas ahora mis ojos te ven». — Job 42:5',
   },
 ];
 
