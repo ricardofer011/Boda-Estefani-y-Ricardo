@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { WEDDING_CONFIG } from '@/config/wedding';
 import { Envelope } from '@/components/Envelope';
 import { InvitationCard } from '@/components/InvitationCard';
+import { BridesmaidInvitationCard } from '@/components/BridesmaidInvitationCard';
 import { CouplePhotoSection } from '@/components/CouplePhotoSection';
 import { Countdown } from '@/components/Countdown';
 import { CeremonySection } from '@/components/CeremonySection';
@@ -26,6 +27,7 @@ export default function WeddingInvitationPage() {
 
     const params = new URLSearchParams(window.location.search);
     const code = params.get('invitacion') || params.get('code') || params.get('invitado') || params.get('guest');
+    const roleParam = params.get('rol') || params.get('tipo') || params.get('dama') || params.get('damas');
 
     if (code) {
       fetch(`/api/guests/verify?code=${encodeURIComponent(code.trim())}`)
@@ -38,6 +40,17 @@ export default function WeddingInvitationPage() {
         .catch((err) => {
           console.warn('Error verificando enlace de invitado:', err);
         });
+    } else if (roleParam === 'dama' || roleParam === 'damas' || roleParam === '1' || roleParam === 'true') {
+      // Acceso directo a vista de damas mediante parámetro de enlace
+      setGuest({
+        code: 'damas',
+        full_name: 'Queridas Damas de Honor',
+        max_guests: 1,
+        status: 'pending',
+        gift_type: 'bank',
+        invitation_scope: 'church_and_reception',
+        invitation_role: 'bridesmaid',
+      });
     }
   }, []);
 
@@ -84,8 +97,12 @@ export default function WeddingInvitationPage() {
 
         {/* Contenido principal estructurado */}
         <div className="relative z-10 flex flex-col items-center">
-          {/* Tarjeta de invitación oficial con datos personalizados de pases */}
-          <InvitationCard guest={guest} />
+          {/* Tarjeta de invitación oficial (Formato Damas de Honor o Invitación General) */}
+          {guest?.invitation_role === 'bridesmaid' ? (
+            <BridesmaidInvitationCard guest={guest} />
+          ) : (
+            <InvitationCard guest={guest} />
+          )}
 
           {/* Retrato oficial de los novios */}
           <CouplePhotoSection />

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { WEDDING_CONFIG } from '@/config/wedding';
-import { AttendanceStatus, RSVPFormData, GiftPreferenceType, InvitationScopeType } from '@/lib/types';
+import { AttendanceStatus, RSVPFormData, GiftPreferenceType, InvitationScopeType, InvitationRoleType } from '@/lib/types';
 import {
   CheckCircle2,
   Heart,
@@ -26,6 +26,7 @@ export interface VerifiedGuest {
   status: string;
   gift_type?: GiftPreferenceType;
   invitation_scope?: InvitationScopeType;
+  invitation_role?: InvitationRoleType;
 }
 
 interface RsvpFormProps {
@@ -251,8 +252,11 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
   const cleanPhone = couplePhone.replace(/[^0-9]/g, '');
   const isAttending = successResponse?.status === 'attending';
 
+  const isDama = verifiedGuest?.invitation_role === 'bridesmaid';
   const guestMsg = isAttending
-    ? `¡Hola Estefani & Ricardo! 🕊️ Acabo de confirmar mi asistencia a su boda (${successResponse.guestName}, ${successResponse.confirmedCount} ${successResponse.confirmedCount === 1 ? 'persona' : 'personas'}). ¡Nos vemos el 12 de diciembre!`
+    ? isDama
+      ? `¡Hola Estefani & Ricardo! 🌸✨ ¡Acepto con todo el corazón ser su Dama de Honor y confirmo mi asistencia a su boda! (${successResponse.guestName}). ¡Nos vemos el 12 de diciembre!`
+      : `¡Hola Estefani & Ricardo! 🕊️ Acabo de confirmar mi asistencia a su boda (${successResponse.guestName}, ${successResponse.confirmedCount} ${successResponse.confirmedCount === 1 ? 'persona' : 'personas'}). ¡Nos vemos el 12 de diciembre!`
     : `¡Hola Estefani & Ricardo! 🕊️ Les escribe ${successResponse?.guestName}. Lamentablemente no podré acompañarlos físicamente, pero les deseo de corazón todas las bendiciones del cielo en su matrimonio.`;
 
   const whatsappDirectUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(guestMsg)}`;
@@ -261,16 +265,16 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
     <section className="w-full max-w-xl mx-auto my-12 px-4" aria-labelledby="rsvp-heading" id="confirmar">
       <div className="text-center mb-6">
         <span className="font-serif-luxury text-xs tracking-[0.25em] uppercase text-[#784A67] font-semibold">
-          Confirmación de Asistencia
+          {isDama ? '🌸 Corte de Honor • Damas' : 'Confirmación de Asistencia'}
         </span>
         <h2 id="rsvp-heading" className="font-serif-luxury text-2xl sm:text-3xl text-[#2A1C28] font-normal mt-1">
-          Confirma tu presencia
+          {isDama ? '¿Aceptas ser nuestra Dama de Honor?' : 'Confirma tu presencia'}
         </h2>
         <OrnamentalDivider className="w-48 mx-auto my-3 text-[#9B709E]" />
         <p className="font-serif-luxury text-xs sm:text-sm text-[#6A5365] max-w-md mx-auto italic">
           Por favor confírmanos antes del{' '}
           <strong className="text-[#5C3759] font-semibold">{WEDDING_CONFIG.rsvp.deadlineFormatted}</strong>{' '}
-          para reservar debidamente tus asientos.
+          para coordinar todos los preparativos de la boda.
         </p>
       </div>
 

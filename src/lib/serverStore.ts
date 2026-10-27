@@ -284,6 +284,7 @@ export async function saveGuestInvite(
         notes: guest.notes || null,
         gift_type: guest.gift_type || guests[idx].gift_type || 'bank',
         invitation_scope: guest.invitation_scope || guests[idx].invitation_scope || 'church_and_reception',
+        invitation_role: guest.invitation_role || guests[idx].invitation_role || 'standard',
         updated_at: now,
       };
       await saveGuestsData(guests);
@@ -302,6 +303,7 @@ export async function saveGuestInvite(
     notes: guest.notes || null,
     gift_type: guest.gift_type || 'bank',
     invitation_scope: guest.invitation_scope || 'church_and_reception',
+    invitation_role: guest.invitation_role || 'standard',
     created_at: now,
   };
 

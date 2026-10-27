@@ -30,6 +30,28 @@ export async function GET(request: NextRequest) {
           status: 'confirmed',
           gift_type: 'both',
           invitation_scope: 'church_and_reception',
+          invitation_role: 'standard',
+        },
+      });
+    }
+
+    // Llave maestra para Damas de Honor
+    if (
+      cleanQuery === 'dama' ||
+      cleanQuery === 'damas' ||
+      cleanQuery === 'damadehonor' ||
+      cleanQuery === 'damasdehonor'
+    ) {
+      return NextResponse.json({
+        success: true,
+        data: {
+          code: 'damas',
+          full_name: 'Queridas Damas de Honor',
+          max_guests: 1,
+          status: 'pending',
+          gift_type: 'bank',
+          invitation_scope: 'church_and_reception',
+          invitation_role: 'bridesmaid',
         },
       });
     }
@@ -56,6 +78,7 @@ export async function GET(request: NextRequest) {
         status: guest.status,
         gift_type: guest.gift_type || 'bank',
         invitation_scope: guest.invitation_scope || 'church_and_reception',
+        invitation_role: guest.invitation_role || 'standard',
       },
     });
   } catch (err: unknown) {

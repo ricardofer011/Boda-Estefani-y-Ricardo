@@ -210,13 +210,17 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
         {guest && (
           <div className="mb-4 px-4 py-2 rounded-2xl bg-[#FCF9FD] border border-[#AB86B1]/50 shadow-xs text-center animate-fade-in max-w-xs">
             <span className="font-serif-luxury text-[10px] tracking-widest uppercase text-[#784A67] font-semibold block">
-              Invitación Reservada Para:
+              {guest.invitation_role === 'bridesmaid' ? '🌸 Invitación Especial • Damas de Honor' : 'Invitación Reservada Para:'}
             </span>
             <p className="font-serif-luxury text-sm sm:text-base font-semibold text-[#2A1C28] truncate mt-0.5">
               {guest.full_name}
             </p>
             <span className="inline-block mt-0.5 px-3 py-0.5 rounded-full bg-[#5C3759] text-[#DFC6E3] text-[11px] font-serif-luxury font-semibold shadow-2xs">
-              {guest.max_guests === 1 ? '1 Pase Reservado' : `${guest.max_guests} Pases Reservados`}
+              {guest.invitation_role === 'bridesmaid'
+                ? '🌸 Dama de Honor Oficial'
+                : guest.max_guests === 1
+                ? '1 Pase Reservado'
+                : `${guest.max_guests} Pases Reservados`}
             </span>
           </div>
         )}
@@ -283,7 +287,7 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
               )}
 
               <span className="text-[#784A67] text-[10px] font-serif-luxury tracking-[0.25em] uppercase mb-1 font-semibold">
-                Nuestra Boda Católica
+                {guest?.invitation_role === 'bridesmaid' ? '🌸 Corte de Honor • Damas' : 'Nuestra Boda Católica'}
               </span>
               <p className="font-serif-luxury text-lg sm:text-xl text-[#2A1C28] font-medium royal-text-gradient leading-tight">
                 Estefani Cedeño

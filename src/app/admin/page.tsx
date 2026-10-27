@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { RSVPRecord, GuestInvite, GiftPreferenceType, InvitationScopeType } from '@/lib/types';
+import { RSVPRecord, GuestInvite, GiftPreferenceType, InvitationScopeType, InvitationRoleType } from '@/lib/types';
 import { WEDDING_CONFIG } from '@/config/wedding';
 import {
   Lock,
@@ -56,6 +56,7 @@ export default function AdminPage() {
   const [isLoadingGuests, setIsLoadingGuests] = useState(false);
   const [guestSearchTerm, setGuestSearchTerm] = useState('');
   const [guestGroupFilter, setGuestGroupFilter] = useState<string>('all');
+  const [guestRoleFilter, setGuestRoleFilter] = useState<'all' | 'standard' | 'bridesmaid'>('all');
 
   // Formulario nuevo invitado
   const [newGuestName, setNewGuestName] = useState('');
@@ -65,6 +66,7 @@ export default function AdminPage() {
   const [newGuestNotes, setNewGuestNotes] = useState('');
   const [newGuestGiftType, setNewGuestGiftType] = useState<GiftPreferenceType>('bank');
   const [newGuestScope, setNewGuestScope] = useState<InvitationScopeType>('church_and_reception');
+  const [newGuestRole, setNewGuestRole] = useState<InvitationRoleType>('standard');
   const [isAddingGuest, setIsAddingGuest] = useState(false);
   const [guestFeedback, setGuestFeedback] = useState<string | null>(null);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
@@ -180,6 +182,7 @@ export default function AdminPage() {
           notes: newGuestNotes.trim() || undefined,
           gift_type: newGuestGiftType,
           invitation_scope: newGuestScope,
+          invitation_role: newGuestRole,
         }),
       });
 
@@ -192,7 +195,8 @@ export default function AdminPage() {
         setNewGuestNotes('');
         setNewGuestGiftType('bank');
         setNewGuestScope('church_and_reception');
-        setGuestFeedback(`¡Invitación para ${data.data.full_name} creada con ${data.data.max_guests} pases asignados!`);
+        setNewGuestRole('standard');
+        setGuestFeedback(`¡Invitación para ${data.data.full_name} (${data.data.invitation_role === 'bridesmaid' ? '🌸 Dama de Honor' : 'General'}) creada con éxito!`);
         setTimeout(() => setGuestFeedback(null), 5000);
       } else {
         setGuestFeedback(data.error || 'Error al guardar el invitado.');
@@ -223,6 +227,7 @@ export default function AdminPage() {
           notes: editingGuest.notes || undefined,
           gift_type: editingGuest.gift_type || 'bank',
           invitation_scope: editingGuest.invitation_scope || 'church_and_reception',
+          invitation_role: editingGuest.invitation_role || 'standard',
         }),
       });
 
@@ -322,10 +327,15 @@ export default function AdminPage() {
 
       if (!matchesSearch) return false;
       if (guestGroupFilter !== 'all' && g.group !== guestGroupFilter) return false;
+      if (guestRoleFilter !== 'all') {
+        const isBridesmaid = g.invitation_role === 'bridesmaid';
+        if (guestRoleFilter === 'bridesmaid' && !isBridesmaid) return false;
+        if (guestRoleFilter === 'standard' && isBridesmaid) return false;
+      }
 
       return true;
     });
-  }, [guests, guestSearchTerm, guestGroupFilter]);
+  }, [guests, guestSearchTerm, guestGroupFilter, guestRoleFilter]);
 
   // Filtrado de confirmaciones (RSVPs)
   const filteredRsvps = useMemo(() => {
@@ -361,6 +371,14 @@ export default function AdminPage() {
 
   const getGuestWhatsAppInviteUrl = (guest: GuestInvite) => {
     const url = getPersonalizedUrl(guest.code);
+
+    if (guest.invitation_role === 'bridesmaid') {
+      const damaText = `¡Hola ${guest.full_name}! 🌸💌\n\nNos llena de una emoción inmensa compartir contigo una noticia que sale desde lo más profundo de nuestro corazón.\n\nHemos preparado una invitación hecha especialmente para ti, porque soñamos con que nos acompañes como una de nuestras *Damas de Honor* el día de nuestra boda:\n\n📅 Sábado, 12 de diciembre de 2026\n⏰ 11:00 a. m. (Hora Oficial)\n⛪ Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo\n\nPuedes abrir tu sobre exclusivo para damas aquí:\n${url}\n\nCon todo nuestro cariño,\nEstefani Cedeño & Ricardo Fernández`;
+      const cleanPhone = guest.phone ? guest.phone.replace(/[^0-9]/g, '') : '';
+      const phoneParam = cleanPhone ? `phone=${cleanPhone}&` : '';
+      return `https://api.whatsapp.com/send?${phoneParam}text=${encodeURIComponent(damaText)}`;
+    }
+
     const passesText =
       guest.max_guests === 1
         ? '1 pase personal reservado con especial afecto en su honor'
@@ -747,6 +765,32 @@ export default function AdminPage() {
                   </select>
                 </div>
 
+                <div>
+                  <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean flex items-center justify-between">
+                    <span>Tipo de Invitación</span>
+                    <span className="text-pink-600 font-bold">*</span>
+                  </label>
+                  <select
+                    value={newGuestRole}
+                    onChange={(e) => {
+                      const role = e.target.value as InvitationRoleType;
+                      setNewGuestRole(role);
+                      if (role === 'bridesmaid') {
+                        if (!newGuestGroup || newGuestGroup === 'Familia') setNewGuestGroup('Damas de Honor');
+                        setNewGuestPasses(1);
+                      }
+                    }}
+                    className={`w-full px-3.5 py-2.5 rounded-lg border text-xs sm:text-sm font-sans-clean focus:outline-none focus:ring-1 focus:ring-[#B89355] ${
+                      newGuestRole === 'bridesmaid'
+                        ? 'border-pink-300 bg-pink-50 text-pink-900 font-semibold'
+                        : 'border-[#DFC088]/50 bg-white'
+                    }`}
+                  >
+                    <option value="standard">💌 Invitación General de Boda</option>
+                    <option value="bridesmaid">🌸 Exclusiva para Damas de Honor</option>
+                  </select>
+                </div>
+
                 <div className="sm:col-span-2 lg:col-span-2">
                   <input
                     type="text"
@@ -805,6 +849,17 @@ export default function AdminPage() {
                       ))}
                     </select>
                   )}
+
+                  {/* Filtro por tipo de invitación */}
+                  <select
+                    value={guestRoleFilter}
+                    onChange={(e) => setGuestRoleFilter(e.target.value as 'all' | 'standard' | 'bridesmaid')}
+                    className="px-2.5 py-1.5 rounded-lg border border-[#DFC088]/40 bg-white text-xs font-sans-clean text-[#784A67] font-medium"
+                  >
+                    <option value="all">Todas las invitaciones</option>
+                    <option value="standard">💌 Invitados Generales</option>
+                    <option value="bridesmaid">🌸 Damas de Honor</option>
+                  </select>
                 </div>
               </div>
 
@@ -832,11 +887,19 @@ export default function AdminPage() {
                       filteredGuests.map((g) => {
                         const isConfirmed = g.status === 'confirmed';
                         const isDeclined = g.status === 'declined';
+                        const isBridesmaid = g.invitation_role === 'bridesmaid';
 
                         return (
                           <tr key={g.id} className="hover:bg-[#FAF7F2] transition-colors">
                             <td className="py-3.5 px-3 font-medium text-[#2A2118]">
-                              {g.full_name}
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span>{g.full_name}</span>
+                                {isBridesmaid && (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-pink-100 border border-pink-300 text-pink-700 text-[10px] font-semibold">
+                                    🌸 Dama de Honor
+                                  </span>
+                                )}
+                              </div>
                               {g.phone && <span className="block text-[11px] text-[#8C6A35]">{g.phone}</span>}
                             </td>
 
@@ -858,6 +921,11 @@ export default function AdminPage() {
 
                             <td className="py-3.5 px-3">
                               <div className="flex flex-col gap-1 items-start">
+                                {isBridesmaid && (
+                                  <span className="inline-block px-2 py-0.5 rounded-md bg-pink-50 text-pink-800 border border-pink-200 text-[10px] font-semibold">
+                                    🌸 Formato Damas
+                                  </span>
+                                )}
                                 {g.invitation_scope === 'church_only' ? (
                                   <span className="inline-block px-2 py-0.5 rounded-md bg-stone-100 text-stone-700 border border-stone-200 text-[10px] font-medium">
                                     ⛪ Solo Iglesia
@@ -1284,6 +1352,30 @@ export default function AdminPage() {
                   <option value="bank">💳 Solo Cuenta APAP (Lluvia de Sobres)</option>
                   <option value="registry">🎁 Solo Lista de Regalos</option>
                   <option value="both">💳🎁 Ambas opciones (Cuenta y Regalos)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean flex items-center justify-between">
+                  <span>Tipo de Invitación</span>
+                  <span className="text-pink-600 font-bold">*</span>
+                </label>
+                <select
+                  value={editingGuest.invitation_role || 'standard'}
+                  onChange={(e) =>
+                    setEditingGuest({
+                      ...editingGuest,
+                      invitation_role: e.target.value as InvitationRoleType,
+                    })
+                  }
+                  className={`w-full px-3.5 py-2.5 rounded-lg border text-xs font-sans-clean ${
+                    editingGuest.invitation_role === 'bridesmaid'
+                      ? 'border-pink-300 bg-pink-50 text-pink-900 font-semibold'
+                      : 'border-[#DFC088]/50 bg-white'
+                  }`}
+                >
+                  <option value="standard">💌 Invitación General de Boda</option>
+                  <option value="bridesmaid">🌸 Exclusiva para Damas de Honor</option>
                 </select>
               </div>
 
