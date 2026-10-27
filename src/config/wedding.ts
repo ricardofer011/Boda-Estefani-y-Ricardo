@@ -29,8 +29,11 @@ export interface WeddingConfig {
     isDefined: boolean;
     venueName?: string;
     address?: string;
+    city?: string;
+    fullLocation?: string;
     timeFormatted?: string;
     notes?: string;
+    googleMapsUrl?: string;
   };
   calendar: {
     title: string;
@@ -55,6 +58,18 @@ export interface WeddingConfig {
     holders: string;
     currency: string;
     thanksMessage: string;
+    registry?: {
+      badge: string;
+      title: string;
+      message: string;
+      stores: Array<{
+        name: string;
+        description: string;
+        code: string;
+        link: string;
+      }>;
+      notice: string;
+    };
   };
   share: {
     whatsappTemplate: (url: string) => string;
@@ -97,12 +112,14 @@ export const WEDDING_CONFIG: WeddingConfig = {
     googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Iglesia+Nuestra+Señora+de+Las+Mercedes,+Ciudad+Colonial,+Santo+Domingo,+República+Dominicana",
   },
   reception: {
-    // La recepción todavía no está definida. No se inventa información.
-    isDefined: false,
-    venueName: undefined,
-    address: undefined,
-    timeFormatted: undefined,
-    notes: "Los detalles de la celebración posterior se comunicarán a los invitados confirmados oportunamente.",
+    isDefined: true,
+    venueName: "Salón Vista Marina",
+    address: "Av. España 70, Santo Domingo Este 10080",
+    city: "Santo Domingo Este",
+    fullLocation: "Salón Vista Marina, Av. España 70, Santo Domingo Este 10080, República Dominicana",
+    timeFormatted: "1:30 p. m. (al término de la ceremonia)",
+    notes: "Acompáñanos a brindar y celebrar el banquete de bodas con vista al mar.",
+    googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Salon+Vista+Marina,+Av.+Espa%C3%B1a+70,+Santo+Domingo+Este+10080",
   },
   calendar: {
     title: "Boda de Estefani & Ricardo",
@@ -129,6 +146,33 @@ export const WEDDING_CONFIG: WeddingConfig = {
     holders: "Estefani & Ricardo",
     currency: "DOP (Pesos Dominicanos)",
     thanksMessage: "¡Muchas gracias por acompañarnos con tanto cariño en este nuevo capítulo de nuestras vidas!",
+    registry: {
+      badge: "Muestra de Cariño",
+      title: "Mesa de Regalos",
+      message:
+        "El regalo más valioso para nosotros es su compañía y bendición en el inicio de nuestro matrimonio. Si desean tener un detalle para acompañar la construcción de nuestro nuevo hogar, hemos seleccionado algunas opciones en nuestras tiendas preferidas:",
+      stores: [
+        {
+          name: "Casa Cuesta",
+          description: "Mesa de Bodas • Boda Estefani & Ricardo",
+          code: "Estefani & Ricardo 2026",
+          link: "https://casacuesta.com",
+        },
+        {
+          name: "Ilumel",
+          description: "Colección Muebles & Decoración",
+          code: "Estefani & Ricardo",
+          link: "https://ilumel.com",
+        },
+        {
+          name: "Amazon Wedding Registry",
+          description: "Mesa de Regalos Online",
+          code: "Estefani & Ricardo",
+          link: "https://www.amazon.com/wedding",
+        },
+      ],
+      notice: "Si deseas hacernos llegar un detalle o necesitas ayuda con la lista de regalos, no dudes en contactarnos.",
+    },
   },
   share: {
     whatsappTemplate: (url: string) =>

@@ -14,6 +14,9 @@ export interface RSVPRecord {
   updated_at: string;
 }
 
+export type GiftPreferenceType = 'bank' | 'registry' | 'both';
+export type InvitationScopeType = 'church_only' | 'church_and_reception';
+
 export interface GuestInvite {
   id: string;
   code: string;
@@ -24,6 +27,8 @@ export interface GuestInvite {
   confirmed_count?: number;
   group?: string | null;
   notes?: string | null;
+  gift_type?: GiftPreferenceType;
+  invitation_scope?: InvitationScopeType;
   created_at: string;
   updated_at?: string;
 }

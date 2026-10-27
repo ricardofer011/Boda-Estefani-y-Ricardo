@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { WEDDING_CONFIG } from '@/config/wedding';
 import { Envelope } from '@/components/Envelope';
 import { InvitationCard } from '@/components/InvitationCard';
@@ -9,7 +9,7 @@ import { Countdown } from '@/components/Countdown';
 import { CeremonySection } from '@/components/CeremonySection';
 import { CalendarSection } from '@/components/CalendarSection';
 import { GiftsSection } from '@/components/GiftsSection';
-import { RsvpForm } from '@/components/RsvpForm';
+import { RsvpForm, VerifiedGuest } from '@/components/RsvpForm';
 import { ShareSection } from '@/components/ShareSection';
 import { MusicPlayer } from '@/components/MusicPlayer';
 import { Footer } from '@/components/Footer';
@@ -17,6 +17,28 @@ import { Mail } from 'lucide-react';
 
 export default function WeddingInvitationPage() {
   const [isOpened, setIsOpened] = useState(false);
+  const [guest, setGuest] = useState<VerifiedGuest | null>(null);
+
+  // Buscar información del invitado a partir del enlace personalizado
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('invitacion') || params.get('code') || params.get('invitado') || params.get('guest');
+
+    if (code) {
+      fetch(`/api/guests/verify?code=${encodeURIComponent(code.trim())}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.data) {
+            setGuest(data.data);
+          }
+        })
+        .catch((err) => {
+          console.warn('Error verificando enlace de invitado:', err);
+        });
+    }
+  }, []);
 
   return (
     <main className="min-h-screen bg-[#FAF7F2] relative overflow-x-hidden selection:bg-[#DFC088]/30">
@@ -57,8 +79,8 @@ export default function WeddingInvitationPage() {
 
         {/* Contenido principal estructurado */}
         <div className="relative z-10 flex flex-col items-center">
-          {/* Tarjeta de invitación oficial */}
-          <InvitationCard />
+          {/* Tarjeta de invitación oficial con datos personalizados de pases */}
+          <InvitationCard guest={guest} />
 
           {/* Retrato oficial de los novios */}
           <CouplePhotoSection />
@@ -66,17 +88,20 @@ export default function WeddingInvitationPage() {
           {/* Cuenta regresiva en tiempo real */}
           <Countdown />
 
-          {/* Sección de ceremonia y ubicación en mapa */}
-          <CeremonySection />
+          {/* Sección de ceremonia y ubicación en mapa (Iglesia sola o Iglesia + Recepción Salón Vista Marina) */}
+          <CeremonySection scope={guest?.invitation_scope || 'church_and_reception'} />
 
           {/* Guardar en Google Calendar & Apple Calendar */}
           <CalendarSection />
 
-          {/* Muestra de cariño / Lluvia de sobres */}
-          <GiftsSection />
+          {/* Muestra de cariño: Cuenta APAP / Lista de Regalos / Ambas */}
+          <GiftsSection giftType={guest?.gift_type || 'bank'} />
 
           {/* Formulario real de confirmación (RSVP) */}
-          <RsvpForm />
+          <RsvpForm
+            initialGuest={guest}
+            onGuestVerified={(g) => setGuest(g)}
+          />
 
           {/* Compartir por WhatsApp y enlace */}
           <ShareSection />

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { WEDDING_CONFIG } from '@/config/wedding';
-import { AttendanceStatus, RSVPFormData } from '@/lib/types';
+import { AttendanceStatus, RSVPFormData, GiftPreferenceType, InvitationScopeType } from '@/lib/types';
 import {
   CheckCircle2,
   Heart,
@@ -15,31 +15,39 @@ import {
   Lock,
   MessageCircle,
   Sparkles,
+  ShieldCheck,
 } from 'lucide-react';
 import { OrnamentalDivider } from './Ornaments';
 
-interface VerifiedGuest {
+export interface VerifiedGuest {
   code: string;
   full_name: string;
   max_guests: number;
   status: string;
+  gift_type?: GiftPreferenceType;
+  invitation_scope?: InvitationScopeType;
 }
 
-export function RsvpForm() {
-  const [verifiedGuest, setVerifiedGuest] = useState<VerifiedGuest | null>(null);
+interface RsvpFormProps {
+  initialGuest?: VerifiedGuest | null;
+  onGuestVerified?: (guest: VerifiedGuest | null) => void;
+}
+
+export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
+  const [verifiedGuest, setVerifiedGuest] = useState<VerifiedGuest | null>(initialGuest || null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<RSVPFormData>({
-    guest_name: '',
+    guest_name: initialGuest?.full_name || '',
     attendance_status: 'attending',
-    guest_count: 1,
-    companion_names: [],
+    guest_count: initialGuest?.max_guests || 1,
+    companion_names: initialGuest ? Array(Math.max(0, initialGuest.max_guests - 1)).fill('') : [],
     dietary_restrictions: '',
     phone: '',
     message: '',
-    invitation_code: '',
+    invitation_code: initialGuest?.code || '',
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -51,8 +59,23 @@ export function RsvpForm() {
     guestName: string;
   } | null>(null);
 
-  // Detectar código de invitación en la URL (ej. ?invitacion=maria-fernandez o ?code=ABC)
+  // Sincronizar si cambia initialGuest desde el componente padre
   useEffect(() => {
+    if (initialGuest) {
+      setVerifiedGuest(initialGuest);
+      setFormData((prev) => ({
+        ...prev,
+        guest_name: initialGuest.full_name,
+        invitation_code: initialGuest.code,
+        guest_count: initialGuest.max_guests,
+        companion_names: Array(Math.max(0, initialGuest.max_guests - 1)).fill(''),
+      }));
+    }
+  }, [initialGuest]);
+
+  // Si no se pasó initialGuest, detectar si hay query param en la URL
+  useEffect(() => {
+    if (initialGuest) return;
     if (typeof window === 'undefined') return;
 
     const params = new URLSearchParams(window.location.search);
@@ -76,6 +99,9 @@ export function RsvpForm() {
       if (res.ok && data.success && data.data) {
         const guest: VerifiedGuest = data.data;
         setVerifiedGuest(guest);
+        if (onGuestVerified) {
+          onGuestVerified(guest);
+        }
         setFormData((prev) => ({
           ...prev,
           guest_name: guest.full_name,
@@ -99,6 +125,7 @@ export function RsvpForm() {
   };
 
   const maxAllowed = verifiedGuest ? verifiedGuest.max_guests : 1;
+  const isChurchOnly = verifiedGuest?.invitation_scope === 'church_only';
 
   const handleAttendanceChange = (status: AttendanceStatus) => {
     setFormData((prev) => ({
@@ -179,11 +206,11 @@ export function RsvpForm() {
       const result = await response.json();
 
       if (!response.ok || !result.success) {
-        throw new Error(result.error || 'Ocurrió un error al enviar tu confirmación.');
+        throw new Error(result.error || 'No se pudo guardar la confirmación. Por favor inténtalo de nuevo.');
       }
 
       setSuccessResponse({
-        message: result.message,
+        message: result.message || 'Respuesta registrada con éxito.',
         status: formData.attendance_status,
         confirmedCount: formData.attendance_status === 'attending' ? formData.guest_count : 0,
         guestName: formData.guest_name,
@@ -193,105 +220,108 @@ export function RsvpForm() {
         triggerCelebrationConfetti();
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Error de conexión. Inténtalo de nuevo.';
-      setErrorMessage(msg);
+      const message = err instanceof Error ? err.message : 'Error inesperado. Inténtalo de nuevo.';
+      setErrorMessage(message);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const resetForm = () => {
+  const handleReset = () => {
     setSuccessResponse(null);
     setErrorMessage(null);
   };
 
-  // Generar enlace para avisar por WhatsApp a los novios directamente
-  const getCoupleNotificationWhatsAppUrl = () => {
-    if (!successResponse) return '';
-    const phone = (WEDDING_CONFIG.couple.notificationPhone || '+1 809 000 0000').replace(/[^0-9]/g, '');
-    const isAttending = successResponse.status === 'attending';
-
-    const text = isAttending
-      ? `¡Hola Estefani & Ricardo! 🕊️ Acabo de confirmar mi asistencia a su boda a través de la invitación digital.\n\n👤 Invitado: ${successResponse.guestName}\n👥 Asistentes confirmados: ${successResponse.confirmedCount} persona(s)\n\n¡Qué bendición acompañarlos este 12 de diciembre!`
-      : `¡Hola Estefani & Ricardo! 🕊️ Les escribo para avisarles con mucho cariño que registré mi respuesta en la invitación. Lamentablemente no podré acompañarlos físicamente, pero estarán en mis oraciones. ¡Felicidades!`;
-
-    return `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(text)}`;
+  const handleClearGuest = () => {
+    setVerifiedGuest(null);
+    if (onGuestVerified) onGuestVerified(null);
+    setFormData({
+      guest_name: '',
+      attendance_status: 'attending',
+      guest_count: 1,
+      companion_names: [],
+      dietary_restrictions: '',
+      phone: '',
+      message: '',
+      invitation_code: '',
+    });
   };
 
+  const couplePhone = WEDDING_CONFIG.couple.notificationPhone || '+1 809 000 0000';
+  const cleanPhone = couplePhone.replace(/[^0-9]/g, '');
+  const isAttending = successResponse?.status === 'attending';
+
+  const guestMsg = isAttending
+    ? `¡Hola Estefani & Ricardo! 🕊️ Acabo de confirmar mi asistencia a su boda (${successResponse.guestName}, ${successResponse.confirmedCount} ${successResponse.confirmedCount === 1 ? 'persona' : 'personas'}). ¡Nos vemos el 12 de diciembre!`
+    : `¡Hola Estefani & Ricardo! 🕊️ Les escribe ${successResponse?.guestName}. Lamentablemente no podré acompañarlos físicamente, pero les deseo de corazón todas las bendiciones del cielo en su matrimonio.`;
+
+  const whatsappDirectUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(guestMsg)}`;
+
   return (
-    <section className="w-full max-w-xl mx-auto my-12 px-4" aria-labelledby="rsvp-heading">
+    <section className="w-full max-w-xl mx-auto my-12 px-4" aria-labelledby="rsvp-heading" id="confirmar">
       <div className="text-center mb-6">
         <span className="font-serif-luxury text-xs tracking-[0.25em] uppercase text-[#8C6A35] font-semibold">
-          Confirmación de asistencia
+          Confirmación de Asistencia
         </span>
-        <h2 id="rsvp-heading" className="font-serif-luxury text-3xl sm:text-4xl text-[#2A2118] font-normal mt-1">
-          R. S. V. P.
+        <h2 id="rsvp-heading" className="font-serif-luxury text-2xl sm:text-3xl text-[#2A2118] font-normal mt-1">
+          Confirma tu presencia
         </h2>
         <OrnamentalDivider className="w-48 mx-auto my-3 text-[#B89355]" />
-        <p className="font-sans-clean text-xs sm:text-sm text-[#6B5B4D] max-w-md mx-auto">
-          Los pases son asignados personalmente por Estefani & Ricardo. Por favor confirma tu asistencia antes del{' '}
-          <strong className="text-[#2A2118] font-medium">{WEDDING_CONFIG.rsvp.deadlineFormatted}</strong>.
+        <p className="font-serif-luxury text-xs sm:text-sm text-[#6B5B4D] max-w-md mx-auto italic">
+          Por favor confírmanos antes del{' '}
+          <strong className="text-[#8C6A35] font-semibold">{WEDDING_CONFIG.rsvp.deadlineFormatted}</strong>{' '}
+          para reservar debidamente tus asientos.
         </p>
       </div>
 
-      <div className="bg-[#FCFAF6] border border-[#DFC088]/40 rounded-2xl p-6 sm:p-9 shadow-card-elevated relative overflow-hidden">
-        {/* Esquina dorada decorativa */}
-        <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-[#DFC088]/20 to-transparent pointer-events-none" />
-
+      <div className="bg-[#FCFAF6] border border-[#DFC088]/40 rounded-2xl p-6 sm:p-8 shadow-card-elevated card-paper-texture">
         {/* ==================================================================== */}
-        {/* CASO 1: PANTALLA DE ÉXITO TRAS CONFIRMAR */}
+        {/* CASO 1: RESPUESTA EXITOSA REGISTRADA */}
         {/* ==================================================================== */}
         {successResponse ? (
           <div className="text-center py-6 animate-fade-in">
-            {successResponse.status === 'attending' ? (
-              <div className="w-16 h-16 rounded-full bg-[#FAF4E6] border border-[#B89355]/40 flex items-center justify-center mx-auto mb-4 text-[#B89355]">
-                <Heart className="w-8 h-8 fill-current" />
-              </div>
-            ) : (
-              <div className="w-16 h-16 rounded-full bg-[#F3EDE2] border border-[#B89355]/30 flex items-center justify-center mx-auto mb-4 text-[#8C6A35]">
-                <UserCheck className="w-8 h-8" />
-              </div>
-            )}
+            <div className="w-16 h-16 mx-auto rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 mb-4 shadow-xs">
+              <CheckCircle2 className="w-8 h-8" />
+            </div>
 
-            <h3 className="font-serif-luxury text-2xl sm:text-3xl text-[#2A2118] font-medium mb-2">
-              {successResponse.status === 'attending' ? '¡Confirmación recibida!' : 'Respuesta registrada'}
+            <h3 className="font-serif-luxury text-2xl text-[#2A2118] font-medium mb-2">
+              {isAttending ? '¡Será un honor contar contigo!' : 'Agradecemos tu respuesta'}
             </h3>
 
-            <p className="font-sans-clean text-sm sm:text-base text-[#6B5B4D] leading-relaxed max-w-md mx-auto mb-5">
+            <p className="font-sans-clean text-sm text-[#6B5B4D] max-w-md mx-auto mb-4 leading-relaxed">
               {successResponse.message}
             </p>
 
-            <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#DFC088]/30 max-w-sm mx-auto text-xs text-[#8C6A35] font-sans-clean mb-6 text-center">
-              <div>
-                Invitado: <strong>{successResponse.guestName}</strong>
-              </div>
-              {successResponse.status === 'attending' && (
-                <div className="mt-1">
-                  Pases confirmados: <strong>{successResponse.confirmedCount}</strong>
-                </div>
-              )}
-              <div className="mt-2 text-[11px] text-[#A69584] italic">
-                (Esta confirmación ha sido guardada de forma segura y privada para los novios)
-              </div>
+            <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#DFC088]/30 max-w-sm mx-auto mb-6 text-xs text-[#2A2118] font-sans-clean">
+              <p className="font-semibold text-[#8C6A35] mb-1 font-serif-luxury text-sm">
+                Resumen de confirmación
+              </p>
+              <p><strong>Invitado:</strong> {successResponse.guestName}</p>
+              <p>
+                <strong>Asistencia:</strong>{' '}
+                <span className={isAttending ? 'text-emerald-700 font-semibold' : 'text-stone-600 font-semibold'}>
+                  {isAttending ? `Confirmada (${successResponse.confirmedCount} ${successResponse.confirmedCount === 1 ? 'persona' : 'personas'})` : 'No asistirá'}
+                </span>
+              </p>
             </div>
 
-            {/* Botón directo para avisar a Ricardo & Estefani a su WhatsApp */}
-            <div className="flex flex-col items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <a
-                href={getCoupleNotificationWhatsAppUrl()}
+                href={whatsappDirectUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto px-6 py-3 rounded-full bg-[#25D366] text-white hover:bg-[#20ba5a] font-sans-clean text-xs font-semibold tracking-wider inline-flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-sans-clean text-xs font-semibold tracking-wider transition-all duration-300 shadow-xs cursor-pointer"
               >
-                <MessageCircle className="w-4 h-4 fill-current" />
-                <span>Avisar confirmación al WhatsApp de los novios</span>
+                <MessageCircle className="w-4 h-4" />
+                <span>Avisar a los novios por WhatsApp</span>
               </a>
 
               <button
-                onClick={resetForm}
-                className="text-xs font-sans-clean tracking-wider uppercase text-[#8C6A35] hover:text-[#2A2118] underline underline-offset-4 cursor-pointer pt-2"
+                type="button"
+                onClick={handleReset}
+                className="w-full sm:w-auto px-5 py-3 rounded-full border border-[#DFC088]/50 text-xs font-sans-clean text-[#6B5B4D] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
               >
-                Modificar mi respuesta
+                Modificar respuesta
               </button>
             </div>
           </div>
@@ -308,7 +338,7 @@ export function RsvpForm() {
               Consulta tus pases reservados
             </h3>
             <p className="font-sans-clean text-xs sm:text-sm text-[#6B5B4D] max-w-sm mx-auto mb-6">
-              Para garantizar una celebración íntima, los pases han sido asignados exclusivamente por los novios. Escribe tu nombre o el código de tu invitación:
+              Para garantizar una celebración solemne y organizada, cada invitación ha sido asignada con una cantidad fija de pases. Escribe tu nombre o código de invitación:
             </p>
 
             <form onSubmit={handleManualSearch} className="space-y-4 max-w-md mx-auto">
@@ -325,7 +355,7 @@ export function RsvpForm() {
                   required
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Ej. Carmen Rosario Gómez o tu código..."
+                  placeholder="Ej. Familia Rodríguez o tu código..."
                   className="w-full px-4 py-3 rounded-xl border border-[#DFC088]/50 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#B89355] font-sans-clean shadow-xs"
                 />
               </div>
@@ -355,7 +385,7 @@ export function RsvpForm() {
           /* ==================================================================== */
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Tarjeta de bienvenida personalizada con los pases autorizados */}
-            <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#DFC088]/50 relative">
+            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-[#FAF4E6] to-[#F3EDE2] border border-[#DFC088]/60 relative shadow-2xs">
               <div className="flex items-start justify-between">
                 <div>
                   <span className="font-serif-luxury text-[11px] tracking-widest uppercase text-[#8C6A35] font-semibold block">
@@ -367,7 +397,7 @@ export function RsvpForm() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setVerifiedGuest(null)}
+                  onClick={handleClearGuest}
                   className="text-xs text-[#8C6A35] hover:underline font-sans-clean"
                 >
                   Cambiar
@@ -376,11 +406,18 @@ export function RsvpForm() {
 
               <div className="mt-3 pt-3 border-t border-[#DFC088]/30 flex items-center justify-between">
                 <span className="font-sans-clean text-xs text-[#6B5B4D]">
-                  Pases reservados por los novios:
+                  Pases reservados en su honor:
                 </span>
-                <span className="px-3 py-1 rounded-full bg-[#B89355] text-white font-serif-luxury text-xs font-semibold tracking-wider">
-                  {verifiedGuest.max_guests} {verifiedGuest.max_guests === 1 ? 'PASE' : 'PASES'}
+                <span className="px-3 py-1 rounded-full bg-[#2A2118] text-[#DFC088] font-serif-luxury text-xs font-semibold tracking-wider shadow-2xs">
+                  {verifiedGuest.max_guests} {verifiedGuest.max_guests === 1 ? 'PASE PERSONAL' : 'PASES'}
                 </span>
+              </div>
+
+              {/* Protocolo formal estricto */}
+              <div className="mt-3 pt-2.5 border-t border-[#DFC088]/30">
+                <p className="font-serif-luxury text-[11px] text-[#6B5B4D] italic leading-relaxed">
+                  «Rogamos tomar en consideración que esta invitación es personal e intransferible y aplica estrictamente para el número de personas indicado. Agradecemos su generosa comprensión.»
+                </p>
               </div>
             </div>
 
@@ -394,10 +431,12 @@ export function RsvpForm() {
               </div>
             )}
 
-            {/* Asistencia: Sí o No */}
+            {/* Asistencia: Sí o No adaptado al alcance */}
             <div>
               <label className="block font-serif-luxury text-sm font-semibold text-[#2A2118] mb-2">
-                ¿Nos acompañarás en nuestra ceremonia? <span className="text-[#8C6A35]">*</span>
+                {isChurchOnly
+                  ? '¿Nos acompañarás en la ceremonia religiosa?'
+                  : '¿Nos acompañarás en nuestra ceremonia y recepción?'} <span className="text-[#8C6A35]">*</span>
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <button
@@ -438,13 +477,13 @@ export function RsvpForm() {
                       ¿Cuántos de tus pases utilizarás?
                     </label>
                     <span className="text-xs text-[#8C6A35] font-sans-clean font-medium">
-                      Máximo permitido: {maxAllowed}
+                      Máximo autorizado: {maxAllowed}
                     </span>
                   </div>
 
                   {maxAllowed === 1 ? (
                     <div className="p-3 bg-[#FAF7F2] rounded-lg border border-[#DFC088]/30 text-xs text-[#6B5B4D]">
-                      Tienes asignado <strong>1 pase individual</strong> en tu honor.
+                      Tienes asignado <strong>1 pase personal</strong> en tu honor.
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">

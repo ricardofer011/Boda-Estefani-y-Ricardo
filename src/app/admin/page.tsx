@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { RSVPRecord, GuestInvite } from '@/lib/types';
+import { RSVPRecord, GuestInvite, GiftPreferenceType, InvitationScopeType } from '@/lib/types';
 import { WEDDING_CONFIG } from '@/config/wedding';
 import {
   Lock,
@@ -63,6 +63,8 @@ export default function AdminPage() {
   const [newGuestGroup, setNewGuestGroup] = useState('Familia');
   const [newGuestPhone, setNewGuestPhone] = useState('');
   const [newGuestNotes, setNewGuestNotes] = useState('');
+  const [newGuestGiftType, setNewGuestGiftType] = useState<GiftPreferenceType>('bank');
+  const [newGuestScope, setNewGuestScope] = useState<InvitationScopeType>('church_and_reception');
   const [isAddingGuest, setIsAddingGuest] = useState(false);
   const [guestFeedback, setGuestFeedback] = useState<string | null>(null);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
@@ -176,6 +178,8 @@ export default function AdminPage() {
           group: newGuestGroup.trim() || undefined,
           phone: newGuestPhone.trim() || undefined,
           notes: newGuestNotes.trim() || undefined,
+          gift_type: newGuestGiftType,
+          invitation_scope: newGuestScope,
         }),
       });
 
@@ -186,6 +190,8 @@ export default function AdminPage() {
         setNewGuestPasses(2);
         setNewGuestPhone('');
         setNewGuestNotes('');
+        setNewGuestGiftType('bank');
+        setNewGuestScope('church_and_reception');
         setGuestFeedback(`¡Invitación para ${data.data.full_name} creada con ${data.data.max_guests} pases asignados!`);
         setTimeout(() => setGuestFeedback(null), 5000);
       } else {
@@ -215,6 +221,8 @@ export default function AdminPage() {
           group: editingGuest.group || undefined,
           phone: editingGuest.phone || undefined,
           notes: editingGuest.notes || undefined,
+          gift_type: editingGuest.gift_type || 'bank',
+          invitation_scope: editingGuest.invitation_scope || 'church_and_reception',
         }),
       });
 
@@ -353,9 +361,17 @@ export default function AdminPage() {
 
   const getGuestWhatsAppInviteUrl = (guest: GuestInvite) => {
     const url = getPersonalizedUrl(guest.code);
-    const passesText = guest.max_guests === 1 ? '1 pase reservado en tu honor' : `${guest.max_guests} pases reservados para ti y tus acompañantes`;
+    const passesText =
+      guest.max_guests === 1
+        ? '1 pase personal reservado con especial afecto en su honor'
+        : `${guest.max_guests} pases reservados con especial afecto en su honor`;
 
-    const text = `¡Hola ${guest.full_name}! 🕊️💌 Nos hace una inmensa ilusión compartir contigo un momento sagrado en nuestras vidas.\n\nTe invitamos a celebrar nuestra boda religiosa este sábado 12 de diciembre de 2026 a las 11:00 a. m. en la Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo.\n\nHemos preparado ${passesText}.\n\nPuedes ver tu invitación personalizada y confirmar tu asistencia aquí:\n${url}`;
+    const scopeText =
+      guest.invitation_scope === 'church_only'
+        ? `Te invitamos a celebrar nuestra boda religiosa este sábado 12 de diciembre de 2026 a las 11:00 a. m. en la Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo.`
+        : `Te invitamos a celebrar nuestra boda religiosa este sábado 12 de diciembre de 2026 a las 11:00 a. m. en la Iglesia Las Mercedes, Ciudad Colonial, y posteriormente acompañarnos al brindis y recepción en el Salón Vista Marina (Av. España 70, Santo Domingo Este).`;
+
+    const text = `¡Hola ${guest.full_name}! 🕊️💌 Nos hace una inmensa ilusión compartir contigo un momento tan significativo en nuestras vidas.\n\n${scopeText}\n\nHemos preparado ${passesText}.\n\n*Nota formal:* La invitación es personal e intransferible, válida exclusivamente para el número de pases asignados.\n\nPuedes ver tu tarjeta personalizada y confirmar tu asistencia aquí:\n${url}`;
 
     const cleanPhone = guest.phone ? guest.phone.replace(/[^0-9]/g, '') : '';
     const phoneParam = cleanPhone ? `phone=${cleanPhone}&` : '';
@@ -643,8 +659,8 @@ export default function AdminPage() {
                 </div>
               )}
 
-              <form onSubmit={handleAddGuest} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-                <div className="lg:col-span-2">
+              <form onSubmit={handleAddGuest} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                <div className="sm:col-span-2 lg:col-span-1">
                   <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
                     Nombre o Familia del Invitado <span className="text-[#8C6A35]">*</span>
                   </label>
@@ -691,7 +707,7 @@ export default function AdminPage() {
 
                 <div>
                   <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
-                    Teléfono (opcional)
+                    Teléfono (opcional para WhatsApp)
                   </label>
                   <input
                     type="tel"
@@ -702,13 +718,42 @@ export default function AdminPage() {
                   />
                 </div>
 
-                <div className="sm:col-span-2 lg:col-span-4">
+                <div>
+                  <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
+                    Alcance de la Invitación <span className="text-[#8C6A35]">*</span>
+                  </label>
+                  <select
+                    value={newGuestScope}
+                    onChange={(e) => setNewGuestScope(e.target.value as InvitationScopeType)}
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#DFC088]/50 bg-white text-xs sm:text-sm font-sans-clean focus:outline-none focus:ring-1 focus:ring-[#B89355]"
+                  >
+                    <option value="church_and_reception">⛪ + 🥂 Iglesia y Recepción (Salón Vista Marina)</option>
+                    <option value="church_only">⛪ Solo Iglesia</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
+                    Detalle u Obsequio a Mostrar <span className="text-[#8C6A35]">*</span>
+                  </label>
+                  <select
+                    value={newGuestGiftType}
+                    onChange={(e) => setNewGuestGiftType(e.target.value as GiftPreferenceType)}
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#DFC088]/50 bg-white text-xs sm:text-sm font-sans-clean focus:outline-none focus:ring-1 focus:ring-[#B89355]"
+                  >
+                    <option value="bank">💳 Solo Cuenta APAP (Lluvia de Sobres)</option>
+                    <option value="registry">🎁 Solo Lista de Regalos</option>
+                    <option value="both">💳🎁 Ambas opciones (Cuenta y Regalos)</option>
+                  </select>
+                </div>
+
+                <div className="sm:col-span-2 lg:col-span-2">
                   <input
                     type="text"
                     value={newGuestNotes}
                     onChange={(e) => setNewGuestNotes(e.target.value)}
                     placeholder="Notas internas (ej. Padrinos, mesa 4, requiere transporte...)"
-                    className="w-full px-3.5 py-2 rounded-lg border border-[#DFC088]/30 bg-white text-xs text-[#6B5B4D] font-sans-clean focus:outline-none"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#DFC088]/30 bg-white text-xs text-[#6B5B4D] font-sans-clean focus:outline-none"
                   />
                 </div>
 
@@ -769,7 +814,8 @@ export default function AdminPage() {
                     <tr className="border-b border-[#DFC088]/30 text-[#8C6A35] font-serif-luxury text-xs uppercase tracking-wider">
                       <th className="py-3 px-3">Invitado</th>
                       <th className="py-3 px-3">Grupo / Mesa</th>
-                      <th className="py-3 px-3 text-center">Pases Asignados</th>
+                      <th className="py-3 px-3 text-center">Pases</th>
+                      <th className="py-3 px-3">Alcance & Regalo</th>
                       <th className="py-3 px-3">Estado</th>
                       <th className="py-3 px-3">Notas</th>
                       <th className="py-3 px-3 text-right">Compartir / Acciones</th>
@@ -778,7 +824,7 @@ export default function AdminPage() {
                   <tbody className="divide-y divide-[#DFC088]/20">
                     {filteredGuests.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="py-8 text-center text-[#6B5B4D] italic">
+                        <td colSpan={7} className="py-8 text-center text-[#6B5B4D] italic">
                           No hay invitados registrados con esos criterios.
                         </td>
                       </tr>
@@ -808,6 +854,33 @@ export default function AdminPage() {
                               <span className="inline-block px-2.5 py-1 rounded-full bg-[#FAF4E6] border border-[#B89355]/40 text-[#8C6A35] font-semibold text-xs">
                                 {g.max_guests} {g.max_guests === 1 ? 'pase' : 'pases'}
                               </span>
+                            </td>
+
+                            <td className="py-3.5 px-3">
+                              <div className="flex flex-col gap-1 items-start">
+                                {g.invitation_scope === 'church_only' ? (
+                                  <span className="inline-block px-2 py-0.5 rounded-md bg-stone-100 text-stone-700 border border-stone-200 text-[10px] font-medium">
+                                    ⛪ Solo Iglesia
+                                  </span>
+                                ) : (
+                                  <span className="inline-block px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-medium">
+                                    ⛪ + 🥂 Vista Marina
+                                  </span>
+                                )}
+                                {g.gift_type === 'registry' ? (
+                                  <span className="inline-block px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200 text-[10px] font-medium">
+                                    🎁 Lista Regalos
+                                  </span>
+                                ) : g.gift_type === 'both' ? (
+                                  <span className="inline-block px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-medium">
+                                    💳🎁 Cuenta + Regalos
+                                  </span>
+                                ) : (
+                                  <span className="inline-block px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-medium">
+                                    💳 Cuenta APAP
+                                  </span>
+                                )}
+                              </div>
                             </td>
 
                             <td className="py-3.5 px-3">
@@ -1173,6 +1246,45 @@ export default function AdminPage() {
                   onChange={(e) => setEditingGuest({ ...editingGuest, notes: e.target.value })}
                   className="w-full px-3.5 py-2 rounded-lg border border-[#DFC088]/30 bg-white text-xs font-sans-clean"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
+                  Alcance de la Invitación
+                </label>
+                <select
+                  value={editingGuest.invitation_scope || 'church_and_reception'}
+                  onChange={(e) =>
+                    setEditingGuest({
+                      ...editingGuest,
+                      invitation_scope: e.target.value as InvitationScopeType,
+                    })
+                  }
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#DFC088]/50 bg-white text-xs font-sans-clean"
+                >
+                  <option value="church_and_reception">⛪ + 🥂 Iglesia y Recepción (Salón Vista Marina)</option>
+                  <option value="church_only">⛪ Solo Iglesia</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
+                  Detalle u Obsequio a Mostrar
+                </label>
+                <select
+                  value={editingGuest.gift_type || 'bank'}
+                  onChange={(e) =>
+                    setEditingGuest({
+                      ...editingGuest,
+                      gift_type: e.target.value as GiftPreferenceType,
+                    })
+                  }
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#DFC088]/50 bg-white text-xs font-sans-clean"
+                >
+                  <option value="bank">💳 Solo Cuenta APAP (Lluvia de Sobres)</option>
+                  <option value="registry">🎁 Solo Lista de Regalos</option>
+                  <option value="both">💳🎁 Ambas opciones (Cuenta y Regalos)</option>
+                </select>
               </div>
 
               <div className="pt-2 flex items-center justify-end gap-2">

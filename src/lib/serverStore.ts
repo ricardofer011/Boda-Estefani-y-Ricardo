@@ -111,6 +111,8 @@ async function ensureGuestsFile(): Promise<GuestInvite[]> {
         confirmed_count: 2,
         group: 'Familia',
         notes: 'Familia cercana',
+        gift_type: 'bank',
+        invitation_scope: 'church_and_reception',
         created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
       },
       {
@@ -122,6 +124,8 @@ async function ensureGuestsFile(): Promise<GuestInvite[]> {
         status: 'pending',
         group: 'Amigos',
         notes: 'Amigos de la universidad',
+        gift_type: 'registry',
+        invitation_scope: 'church_and_reception',
         created_at: new Date().toISOString(),
       },
     ];
@@ -278,6 +282,8 @@ export async function saveGuestInvite(
         status: guest.status || guests[idx].status,
         group: guest.group !== undefined ? guest.group : guests[idx].group,
         notes: guest.notes || null,
+        gift_type: guest.gift_type || guests[idx].gift_type || 'bank',
+        invitation_scope: guest.invitation_scope || guests[idx].invitation_scope || 'church_and_reception',
         updated_at: now,
       };
       await saveGuestsData(guests);
@@ -294,6 +300,8 @@ export async function saveGuestInvite(
     status: guest.status || 'pending',
     group: guest.group || null,
     notes: guest.notes || null,
+    gift_type: guest.gift_type || 'bank',
+    invitation_scope: guest.invitation_scope || 'church_and_reception',
     created_at: now,
   };
 

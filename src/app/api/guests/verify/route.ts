@@ -32,6 +32,8 @@ export async function GET(request: NextRequest) {
         full_name: guest.full_name,
         max_guests: guest.max_guests,
         status: guest.status,
+        gift_type: guest.gift_type || 'bank',
+        invitation_scope: guest.invitation_scope || 'church_and_reception',
       },
     });
   } catch (err: unknown) {
