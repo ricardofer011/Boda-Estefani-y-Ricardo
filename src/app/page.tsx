@@ -41,7 +41,7 @@ export default function WeddingInvitationPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[#FAF7F2] relative overflow-x-hidden selection:bg-[#DFC088]/30">
+    <main className="min-h-screen bg-[#FAF6FA] relative overflow-x-hidden selection:bg-[#DFC6E3] selection:text-[#5C3759]">
       {/* 1. SOBRE ANIMADO INICIAL */}
       {!isOpened && (
         <Envelope
@@ -64,16 +64,16 @@ export default function WeddingInvitationPage() {
         <MusicPlayer />
 
         {/* Barra superior discreta con opción de reabrir el sobre */}
-        <header className="relative z-10 w-full py-4 px-6 flex items-center justify-between border-b border-[#DFC088]/20 bg-[#FAF7F2]/80 backdrop-blur-xs">
-          <span className="font-serif-luxury text-sm tracking-widest text-[#8C6A35] font-semibold">
+        <header className="relative z-10 w-full py-4 px-6 flex items-center justify-between border-b border-[#AB86B1]/25 bg-[#FAF6FA]/85 backdrop-blur-xs">
+          <span className="font-serif-luxury text-sm tracking-widest text-[#5C3759] font-semibold">
             {WEDDING_CONFIG.couple.initials}
           </span>
           <button
             onClick={() => setIsOpened(false)}
-            className="inline-flex items-center gap-1.5 font-sans-clean text-xs text-[#6B5B4D] hover:text-[#2A2118] transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 font-sans-clean text-xs text-[#784A67] hover:text-[#5C3759] transition-colors cursor-pointer"
             title="Volver a ver el sobre animado"
           >
-            <Mail className="w-3.5 h-3.5 text-[#B89355]" />
+            <Mail className="w-3.5 h-3.5 text-[#9B709E]" />
             <span>Ver sobre</span>
           </button>
         </header>

@@ -7,14 +7,20 @@
     --font-montserrat: 'Montserrat', system-ui, sans-serif;
     --font-pinyon: 'Pinyon Script', cursive;
 
-    --color-ivory: #FAF7F2;
-    --color-beige: #F3EDE2;
-    --color-champagne: #E6D7C3;
-    --color-gold-light: #DFC088;
-    --color-gold-base: #B89355;
-    --color-gold-dark: #8C6A35;
-    --color-text-dark: #2A2118;
-    --color-text-muted: #6B5B4D;
+    /* Paleta Oficial de Boda (Estefani & Ricardo) */
+    --color-plum-deep: #5C3759;      /* Círculo 1: Ciruela imperial profundo */
+    --color-mauve-rich: #784A67;     /* Círculo 2: Malva floral intenso */
+    --color-lilac-dusty: #9B709E;    /* Círculo 3: Lila empolvado clásico */
+    --color-orchid-soft: #AB86B1;    /* Círculo 4: Orquídea lavanda suave */
+    --color-whisper-lilac: #DFC6E3;  /* Círculo 5: Lavanda tenue / Whisper */
+
+    --color-paper-light: #FAF6FA;    /* Fondo marfil sutilmente teñido de lila */
+    --color-paper-card: #FCF9FD;     /* Papelería nupcial */
+    --color-gold-light: #DFC088;     /* Oro champán / foil */
+    --color-gold-base: #B89355;      /* Oro medio */
+    --color-gold-dark: #8C6A35;      /* Oro envejecido */
+    --color-text-dark: #2A1C28;      /* Texto principal ciruela oscuro */
+    --color-text-muted: #6A5365;     /* Texto secundario malva tenue */
   }
 }
 
@@ -35,67 +41,74 @@
   font-family: var(--font-pinyon), cursive;
 }
 
-/* Textura sutil de papel fino artesanal */
+/* Textura sutil de papel fino artesanal con reflejo lila y oro */
 .paper-texture {
-  background-color: #FAF7F2;
-  background-image: radial-gradient(rgba(184, 147, 85, 0.05) 1px, transparent 0);
+  background-color: #FAF6FA;
+  background-image: radial-gradient(rgba(155, 112, 158, 0.07) 1px, transparent 0);
   background-size: 24px 24px;
 }
 
 .card-paper-texture {
-  background-color: #FCFAF6;
+  background-color: #FCF9FD;
   background-image: 
-    linear-gradient(to right, rgba(184, 147, 85, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(184, 147, 85, 0.03) 1px, transparent 1px);
+    linear-gradient(to right, rgba(155, 112, 158, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(155, 112, 158, 0.035) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
-/* Efectos dorados y metalizados tenues */
+/* Efectos de texto y gradientes de la paleta oficial */
+.royal-text-gradient {
+  background: linear-gradient(135deg, #4A2646 0%, #784A67 40%, #5C3759 80%, #9B709E 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .gold-text-gradient {
-  background: linear-gradient(135deg, #A88448 0%, #D4AF37 35%, #B38F55 70%, #8C6831 100%);
+  background: linear-gradient(135deg, #5C3759 0%, #8C5779 30%, #B89355 65%, #5C3759 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .gold-border-gradient {
-  border-image: linear-gradient(to bottom right, #D4AF37, #EED99E, #B38F55, #8C6831) 1;
+  border-image: linear-gradient(to bottom right, #9B709E, #DFC088, #784A67, #5C3759) 1;
 }
 
 .gold-foil-box {
-  border: 1px solid rgba(184, 147, 85, 0.35);
+  border: 1px solid rgba(171, 134, 177, 0.4);
   box-shadow: 
-    inset 0 0 15px rgba(223, 192, 136, 0.08),
-    0 10px 30px -10px rgba(42, 33, 24, 0.08);
+    inset 0 0 15px rgba(223, 198, 227, 0.12),
+    0 10px 30px -10px rgba(92, 55, 89, 0.1);
 }
 
-.gold-button {
-  background: linear-gradient(135deg, #B89355 0%, #C9A76A 50%, #A58043 100%);
+.gold-button, .royal-button {
+  background: linear-gradient(135deg, #5C3759 0%, #784A67 50%, #5C3759 100%);
   color: #FFFFFF;
-  box-shadow: 0 4px 15px rgba(184, 147, 85, 0.25);
+  border: 1px solid rgba(223, 192, 136, 0.45);
+  box-shadow: 0 4px 15px rgba(92, 55, 89, 0.28);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.gold-button:hover {
-  background: linear-gradient(135deg, #C29E60 0%, #D4B275 50%, #AF8A4D 100%);
-  box-shadow: 0 6px 20px rgba(184, 147, 85, 0.35);
+.gold-button:hover, .royal-button:hover {
+  background: linear-gradient(135deg, #6B3F67 0%, #895476 50%, #6B3F67 100%);
+  box-shadow: 0 6px 20px rgba(92, 55, 89, 0.4);
   transform: translateY(-1px);
 }
 
-.gold-button:active {
+.gold-button:active, .royal-button:active {
   transform: translateY(0);
 }
 
 /* Sombras suaves y dimensionales */
 .shadow-envelope {
   box-shadow: 
-    0 20px 40px -15px rgba(42, 33, 24, 0.15),
-    0 0 0 1px rgba(184, 147, 85, 0.2);
+    0 20px 40px -15px rgba(92, 55, 89, 0.2),
+    0 0 0 1px rgba(155, 112, 158, 0.25);
 }
 
 .shadow-card-elevated {
   box-shadow: 
-    0 25px 50px -12px rgba(42, 33, 24, 0.12),
-    0 0 0 1px rgba(184, 147, 85, 0.18);
+    0 25px 50px -12px rgba(92, 55, 89, 0.14),
+    0 0 0 1px rgba(155, 112, 158, 0.2);
 }
 
 /* Sello de cera artesanal en 3D */

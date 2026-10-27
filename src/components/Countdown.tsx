@@ -88,12 +88,12 @@ export function Countdown() {
 
   if (timeLeft.isWeddingDay) {
     return (
-      <div className="w-full max-w-lg mx-auto p-6 bg-[#FCFAF6] border border-[#DFC088]/50 rounded-xl shadow-card-elevated text-center my-6">
-        <Heart className="w-8 h-8 text-[#B89355] mx-auto mb-2 animate-bounce" />
-        <h3 className="font-serif-luxury text-2xl sm:text-3xl text-[#2A2118] font-medium mb-1">
+      <div className="w-full max-w-lg mx-auto p-6 bg-[#FCF9FD] border border-[#AB86B1]/50 rounded-xl shadow-card-elevated text-center my-6">
+        <Heart className="w-8 h-8 text-[#9B709E] mx-auto mb-2 animate-bounce" />
+        <h3 className="font-serif-luxury text-2xl sm:text-3xl text-[#2A1C28] font-medium mb-1">
           ¡Hoy es nuestro gran día!
         </h3>
-        <p className="font-sans-clean text-sm text-[#6B5B4D]">
+        <p className="font-sans-clean text-sm text-[#6A5365]">
           Celebramos hoy el sacramento de nuestra unión. ¡Gracias por acompañarnos con tu presencia y tus oraciones!
         </p>
       </div>
@@ -102,12 +102,12 @@ export function Countdown() {
 
   if (timeLeft.isPast) {
     return (
-      <div className="w-full max-w-lg mx-auto p-6 bg-[#FCFAF6] border border-[#DFC088]/50 rounded-xl shadow-card-elevated text-center my-6">
-        <Heart className="w-8 h-8 text-[#B89355] mx-auto mb-2" />
-        <h3 className="font-serif-luxury text-2xl sm:text-3xl text-[#2A2118] font-medium mb-1">
+      <div className="w-full max-w-lg mx-auto p-6 bg-[#FCF9FD] border border-[#AB86B1]/50 rounded-xl shadow-card-elevated text-center my-6">
+        <Heart className="w-8 h-8 text-[#9B709E] mx-auto mb-2" />
+        <h3 className="font-serif-luxury text-2xl sm:text-3xl text-[#2A1C28] font-medium mb-1">
           Unidos en sagrado matrimonio
         </h3>
-        <p className="font-sans-clean text-sm text-[#6B5B4D]">
+        <p className="font-sans-clean text-sm text-[#6A5365]">
           Nuestra boda se celebró con inmensa alegría. Agradecemos a Dios y a cada uno de nuestros seres queridos por acompañarnos.
         </p>
       </div>
@@ -123,8 +123,8 @@ export function Countdown() {
 
   return (
     <div className="w-full max-w-md mx-auto my-6 px-2">
-      <div className="flex items-center justify-center gap-1.5 text-xs uppercase tracking-[0.25em] text-[#8C6A35] font-serif-luxury mb-4 font-semibold">
-        <Clock className="w-3.5 h-3.5 text-[#B89355]" />
+      <div className="flex items-center justify-center gap-1.5 text-xs uppercase tracking-[0.25em] text-[#784A67] font-serif-luxury mb-4 font-semibold">
+        <Clock className="w-3.5 h-3.5 text-[#9B709E]" />
         <span>Cuenta regresiva para nuestro enlace</span>
       </div>
 
@@ -132,15 +132,15 @@ export function Countdown() {
         {units.map((unit) => (
           <div
             key={unit.label}
-            className="flex flex-col items-center justify-center py-3.5 px-2 rounded-lg bg-[#FCFAF6] border border-[#B89355]/30 shadow-sm relative overflow-hidden"
+            className="flex flex-col items-center justify-center py-3.5 px-2 rounded-xl bg-[#FCF9FD] border border-[#AB86B1]/40 shadow-xs relative overflow-hidden"
           >
             {/* Brillo tenue superior */}
-            <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#DFC088] to-transparent" />
+            <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#AB86B1] to-transparent" />
             
-            <span className="font-serif-luxury text-2xl sm:text-3xl text-[#2A2118] font-semibold tracking-tight">
+            <span className="font-serif-luxury text-2xl sm:text-3xl text-[#5C3759] font-semibold tracking-tight">
               {unit.value}
             </span>
-            <span className="font-sans-clean text-[10px] sm:text-xs uppercase tracking-wider text-[#6B5B4D] mt-1 font-medium">
+            <span className="font-sans-clean text-[10px] sm:text-xs uppercase tracking-wider text-[#784A67] mt-1 font-medium">
               {unit.label}
             </span>
           </div>

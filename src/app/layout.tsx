@@ -4,22 +4,18 @@ import './globals.css';
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  style: ['normal', 'italic'],
   variable: '--font-cormorant',
   display: 'swap',
 });
 
 const cinzel = Cinzel({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
   variable: '--font-cinzel',
   display: 'swap',
 });
 
 const montserrat = Montserrat({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
   variable: '--font-montserrat',
   display: 'swap',
 });
@@ -80,7 +76,7 @@ export const viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#FAF7F2',
+  themeColor: '#FAF6FA',
 };
 
 export default function RootLayout({
@@ -93,7 +89,7 @@ export default function RootLayout({
       lang="es"
       className={`${cormorant.variable} ${cinzel.variable} ${montserrat.variable} ${pinyon.variable} scroll-smooth`}
     >
-      <body className="min-h-screen bg-[#FAF7F2] text-[#2B2118] antialiased selection:bg-[#E8D8C3] selection:text-[#2B2118]">
+      <body className="min-h-screen bg-[#FAF6FA] text-[#2A1C28] antialiased selection:bg-[#DFC6E3] selection:text-[#5C3759]">
         {children}
       </body>
     </html>

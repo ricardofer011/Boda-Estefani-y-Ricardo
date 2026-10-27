@@ -26,9 +26,9 @@ export function WaxSeal({
       } ${className}`}
       style={{ width: `${size}px`, height: `${size}px` }}
     >
-      {/* 1. Halo áureo sutil y elegante al interactuar */}
+      {/* 1. Halo celestial sutil y elegante con reflejos lila y oro */}
       <div
-        className="absolute -inset-2 rounded-full bg-gradient-to-tr from-[#D4AF37]/35 via-[#F7E7B4]/40 to-[#B89355]/30 blur-md opacity-80 group-hover:opacity-100 group-hover:scale-115 transition-all duration-300 animate-pulse pointer-events-none"
+        className="absolute -inset-2 rounded-full bg-gradient-to-tr from-[#9B709E]/35 via-[#DFC6E3]/45 to-[#DFC088]/40 blur-md opacity-80 group-hover:opacity-100 group-hover:scale-115 transition-all duration-300 animate-pulse pointer-events-none"
         aria-hidden="true"
       />
 

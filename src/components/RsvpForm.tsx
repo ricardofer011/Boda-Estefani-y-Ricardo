@@ -260,21 +260,21 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
   return (
     <section className="w-full max-w-xl mx-auto my-12 px-4" aria-labelledby="rsvp-heading" id="confirmar">
       <div className="text-center mb-6">
-        <span className="font-serif-luxury text-xs tracking-[0.25em] uppercase text-[#8C6A35] font-semibold">
+        <span className="font-serif-luxury text-xs tracking-[0.25em] uppercase text-[#784A67] font-semibold">
           Confirmación de Asistencia
         </span>
-        <h2 id="rsvp-heading" className="font-serif-luxury text-2xl sm:text-3xl text-[#2A2118] font-normal mt-1">
+        <h2 id="rsvp-heading" className="font-serif-luxury text-2xl sm:text-3xl text-[#2A1C28] font-normal mt-1">
           Confirma tu presencia
         </h2>
-        <OrnamentalDivider className="w-48 mx-auto my-3 text-[#B89355]" />
-        <p className="font-serif-luxury text-xs sm:text-sm text-[#6B5B4D] max-w-md mx-auto italic">
+        <OrnamentalDivider className="w-48 mx-auto my-3 text-[#9B709E]" />
+        <p className="font-serif-luxury text-xs sm:text-sm text-[#6A5365] max-w-md mx-auto italic">
           Por favor confírmanos antes del{' '}
-          <strong className="text-[#8C6A35] font-semibold">{WEDDING_CONFIG.rsvp.deadlineFormatted}</strong>{' '}
+          <strong className="text-[#5C3759] font-semibold">{WEDDING_CONFIG.rsvp.deadlineFormatted}</strong>{' '}
           para reservar debidamente tus asientos.
         </p>
       </div>
 
-      <div className="bg-[#FCFAF6] border border-[#DFC088]/40 rounded-2xl p-6 sm:p-8 shadow-card-elevated card-paper-texture">
+      <div className="bg-[#FCF9FD] border border-[#AB86B1]/40 rounded-2xl p-6 sm:p-8 shadow-card-elevated card-paper-texture">
         {/* ==================================================================== */}
         {/* CASO 1: RESPUESTA EXITOSA REGISTRADA */}
         {/* ==================================================================== */}
@@ -284,16 +284,16 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
               <CheckCircle2 className="w-8 h-8" />
             </div>
 
-            <h3 className="font-serif-luxury text-2xl text-[#2A2118] font-medium mb-2">
+            <h3 className="font-serif-luxury text-2xl text-[#2A1C28] font-medium mb-2">
               {isAttending ? '¡Será un honor contar contigo!' : 'Agradecemos tu respuesta'}
             </h3>
 
-            <p className="font-sans-clean text-sm text-[#6B5B4D] max-w-md mx-auto mb-4 leading-relaxed">
+            <p className="font-sans-clean text-sm text-[#6A5365] max-w-md mx-auto mb-4 leading-relaxed">
               {successResponse.message}
             </p>
 
-            <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#DFC088]/30 max-w-sm mx-auto mb-6 text-xs text-[#2A2118] font-sans-clean">
-              <p className="font-semibold text-[#8C6A35] mb-1 font-serif-luxury text-sm">
+            <div className="p-4 rounded-xl bg-[#F9F2FA] border border-[#AB86B1]/35 max-w-sm mx-auto mb-6 text-xs text-[#2A1C28] font-sans-clean">
+              <p className="font-semibold text-[#784A67] mb-1 font-serif-luxury text-sm">
                 Resumen de confirmación
               </p>
               <p><strong>Invitado:</strong> {successResponse.guestName}</p>
@@ -319,7 +319,7 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
               <button
                 type="button"
                 onClick={handleReset}
-                className="w-full sm:w-auto px-5 py-3 rounded-full border border-[#DFC088]/50 text-xs font-sans-clean text-[#6B5B4D] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
+                className="w-full sm:w-auto px-5 py-3 rounded-full border border-[#AB86B1]/40 text-xs font-sans-clean text-[#6A5365] hover:bg-[#F9F2FA] transition-colors cursor-pointer"
               >
                 Modificar respuesta
               </button>
@@ -330,14 +330,14 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
           /* CASO 2: CONSULTAR INVITACIÓN Y PASES ASIGNADOS */
           /* ==================================================================== */
           <div className="py-4 text-center">
-            <div className="w-12 h-12 rounded-full bg-[#FAF4E6] border border-[#B89355]/40 flex items-center justify-center mx-auto mb-3 text-[#B89355]">
+            <div className="w-12 h-12 rounded-full bg-[#F9F2FA] border border-[#AB86B1]/40 flex items-center justify-center mx-auto mb-3 text-[#784A67]">
               <Lock className="w-5 h-5" />
             </div>
 
-            <h3 className="font-serif-luxury text-xl sm:text-2xl text-[#2A2118] font-normal mb-1">
+            <h3 className="font-serif-luxury text-xl sm:text-2xl text-[#2A1C28] font-normal mb-1">
               Consulta tus pases reservados
             </h3>
-            <p className="font-sans-clean text-xs sm:text-sm text-[#6B5B4D] max-w-sm mx-auto mb-6">
+            <p className="font-sans-clean text-xs sm:text-sm text-[#6A5365] max-w-sm mx-auto mb-6">
               Para garantizar una celebración solemne y organizada, cada invitación ha sido asignada con una cantidad fija de pases. Escribe tu nombre o código de invitación:
             </p>
 
@@ -356,7 +356,7 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Ej. Familia Rodríguez o tu código..."
-                  className="w-full px-4 py-3 rounded-xl border border-[#DFC088]/50 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#B89355] font-sans-clean shadow-xs"
+                  className="w-full px-4 py-3 rounded-xl border border-[#AB86B1]/40 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#9B709E] font-sans-clean shadow-xs"
                 />
               </div>
 
@@ -385,37 +385,37 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
           /* ==================================================================== */
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Tarjeta de bienvenida personalizada con los pases autorizados */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-[#FAF4E6] to-[#F3EDE2] border border-[#DFC088]/60 relative shadow-2xs">
+            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-[#F9F2FA] to-[#F1E5F3] border border-[#AB86B1]/50 relative shadow-2xs">
               <div className="flex items-start justify-between">
                 <div>
-                  <span className="font-serif-luxury text-[11px] tracking-widest uppercase text-[#8C6A35] font-semibold block">
+                  <span className="font-serif-luxury text-[11px] tracking-widest uppercase text-[#784A67] font-semibold block">
                     Invitación Personalizada
                   </span>
-                  <h3 className="font-serif-luxury text-xl sm:text-2xl text-[#2A2118] font-medium">
+                  <h3 className="font-serif-luxury text-xl sm:text-2xl text-[#2A1C28] font-medium">
                     {verifiedGuest.full_name}
                   </h3>
                 </div>
                 <button
                   type="button"
                   onClick={handleClearGuest}
-                  className="text-xs text-[#8C6A35] hover:underline font-sans-clean"
+                  className="text-xs text-[#784A67] hover:underline font-sans-clean"
                 >
                   Cambiar
                 </button>
               </div>
 
-              <div className="mt-3 pt-3 border-t border-[#DFC088]/30 flex items-center justify-between">
-                <span className="font-sans-clean text-xs text-[#6B5B4D]">
+              <div className="mt-3 pt-3 border-t border-[#AB86B1]/30 flex items-center justify-between">
+                <span className="font-sans-clean text-xs text-[#6A5365]">
                   Pases reservados en su honor:
                 </span>
-                <span className="px-3 py-1 rounded-full bg-[#2A2118] text-[#DFC088] font-serif-luxury text-xs font-semibold tracking-wider shadow-2xs">
+                <span className="px-3 py-1 rounded-full bg-[#5C3759] text-[#DFC6E3] font-serif-luxury text-xs font-semibold tracking-wider shadow-2xs">
                   {verifiedGuest.max_guests} {verifiedGuest.max_guests === 1 ? 'PASE PERSONAL' : 'PASES'}
                 </span>
               </div>
 
               {/* Protocolo formal estricto */}
-              <div className="mt-3 pt-2.5 border-t border-[#DFC088]/30">
-                <p className="font-serif-luxury text-[11px] text-[#6B5B4D] italic leading-relaxed">
+              <div className="mt-3 pt-2.5 border-t border-[#AB86B1]/30">
+                <p className="font-serif-luxury text-[11px] text-[#6A5365] italic leading-relaxed">
                   «Rogamos tomar en consideración que esta invitación es personal e intransferible y aplica estrictamente para el número de personas indicado. Agradecemos su generosa comprensión.»
                 </p>
               </div>
@@ -433,10 +433,10 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
 
             {/* Asistencia: Sí o No adaptado al alcance */}
             <div>
-              <label className="block font-serif-luxury text-sm font-semibold text-[#2A2118] mb-2">
+              <label className="block font-serif-luxury text-sm font-semibold text-[#2A1C28] mb-2">
                 {isChurchOnly
                   ? '¿Nos acompañarás en la ceremonia religiosa?'
-                  : '¿Nos acompañarás en nuestra ceremonia y recepción?'} <span className="text-[#8C6A35]">*</span>
+                  : '¿Nos acompañarás en nuestra ceremonia y recepción?'} <span className="text-[#784A67]">*</span>
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <button
@@ -444,8 +444,8 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
                   onClick={() => handleAttendanceChange('attending')}
                   className={`py-3 px-4 rounded-xl border text-center transition-all flex items-center justify-center gap-2 cursor-pointer ${
                     formData.attendance_status === 'attending'
-                      ? 'bg-[#B89355] text-white border-[#B89355] shadow-sm font-medium'
-                      : 'bg-white/70 border-[#DFC088]/40 text-[#6B5B4D] hover:bg-[#FAF7F2]'
+                      ? 'bg-[#5C3759] text-white border-[#5C3759] shadow-sm font-medium'
+                      : 'bg-white/80 border-[#AB86B1]/40 text-[#6A5365] hover:bg-[#F9F2FA]'
                   }`}
                 >
                   <UserCheck className="w-4 h-4 shrink-0" />
@@ -457,8 +457,8 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
                   onClick={() => handleAttendanceChange('declined')}
                   className={`py-3 px-4 rounded-xl border text-center transition-all flex items-center justify-center gap-2 cursor-pointer ${
                     formData.attendance_status === 'declined'
-                      ? 'bg-[#6B5B4D] text-white border-[#6B5B4D] shadow-sm font-medium'
-                      : 'bg-white/70 border-[#DFC088]/40 text-[#6B5B4D] hover:bg-[#FAF7F2]'
+                      ? 'bg-[#784A67] text-white border-[#784A67] shadow-sm font-medium'
+                      : 'bg-white/80 border-[#AB86B1]/40 text-[#6A5365] hover:bg-[#F9F2FA]'
                   }`}
                 >
                   <UserX className="w-4 h-4 shrink-0" />
@@ -469,20 +469,20 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
 
             {/* Campos condicionales si confirma asistencia */}
             {formData.attendance_status === 'attending' && (
-              <div className="space-y-5 pt-2 border-t border-[#DFC088]/20 animate-fade-in">
+              <div className="space-y-5 pt-2 border-t border-[#AB86B1]/20 animate-fade-in">
                 {/* Selector de pases limitados por los novios */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="font-serif-luxury text-sm font-semibold text-[#2A2118]">
+                    <label className="font-serif-luxury text-sm font-semibold text-[#2A1C28]">
                       ¿Cuántos de tus pases utilizarás?
                     </label>
-                    <span className="text-xs text-[#8C6A35] font-sans-clean font-medium">
+                    <span className="text-xs text-[#784A67] font-sans-clean font-medium">
                       Máximo autorizado: {maxAllowed}
                     </span>
                   </div>
 
                   {maxAllowed === 1 ? (
-                    <div className="p-3 bg-[#FAF7F2] rounded-lg border border-[#DFC088]/30 text-xs text-[#6B5B4D]">
+                    <div className="p-3 bg-[#F9F2FA] rounded-lg border border-[#AB86B1]/30 text-xs text-[#6A5365]">
                       Tienes asignado <strong>1 pase personal</strong> en tu honor.
                     </div>
                   ) : (
@@ -494,8 +494,8 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
                           onClick={() => handleCountChange(num)}
                           className={`flex-1 py-2.5 rounded-lg border font-serif-luxury text-sm font-medium transition-all cursor-pointer ${
                             formData.guest_count === num
-                              ? 'bg-[#B89355] text-white border-[#B89355] shadow-xs'
-                              : 'bg-white/70 border-[#DFC088]/40 text-[#6B5B4D] hover:bg-white'
+                              ? 'bg-[#5C3759] text-white border-[#5C3759] shadow-xs'
+                              : 'bg-white/80 border-[#AB86B1]/40 text-[#6A5365] hover:bg-white'
                           }`}
                         >
                           {num} {num === 1 ? 'persona' : 'personas'}
@@ -507,15 +507,15 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
 
                 {/* Nombres de acompañantes si confirma más de 1 persona */}
                 {formData.guest_count > 1 && (
-                  <div className="space-y-3 bg-[#FAF7F2] p-4 rounded-xl border border-[#DFC088]/30">
-                    <p className="font-serif-luxury text-xs tracking-wider uppercase text-[#8C6A35] font-semibold">
+                  <div className="space-y-3 bg-[#F9F2FA] p-4 rounded-xl border border-[#AB86B1]/30">
+                    <p className="font-serif-luxury text-xs tracking-wider uppercase text-[#784A67] font-semibold">
                       Nombre(s) de tu(s) acompañante(s)
                     </p>
                     {formData.companion_names.map((compName, index) => (
                       <div key={index}>
                         <label
                           htmlFor={`companion_${index}`}
-                          className="block font-sans-clean text-xs text-[#6B5B4D] mb-1"
+                          className="block font-sans-clean text-xs text-[#6A5365] mb-1"
                         >
                           Acompañante #{index + 1}
                         </label>
@@ -526,7 +526,7 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
                           value={compName}
                           onChange={(e) => handleCompanionNameChange(index, e.target.value)}
                           placeholder="Nombre y apellido completo"
-                          className="w-full px-3 py-2 rounded-md border border-[#DFC088]/50 bg-white text-xs sm:text-sm text-[#2A2118] focus:outline-none focus:ring-1 focus:ring-[#B89355]"
+                          className="w-full px-3 py-2 rounded-md border border-[#AB86B1]/40 bg-white text-xs sm:text-sm text-[#2A1C28] focus:outline-none focus:ring-1 focus:ring-[#9B709E]"
                         />
                       </div>
                     ))}
@@ -535,8 +535,8 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
 
                 {/* Restricciones alimentarias (opcional) */}
                 <div>
-                  <label htmlFor="dietary_restrictions" className="block font-serif-luxury text-sm font-semibold text-[#2A2118] mb-1">
-                    Restricciones alimentarias o alergias <span className="text-[#8C6A35] text-xs font-normal">(opcional)</span>
+                  <label htmlFor="dietary_restrictions" className="block font-serif-luxury text-sm font-semibold text-[#2A1C28] mb-1">
+                    Restricciones alimentarias o alergias <span className="text-[#784A67] text-xs font-normal">(opcional)</span>
                   </label>
                   <input
                     id="dietary_restrictions"
@@ -544,7 +544,7 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
                     value={formData.dietary_restrictions || ''}
                     onChange={(e) => setFormData({ ...formData, dietary_restrictions: e.target.value })}
                     placeholder="Ej. Celíaco, alergia a mariscos, vegetariano, etc."
-                    className="w-full px-4 py-2.5 rounded-lg border border-[#DFC088]/50 bg-white/80 focus:bg-white text-[#2A2118] text-sm focus:outline-none focus:ring-2 focus:ring-[#B89355]/40 transition-all font-sans-clean"
+                    className="w-full px-4 py-2.5 rounded-lg border border-[#AB86B1]/40 bg-white/80 focus:bg-white text-[#2A1C28] text-sm focus:outline-none focus:ring-2 focus:ring-[#9B709E]/40 transition-all font-sans-clean"
                   />
                 </div>
               </div>
@@ -552,8 +552,8 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
 
             {/* Teléfono (opcional) */}
             <div>
-              <label htmlFor="phone" className="block font-serif-luxury text-sm font-semibold text-[#2A2118] mb-1">
-                Teléfono o WhatsApp <span className="text-[#8C6A35] text-xs font-normal">(opcional para avisos)</span>
+              <label htmlFor="phone" className="block font-serif-luxury text-sm font-semibold text-[#2A1C28] mb-1">
+                Teléfono o WhatsApp <span className="text-[#784A67] text-xs font-normal">(opcional para avisos)</span>
               </label>
               <input
                 id="phone"
@@ -561,14 +561,14 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
                 value={formData.phone || ''}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="Ej. +1 (809) 555-0199"
-                className="w-full px-4 py-2.5 rounded-lg border border-[#DFC088]/50 bg-white/80 focus:bg-white text-[#2A2118] text-sm focus:outline-none focus:ring-2 focus:ring-[#B89355]/40 transition-all font-sans-clean"
+                className="w-full px-4 py-2.5 rounded-lg border border-[#AB86B1]/40 bg-white/80 focus:bg-white text-[#2A1C28] text-sm focus:outline-none focus:ring-2 focus:ring-[#9B709E]/40 transition-all font-sans-clean"
               />
             </div>
 
             {/* Mensaje para los novios (opcional) */}
             <div>
-              <label htmlFor="message" className="block font-serif-luxury text-sm font-semibold text-[#2A2118] mb-1">
-                Mensaje o felicitación para Estefani & Ricardo <span className="text-[#8C6A35] text-xs font-normal">(opcional)</span>
+              <label htmlFor="message" className="block font-serif-luxury text-sm font-semibold text-[#2A1C28] mb-1">
+                Mensaje o felicitación para Estefani & Ricardo <span className="text-[#784A67] text-xs font-normal">(opcional)</span>
               </label>
               <textarea
                 id="message"
@@ -576,7 +576,7 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
                 value={formData.message || ''}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 placeholder="Déjanos unas palabras de bendición o cariño..."
-                className="w-full px-4 py-2.5 rounded-lg border border-[#DFC088]/50 bg-white/80 focus:bg-white text-[#2A2118] text-sm focus:outline-none focus:ring-2 focus:ring-[#B89355]/40 transition-all font-sans-clean resize-none"
+                className="w-full px-4 py-2.5 rounded-lg border border-[#AB86B1]/40 bg-white/80 focus:bg-white text-[#2A1C28] text-sm focus:outline-none focus:ring-2 focus:ring-[#9B709E]/40 transition-all font-sans-clean resize-none"
               />
             </div>
 

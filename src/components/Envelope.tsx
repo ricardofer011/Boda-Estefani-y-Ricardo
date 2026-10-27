@@ -89,10 +89,10 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
           : null;
 
       confetti({
-        particleCount: 45,
-        spread: 65,
+        particleCount: 50,
+        spread: 70,
         origin: { y: 0.5, x: 0.5 },
-        colors: ['#D4AF37', '#F3E5AB', '#B89355', '#FFFFFF', '#EED99E'],
+        colors: ['#5C3759', '#784A67', '#9B709E', '#AB86B1', '#DFC6E3', '#D4AF37', '#FFFFFF'],
         ticks: 180,
         gravity: 0.75,
         scalar: 1.25,
@@ -102,10 +102,10 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
       setTimeout(() => {
         try {
           confetti({
-            particleCount: 25,
-            spread: 80,
+            particleCount: 30,
+            spread: 85,
             origin: { y: 0.48, x: 0.5 },
-            colors: ['#D4AF37', '#FFF8E7', '#DFC088'],
+            colors: ['#9B709E', '#DFC6E3', '#DFC088', '#FFFFFF', '#5C3759'],
             ticks: 200,
             gravity: 0.65,
             scalar: 1.05,
@@ -161,30 +161,30 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col items-center justify-center p-4 bg-[#FAF7F2] select-none overflow-hidden transition-all duration-700 ${
+      className={`fixed inset-0 z-50 flex flex-col items-center justify-center p-4 bg-[#FAF6FA] select-none overflow-hidden transition-all duration-700 ${
         stage === 'transition-out' ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'
       }`}
     >
       {/* 1. Fondo de papel fino con partículas */}
       <div className="absolute inset-0 paper-texture pointer-events-none opacity-90" aria-hidden="true" />
       <div
-        className="absolute inset-0 bg-radial from-transparent via-[#EDE4D4]/50 to-[#DFD3BF]/70 pointer-events-none"
+        className="absolute inset-0 bg-radial from-transparent via-[#F4EBF5]/50 to-[#E6D4E8]/70 pointer-events-none"
         aria-hidden="true"
       />
 
       {/* Partículas luminosas tenues */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-        <div className="absolute top-1/4 left-1/6 w-2 h-2 rounded-full bg-[#DFC088]/40 blur-[1px] animate-pulse" />
+        <div className="absolute top-1/4 left-1/6 w-2 h-2 rounded-full bg-[#DFC6E3]/60 blur-[1px] animate-pulse" />
         <div
-          className="absolute top-1/3 right-1/5 w-3 h-3 rounded-full bg-[#B89355]/30 blur-[2px] animate-pulse"
+          className="absolute top-1/3 right-1/5 w-3 h-3 rounded-full bg-[#AB86B1]/40 blur-[2px] animate-pulse"
           style={{ animationDelay: '1s' }}
         />
         <div
-          className="absolute bottom-1/4 left-1/4 w-2.5 h-2.5 rounded-full bg-[#EED99E]/40 blur-[1px] animate-pulse"
+          className="absolute bottom-1/4 left-1/4 w-2.5 h-2.5 rounded-full bg-[#DFC088]/50 blur-[1px] animate-pulse"
           style={{ animationDelay: '2s' }}
         />
         <div
-          className="absolute bottom-1/3 right-1/4 w-2 h-2 rounded-full bg-[#DFC088]/40 blur-[1px] animate-pulse"
+          className="absolute bottom-1/3 right-1/4 w-2 h-2 rounded-full bg-[#9B709E]/50 blur-[1px] animate-pulse"
           style={{ animationDelay: '1.5s' }}
         />
       </div>
@@ -193,29 +193,29 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
       <div className="relative z-10 w-full max-w-sm sm:max-w-md flex flex-col items-center">
         {/* Encabezado ceremonial con tipografía de lujo */}
         <div className="text-center mb-5 sm:mb-6 transition-transform duration-500">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FAF4E6] border border-[#DFC088]/50 mb-2 shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-[#B89355] animate-pulse" />
-            <span className="font-serif-luxury text-[11px] sm:text-xs tracking-[0.28em] uppercase text-[#8C6A35] font-semibold">
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FBF5FC] border border-[#AB86B1]/45 mb-2 shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-[#9B709E] animate-pulse" />
+            <span className="font-serif-luxury text-[11px] sm:text-xs tracking-[0.28em] uppercase text-[#784A67] font-semibold">
               Una invitación especial para ti
             </span>
           </div>
 
-          <h1 className="font-serif-luxury text-2xl sm:text-3xl text-[#2A2118] font-normal tracking-wide gold-text-gradient">
+          <h1 className="font-serif-luxury text-2xl sm:text-3xl text-[#2A1C28] font-normal tracking-wide royal-text-gradient">
             {coupleNames}
           </h1>
-          <div className="h-[1px] w-20 mx-auto mt-2 bg-gradient-to-r from-transparent via-[#B89355]/60 to-transparent" />
+          <div className="h-[1px] w-20 mx-auto mt-2 bg-gradient-to-r from-transparent via-[#9B709E]/60 to-transparent" />
         </div>
 
         {/* Membrete personalizado si el invitado ingresó con enlace único */}
         {guest && (
-          <div className="mb-4 px-4 py-2 rounded-2xl bg-[#FCFAF6] border border-[#DFC088]/60 shadow-xs text-center animate-fade-in max-w-xs">
-            <span className="font-serif-luxury text-[10px] tracking-widest uppercase text-[#8C6A35] font-semibold block">
+          <div className="mb-4 px-4 py-2 rounded-2xl bg-[#FCF9FD] border border-[#AB86B1]/50 shadow-xs text-center animate-fade-in max-w-xs">
+            <span className="font-serif-luxury text-[10px] tracking-widest uppercase text-[#784A67] font-semibold block">
               Invitación Reservada Para:
             </span>
-            <p className="font-serif-luxury text-sm sm:text-base font-semibold text-[#2A2118] truncate mt-0.5">
+            <p className="font-serif-luxury text-sm sm:text-base font-semibold text-[#2A1C28] truncate mt-0.5">
               {guest.full_name}
             </p>
-            <span className="inline-block mt-0.5 px-3 py-0.5 rounded-full bg-[#2A2118] text-[#DFC088] text-[11px] font-serif-luxury font-semibold shadow-2xs">
+            <span className="inline-block mt-0.5 px-3 py-0.5 rounded-full bg-[#5C3759] text-[#DFC6E3] text-[11px] font-serif-luxury font-semibold shadow-2xs">
               {guest.max_guests === 1 ? '1 Pase Reservado' : `${guest.max_guests} Pases Reservados`}
             </span>
           </div>
@@ -237,7 +237,7 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
         >
           {/* Sombra de contacto realista en la superficie */}
           <div
-            className="absolute inset-x-6 -bottom-5 h-8 bg-[#2A2118]/25 blur-lg rounded-full pointer-events-none transition-all duration-500"
+            className="absolute inset-x-6 -bottom-5 h-8 bg-[#5C3759]/25 blur-lg rounded-full pointer-events-none transition-all duration-500"
             style={{
               transform: isCardEmerging ? 'scale(1.15) translateY(10px)' : 'scale(1)',
               opacity: isCardEmerging ? 0.35 : 0.2,
@@ -245,20 +245,20 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
             aria-hidden="true"
           />
 
-          {/* CUERPO PRINCIPAL DEL SOBRE (Base de papel marfil con filo dorado) */}
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-b from-[#FCF9F3] to-[#EFE7D8] border border-[#DFC088]/60 shadow-2xl overflow-hidden pointer-events-none">
-            {/* Forro interior dorado visible solo cuando la solapa se abre */}
+          {/* CUERPO PRINCIPAL DEL SOBRE (Base de papel fino marfil con forro lila de lujo) */}
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-b from-[#FCF9FD] to-[#F1E5F3] border border-[#AB86B1]/50 shadow-2xl overflow-hidden pointer-events-none">
+            {/* Forro interior floral lila/malva visible cuando la solapa se abre (idéntico al de la foto física) */}
             <div
-              className={`absolute inset-2 rounded-lg bg-[#FCFAF6] border border-[#DFC088]/40 flex items-center justify-center transition-opacity duration-300 ${
+              className={`absolute inset-2 rounded-lg bg-gradient-to-br from-[#9B709E] via-[#8E5E91] to-[#784A67] border border-[#DFC088]/40 flex items-center justify-center transition-opacity duration-300 ${
                 isFlapOpen ? 'opacity-100' : 'opacity-0'
               }`}
               style={{
-                backgroundImage: `radial-gradient(circle at 50% 50%, rgba(184, 147, 85, 0.08) 2px, transparent 2px)`,
+                backgroundImage: `radial-gradient(circle at 50% 50%, rgba(223, 192, 136, 0.18) 1.5px, transparent 1.5px)`,
                 backgroundSize: '16px 16px',
               }}
             >
-              <div className="w-16 h-16 rounded-full border border-[#DFC088]/40 flex items-center justify-center opacity-30">
-                <span className="font-serif-luxury text-2xl text-[#8C6A35] font-light tracking-widest">
+              <div className="w-16 h-16 rounded-full border border-[#DFC088]/50 flex items-center justify-center opacity-60">
+                <span className="font-serif-luxury text-2xl text-[#FAF6FA] font-light tracking-widest drop-shadow-xs">
                   R&E
                 </span>
               </div>
@@ -267,14 +267,14 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
 
           {/* TARJETA INTERIOR (100% oculta cuando el sobre está cerrado) */}
           <div
-            className={`absolute inset-x-3.5 bottom-2.5 h-[195px] sm:h-[240px] rounded-lg bg-[#FCFAF6] border border-[#B89355]/50 shadow-xl p-4 transition-all duration-500 ease-out card-paper-texture pointer-events-none ${
+            className={`absolute inset-x-3.5 bottom-2.5 h-[195px] sm:h-[240px] rounded-lg bg-[#FCF9FD] border border-[#AB86B1]/50 shadow-xl p-4 transition-all duration-500 ease-out card-paper-texture pointer-events-none ${
               isCardEmerging
                 ? '-translate-y-36 sm:-translate-y-48 scale-105 z-35 opacity-100 shadow-2xl'
                 : 'translate-y-4 opacity-0 z-10'
             }`}
           >
-            {/* Filo dorado doble */}
-            <div className="w-full h-full border border-[#B89355]/30 rounded-md flex flex-col items-center justify-center p-3 text-center relative overflow-hidden">
+            {/* Filo con detalles de orfebrería */}
+            <div className="w-full h-full border border-[#AB86B1]/35 rounded-md flex flex-col items-center justify-center p-3 text-center relative overflow-hidden">
               {isCardEmerging && (
                 <div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none animate-shimmer"
@@ -282,21 +282,21 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
                 />
               )}
 
-              <span className="text-[#8C6A35] text-[10px] font-serif-luxury tracking-[0.25em] uppercase mb-1 font-semibold">
+              <span className="text-[#784A67] text-[10px] font-serif-luxury tracking-[0.25em] uppercase mb-1 font-semibold">
                 Nuestra Boda Católica
               </span>
-              <p className="font-serif-luxury text-lg sm:text-xl text-[#2A2118] font-medium gold-text-gradient leading-tight">
+              <p className="font-serif-luxury text-lg sm:text-xl text-[#2A1C28] font-medium royal-text-gradient leading-tight">
                 Ricardo Fernandez
               </p>
-              <span className="font-script-romantic text-xl text-[#B89355] block my-0.5">&</span>
-              <p className="font-serif-luxury text-lg sm:text-xl text-[#2A2118] font-medium gold-text-gradient leading-tight">
+              <span className="font-script-romantic text-xl text-[#9B709E] block my-0.5">&</span>
+              <p className="font-serif-luxury text-lg sm:text-xl text-[#2A1C28] font-medium royal-text-gradient leading-tight">
                 Estefani Cedeño
               </p>
-              <div className="w-10 h-[1px] bg-[#B89355]/60 my-1.5" />
-              <p className="font-sans-clean text-[10px] sm:text-xs text-[#6B5B4D] tracking-widest uppercase">
+              <div className="w-10 h-[1px] bg-[#9B709E]/50 my-1.5" />
+              <p className="font-sans-clean text-[10px] sm:text-xs text-[#6A5365] tracking-widest uppercase">
                 12 • Diciembre • 2026 • 11:00 a. m.
               </p>
-              <p className="font-serif-luxury text-[11px] text-[#8C6A35] mt-1">
+              <p className="font-serif-luxury text-[11px] text-[#784A67] mt-1 font-medium">
                 Iglesia Las Mercedes • Santo Domingo
               </p>
             </div>
@@ -308,8 +308,8 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
             className="absolute inset-0 z-20 pointer-events-none"
             style={{
               clipPath: 'polygon(0% 0%, 51% 50%, 0% 100%)',
-              background: 'linear-gradient(to right, #EDE5D6, #FAF6EE)',
-              borderLeft: '1px solid rgba(184, 147, 85, 0.35)',
+              background: 'linear-gradient(to right, #EDE0EF, #FAF5FB)',
+              borderLeft: '1px solid rgba(171, 134, 177, 0.4)',
             }}
           />
 
@@ -318,8 +318,8 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
             className="absolute inset-0 z-20 pointer-events-none"
             style={{
               clipPath: 'polygon(100% 0%, 49% 50%, 100% 100%)',
-              background: 'linear-gradient(to left, #EDE5D6, #FAF6EE)',
-              borderRight: '1px solid rgba(184, 147, 85, 0.35)',
+              background: 'linear-gradient(to left, #EDE0EF, #FAF5FB)',
+              borderRight: '1px solid rgba(171, 134, 177, 0.4)',
             }}
           />
 
@@ -328,8 +328,8 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
             className="absolute inset-0 z-21 pointer-events-none"
             style={{
               clipPath: 'polygon(0% 100%, 50% 48%, 100% 100%)',
-              background: 'linear-gradient(to top, #E8DFCE, #FAF6EE)',
-              filter: 'drop-shadow(0 -3px 6px rgba(42, 33, 24, 0.07))',
+              background: 'linear-gradient(to top, #E8D8EC, #FAF5FB)',
+              filter: 'drop-shadow(0 -3px 6px rgba(92, 55, 89, 0.08))',
             }}
           />
 
@@ -339,13 +339,13 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
             style={{
               clipPath: 'polygon(0% 0%, 100% 0%, 50% 100%)',
               background: isFlapOpen
-                ? 'linear-gradient(to bottom, #E8DFCE, #F5EFE4)'
-                : 'linear-gradient(to bottom, #FAF6EE, #EDE4D5)',
+                ? 'linear-gradient(to bottom, #9B709E, #804F83)'
+                : 'linear-gradient(to bottom, #FAF5FB, #EADCEE)',
               transformOrigin: 'top center',
               transform: isFlapOpen ? 'rotateX(180deg)' : 'rotateX(0deg)',
               zIndex: isFlapOpen ? 5 : 25,
-              borderTop: '1px solid rgba(184, 147, 85, 0.5)',
-              filter: isFlapOpen ? 'none' : 'drop-shadow(0 4px 8px rgba(42, 33, 24, 0.12))',
+              borderTop: isFlapOpen ? '1.5px solid rgba(223, 192, 136, 0.6)' : '1px solid rgba(171, 134, 177, 0.5)',
+              filter: isFlapOpen ? 'none' : 'drop-shadow(0 4px 8px rgba(92, 55, 89, 0.15))',
             }}
           />
 
@@ -374,17 +374,17 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
             onClick={handleOpenClick}
             role="button"
             tabIndex={0}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#FAF4E6]/90 border border-[#DFC088]/40 shadow-xs cursor-pointer hover:bg-[#FAF4E6] active:scale-95 transition-all"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#FBF5FC]/90 border border-[#AB86B1]/45 shadow-xs cursor-pointer hover:bg-[#FBF5FC] active:scale-95 transition-all"
           >
-            <Sparkles className="w-3.5 h-3.5 text-[#B89355] animate-pulse" />
-            <span className="font-serif-luxury text-xs sm:text-sm tracking-[0.2em] uppercase text-[#8C6A35] font-semibold">
+            <Sparkles className="w-3.5 h-3.5 text-[#9B709E] animate-pulse" />
+            <span className="font-serif-luxury text-xs sm:text-sm tracking-[0.2em] uppercase text-[#5C3759] font-semibold">
               Toca el sello para abrir
             </span>
           </div>
 
           <button
             onClick={onOpenComplete}
-            className="text-[11px] font-sans-clean text-[#8C7A6B] hover:text-[#2A2118] tracking-wider underline underline-offset-4 decoration-[#B89355]/30 hover:decoration-[#B89355] transition-colors cursor-pointer pt-1"
+            className="text-[11px] font-sans-clean text-[#784A67] hover:text-[#5C3759] tracking-wider underline underline-offset-4 decoration-[#9B709E]/40 hover:decoration-[#5C3759] transition-colors cursor-pointer pt-1"
           >
             Saltar animación y ver invitación directamente
           </button>

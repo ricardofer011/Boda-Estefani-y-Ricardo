@@ -30,8 +30,8 @@ export function CouplePhotoSection() {
   return (
     <section className="w-full max-w-xl mx-auto my-10 px-4">
       {/* Marco de papelería nupcial tradicional con acabado de alta gama */}
-      <div className="relative bg-[#FCFAF6] border-2 border-[#DFC088]/40 rounded-3xl p-6 sm:p-10 shadow-card-elevated text-center overflow-hidden card-paper-texture">
-        {/* Esquinas ornamentales con filigrana dorada */}
+      <div className="relative bg-[#FCF9FD] border-2 border-[#AB86B1]/40 rounded-3xl p-6 sm:p-10 shadow-card-elevated text-center overflow-hidden card-paper-texture">
+        {/* Esquinas ornamentales con filigrana dorada/malva */}
         <CardCornerFlourish position="top-left" />
         <CardCornerFlourish position="top-right" />
         <CardCornerFlourish position="bottom-left" />
@@ -39,20 +39,20 @@ export function CouplePhotoSection() {
 
         {/* Encabezado ceremonial de la sección */}
         <div className="flex flex-col items-center mb-6">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FAF4E6] border border-[#DFC088]/45 mb-2.5 shadow-2xs">
-            <Heart className="w-3.5 h-3.5 text-[#B89355] fill-[#B89355]/30 animate-pulse" />
-            <span className="font-serif-luxury text-[11px] sm:text-xs tracking-[0.25em] uppercase text-[#8C6A35] font-semibold">
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FBF5FC] border border-[#AB86B1]/45 mb-2.5 shadow-2xs">
+            <Heart className="w-3.5 h-3.5 text-[#9B709E] fill-[#9B709E]/30 animate-pulse" />
+            <span className="font-serif-luxury text-[11px] sm:text-xs tracking-[0.25em] uppercase text-[#784A67] font-semibold">
               Nuestra Historia de Amor
             </span>
           </div>
 
-          <h2 className="font-serif-luxury text-2xl sm:text-4xl text-[#2A2118] font-normal tracking-wide gold-text-gradient leading-tight">
+          <h2 className="font-serif-luxury text-2xl sm:text-4xl text-[#2A1C28] font-normal tracking-wide royal-text-gradient leading-tight">
             Ricardo Fernandez & Estefani Cedeño
           </h2>
 
-          <OrnamentalDivider className="w-32 mx-auto my-2.5 text-[#B89355]" />
+          <OrnamentalDivider className="w-32 mx-auto my-2.5 text-[#9B709E]" />
 
-          <p className="font-serif-luxury text-xs sm:text-sm italic text-[#6B5B4D] max-w-md mx-auto leading-relaxed">
+          <p className="font-serif-luxury text-xs sm:text-sm italic text-[#6A5365] max-w-md mx-auto leading-relaxed">
             “Caminando juntos de la mano, con fe en el corazón y la bendición de Dios hacia el altar”.
           </p>
         </div>
@@ -60,10 +60,10 @@ export function CouplePhotoSection() {
         {/* ============================================================== */}
         {/* CUADRO DEL RETRATO NUPCIAL CON PASPARTÚ Y FILO DORADO          */}
         {/* ============================================================== */}
-        <div className="relative p-2.5 sm:p-4 rounded-2xl bg-gradient-to-b from-[#FAF6EE] to-[#EFE7D8] border border-[#DFC088]/50 shadow-inner">
+        <div className="relative p-2.5 sm:p-4 rounded-2xl bg-gradient-to-b from-[#F9F2FA] to-[#F1E5F3] border border-[#AB86B1]/45 shadow-inner">
           <div
             onClick={() => setSelectedPhoto(activePhoto)}
-            className="group relative w-full aspect-4/3 sm:aspect-3/2 rounded-xl overflow-hidden cursor-pointer shadow-lg border border-[#DFC088]/40 bg-[#2A2118]"
+            className="group relative w-full aspect-4/3 sm:aspect-3/2 rounded-xl overflow-hidden cursor-pointer shadow-lg border border-[#AB86B1]/40 bg-[#2A1C28]"
           >
             {/* Fotografía oficial de los novios */}
             <Image
@@ -75,7 +75,7 @@ export function CouplePhotoSection() {
               className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
             />
 
-            {/* Viñeta sutil de luz dorada en los bordes */}
+            {/* Viñeta sutil de luz en los bordes */}
             <div
               className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none transition-opacity duration-300 group-hover:opacity-80"
               aria-hidden="true"
@@ -91,9 +91,9 @@ export function CouplePhotoSection() {
 
             {/* Placa decorativa en la parte inferior de la foto */}
             <div className="absolute inset-x-3.5 bottom-3.5 flex items-center justify-between text-left pointer-events-none">
-              <div className="px-3.5 py-1.5 rounded-full bg-[#FAF7F2]/90 backdrop-blur-md border border-[#DFC088]/50 shadow-md">
-                <span className="font-serif-luxury text-xs text-[#2A2118] font-medium tracking-wide flex items-center gap-1.5">
-                  <Sparkles className="w-3 h-3 text-[#B89355]" />
+              <div className="px-3.5 py-1.5 rounded-full bg-[#FCF9FD]/90 backdrop-blur-md border border-[#AB86B1]/40 shadow-md">
+                <span className="font-serif-luxury text-xs text-[#2A1C28] font-medium tracking-wide flex items-center gap-1.5">
+                  <Sparkles className="w-3 h-3 text-[#9B709E]" />
                   <span>Ricardo & Estefani</span>
                 </span>
               </div>
@@ -106,7 +106,7 @@ export function CouplePhotoSection() {
 
           {/* Cita bíblica grabada al pie del marco */}
           <div className="mt-3.5 px-2 text-center">
-            <p className="font-serif-luxury text-xs text-[#8C6A35] italic">
+            <p className="font-serif-luxury text-xs text-[#784A67] italic">
               {activePhoto.caption}
             </p>
           </div>

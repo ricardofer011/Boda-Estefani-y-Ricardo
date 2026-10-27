@@ -32,12 +32,12 @@ export function ShareSection() {
 
   return (
     <div className="w-full max-w-md mx-auto my-10 px-4 text-center">
-      <div className="p-6 bg-[#FAF7F2] border border-[#DFC088]/40 rounded-xl shadow-sm">
-        <Share2 className="w-6 h-6 text-[#B89355] mx-auto mb-2" />
-        <h4 className="font-serif-luxury text-xl text-[#2A2118] font-medium mb-1">
+      <div className="p-6 bg-[#FCF9FD] border border-[#AB86B1]/40 rounded-2xl shadow-sm">
+        <Share2 className="w-6 h-6 text-[#9B709E] mx-auto mb-2" />
+        <h4 className="font-serif-luxury text-xl text-[#2A1C28] font-medium mb-1">
           Comparte esta bendición
         </h4>
-        <p className="font-sans-clean text-xs sm:text-sm text-[#6B5B4D] mb-5">
+        <p className="font-sans-clean text-xs sm:text-sm text-[#6A5365] mb-5">
           Envía la invitación digital a familiares y amigos cercanos para que confirmen su presencia.
         </p>
 
@@ -54,7 +54,7 @@ export function ShareSection() {
 
           <button
             onClick={handleCopyLink}
-            className="w-full sm:w-auto px-5 py-3 rounded-full border border-[#B89355]/40 text-[#2A2118] hover:border-[#B89355] bg-white font-sans-clean text-xs font-medium tracking-wider inline-flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer"
+            className="w-full sm:w-auto px-5 py-3 rounded-full border border-[#AB86B1]/40 text-[#5C3759] hover:border-[#784A67] bg-white font-sans-clean text-xs font-medium tracking-wider inline-flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer"
           >
             {copied ? (
               <>
@@ -63,7 +63,7 @@ export function ShareSection() {
               </>
             ) : (
               <>
-                <Copy className="w-4 h-4 text-[#B89355]" />
+                <Copy className="w-4 h-4 text-[#9B709E]" />
                 <span>Copiar enlace</span>
               </>
             )}

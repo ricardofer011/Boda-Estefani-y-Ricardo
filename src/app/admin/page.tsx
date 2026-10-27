@@ -381,8 +381,8 @@ export default function AdminPage() {
 
   if (isAuthenticated === null) {
     return (
-      <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center p-4">
-        <div className="w-8 h-8 border-2 border-[#B89355] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#FAF6FA] flex items-center justify-center p-4">
+        <div className="w-8 h-8 border-2 border-[#9B709E] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -392,19 +392,19 @@ export default function AdminPage() {
   // ==========================================================================
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#FAF7F2] flex flex-col justify-center items-center p-4 paper-texture">
-        <div className="w-full max-w-md bg-[#FCFAF6] border border-[#DFC088]/50 rounded-2xl p-8 shadow-card-elevated text-center">
-          <div className="w-14 h-14 mx-auto rounded-full bg-[#F3EDE2] border border-[#DFC088]/40 flex items-center justify-center text-[#B89355] mb-4">
+      <div className="min-h-screen bg-[#FAF6FA] flex flex-col justify-center items-center p-4 paper-texture">
+        <div className="w-full max-w-md bg-[#FCF9FD] border border-[#AB86B1]/40 rounded-2xl p-8 shadow-card-elevated text-center">
+          <div className="w-14 h-14 mx-auto rounded-full bg-[#F9F2FA] border border-[#AB86B1]/40 flex items-center justify-center text-[#784A67] mb-4">
             <Lock className="w-6 h-6 stroke-[1.75]" />
           </div>
 
-          <span className="text-xs uppercase font-serif-luxury tracking-widest text-[#8C6A35] font-semibold">
+          <span className="text-xs uppercase font-serif-luxury tracking-widest text-[#784A67] font-semibold">
             Boda Estefani & Ricardo
           </span>
-          <h1 className="font-serif-luxury text-2xl sm:text-3xl text-[#2A2118] font-normal mt-1 mb-2">
+          <h1 className="font-serif-luxury text-2xl sm:text-3xl text-[#2A1C28] font-normal mt-1 mb-2">
             Panel de Novios
           </h1>
-          <p className="font-sans-clean text-xs sm:text-sm text-[#6B5B4D] mb-6">
+          <p className="font-sans-clean text-xs sm:text-sm text-[#6A5365] mb-6">
             Ingresa tu contraseña para asignar los pases y gestionar las confirmaciones de tus invitados.
           </p>
 
@@ -416,7 +416,7 @@ export default function AdminPage() {
             )}
 
             <div>
-              <label htmlFor="admin_password" className="block text-xs font-semibold text-[#2A2118] text-left mb-1.5 font-sans-clean">
+              <label htmlFor="admin_password" className="block text-xs font-semibold text-[#2A1C28] text-left mb-1.5 font-sans-clean">
                 Contraseña de los novios
               </label>
               <input
@@ -426,7 +426,7 @@ export default function AdminPage() {
                 value={passwordInput}
                 onChange={(e) => setPasswordInput(e.target.value)}
                 placeholder="Ingresa la contraseña"
-                className="w-full px-4 py-2.5 rounded-lg border border-[#DFC088]/50 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#B89355] font-sans-clean"
+                className="w-full px-4 py-2.5 rounded-lg border border-[#AB86B1]/40 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#9B709E] font-sans-clean"
               />
             </div>
 
@@ -439,10 +439,10 @@ export default function AdminPage() {
             </button>
           </form>
 
-          <div className="mt-6 pt-4 border-t border-[#DFC088]/30">
+          <div className="mt-6 pt-4 border-t border-[#AB86B1]/30">
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-xs text-[#8C6A35] hover:text-[#2A2118] font-sans-clean"
+              className="inline-flex items-center gap-1.5 text-xs text-[#784A67] hover:text-[#5C3759] font-sans-clean"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Volver a la invitación</span>
@@ -457,14 +457,14 @@ export default function AdminPage() {
   // PANEL ADMINISTRATIVO PRIVADO
   // ==========================================================================
   return (
-    <div className="min-h-screen bg-[#F7F4EE] text-[#2A2118] pb-16">
+    <div className="min-h-screen bg-[#FAF6FA] text-[#2A1C28] pb-16">
       {/* Header */}
-      <header className="bg-[#FCFAF6] border-b border-[#DFC088]/30 sticky top-0 z-30 shadow-xs">
+      <header className="bg-[#FCF9FD] border-b border-[#AB86B1]/30 sticky top-0 z-30 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="p-1.5 rounded-lg text-[#6B5B4D] hover:text-[#2A2118] hover:bg-[#F3EDE2] transition-colors"
+              className="p-1.5 rounded-lg text-[#6A5365] hover:text-[#5C3759] hover:bg-[#F9F2FA] transition-colors"
               title="Volver a la invitación"
             >
               <ArrowLeft className="w-5 h-5" />

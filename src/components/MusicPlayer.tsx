@@ -119,27 +119,27 @@ export function MusicPlayer() {
         onClick={toggleMusic}
         aria-label={isPlaying ? 'Pausar música instrumental' : 'Reproducir música instrumental'}
         title={isPlaying ? 'Pausar música' : 'Reproducir música instrumental de fondo'}
-        className="group relative flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-[#FCFAF6]/90 backdrop-blur-md border border-[#DFC088]/60 shadow-lg text-[#2A2118] hover:border-[#B89355] transition-all cursor-pointer active:scale-95"
+        className="group relative flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-[#FCF9FD]/90 backdrop-blur-md border border-[#AB86B1]/45 shadow-lg text-[#2A1C28] hover:border-[#784A67] transition-all cursor-pointer active:scale-95"
       >
         {isPlaying ? (
           <>
-            <Volume2 className="w-4 h-4 text-[#B89355] animate-pulse" />
+            <Volume2 className="w-4 h-4 text-[#9B709E] animate-pulse" />
             <div className="flex items-end gap-[2px] h-3">
-              <span className="w-0.5 h-3 bg-[#B89355] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-              <span className="w-0.5 h-2 bg-[#B89355] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-              <span className="w-0.5 h-3 bg-[#B89355] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              <span className="w-0.5 h-3 bg-[#9B709E] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+              <span className="w-0.5 h-2 bg-[#9B709E] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+              <span className="w-0.5 h-3 bg-[#9B709E] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
             </div>
-            <span className="font-serif-luxury text-xs text-[#8C6A35] font-medium hidden sm:inline">
+            <span className="font-serif-luxury text-xs text-[#5C3759] font-medium hidden sm:inline">
               Música activada
             </span>
           </>
         ) : (
           <>
-            <Music className="w-4 h-4 text-[#8C6A35]" />
-            <span className="font-serif-luxury text-xs text-[#6B5B4D] font-medium hidden sm:inline">
+            <Music className="w-4 h-4 text-[#784A67]" />
+            <span className="font-serif-luxury text-xs text-[#6A5365] font-medium hidden sm:inline">
               Música ambiental
             </span>
-            <VolumeX className="w-3.5 h-3.5 text-[#6B5B4D] sm:hidden" />
+            <VolumeX className="w-3.5 h-3.5 text-[#6A5365] sm:hidden" />
           </>
         )}
       </button>

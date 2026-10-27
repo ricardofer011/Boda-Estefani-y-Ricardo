@@ -54,8 +54,8 @@ export function GiftsSection({ giftType = 'bank' }: GiftsSectionProps) {
   return (
     <section className="w-full max-w-xl mx-auto my-8 px-4" id="regalos">
       {/* Tarjeta de papelería nupcial con acabado artesanal */}
-      <div className="relative bg-[#FCFAF6] border-2 border-[#DFC088]/40 rounded-3xl p-6 sm:p-10 shadow-card-elevated text-center overflow-hidden card-paper-texture">
-        {/* Esquinas ornamentales en filigrana dorada */}
+      <div className="relative bg-[#FCF9FD] border-2 border-[#AB86B1]/40 rounded-3xl p-6 sm:p-10 shadow-card-elevated text-center overflow-hidden card-paper-texture">
+        {/* Esquinas ornamentales en filigrana dorada/malva */}
         <CardCornerFlourish position="top-left" />
         <CardCornerFlourish position="top-right" />
         <CardCornerFlourish position="bottom-left" />
@@ -63,29 +63,29 @@ export function GiftsSection({ giftType = 'bank' }: GiftsSectionProps) {
 
         {/* Encabezado elegante y sutil */}
         <div className="flex flex-col items-center mb-5">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FAF4E6] border border-[#DFC088]/45 mb-2.5 shadow-2xs">
-            <Gift className="w-3.5 h-3.5 text-[#B89355]" />
-            <span className="font-serif-luxury text-[11px] sm:text-xs tracking-[0.25em] uppercase text-[#8C6A35] font-semibold">
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FBF5FC] border border-[#AB86B1]/45 mb-2.5 shadow-2xs">
+            <Gift className="w-3.5 h-3.5 text-[#9B709E]" />
+            <span className="font-serif-luxury text-[11px] sm:text-xs tracking-[0.25em] uppercase text-[#784A67] font-semibold">
               {currentDisplay === 'bank' ? gifts.badge : gifts.registry?.badge || 'Muestra de Cariño'}
             </span>
           </div>
 
-          <h2 className="font-serif-luxury text-3xl sm:text-4xl text-[#2A2118] font-normal tracking-wide gold-text-gradient leading-tight">
+          <h2 className="font-serif-luxury text-3xl sm:text-4xl text-[#2A1C28] font-normal tracking-wide royal-text-gradient leading-tight">
             {currentDisplay === 'bank' ? gifts.title : gifts.registry?.title || 'Mesa de Regalos'}
           </h2>
 
-          <OrnamentalDivider className="w-32 mx-auto my-2.5 text-[#B89355]" />
+          <OrnamentalDivider className="w-32 mx-auto my-2.5 text-[#9B709E]" />
 
           {/* Selector de pestañas elegante solo si giftType === 'both' */}
           {giftType === 'both' && (
-            <div className="my-3 p-1 rounded-full bg-[#FAF4E6] border border-[#DFC088]/50 inline-flex items-center gap-1 shadow-2xs">
+            <div className="my-3 p-1 rounded-full bg-[#FBF5FC] border border-[#AB86B1]/40 inline-flex items-center gap-1 shadow-2xs">
               <button
                 type="button"
                 onClick={() => setActiveTab('bank')}
                 className={`px-4 py-1.5 rounded-full font-serif-luxury text-xs tracking-wider transition-all duration-300 cursor-pointer ${
                   activeTab === 'bank'
-                    ? 'bg-[#2A2118] text-[#DFC088] shadow-xs'
-                    : 'text-[#6B5B4D] hover:text-[#2A2118]'
+                    ? 'bg-[#5C3759] text-[#DFC6E3] shadow-xs'
+                    : 'text-[#784A67] hover:text-[#5C3759]'
                 }`}
               >
                 Cuenta APAP
@@ -95,8 +95,8 @@ export function GiftsSection({ giftType = 'bank' }: GiftsSectionProps) {
                 onClick={() => setActiveTab('registry')}
                 className={`px-4 py-1.5 rounded-full font-serif-luxury text-xs tracking-wider transition-all duration-300 cursor-pointer ${
                   activeTab === 'registry'
-                    ? 'bg-[#2A2118] text-[#DFC088] shadow-xs'
-                    : 'text-[#6B5B4D] hover:text-[#2A2118]'
+                    ? 'bg-[#5C3759] text-[#DFC6E3] shadow-xs'
+                    : 'text-[#784A67] hover:text-[#5C3759]'
                 }`}
               >
                 Lista de Regalos
@@ -104,7 +104,7 @@ export function GiftsSection({ giftType = 'bank' }: GiftsSectionProps) {
             </div>
           )}
 
-          <p className="font-serif-luxury text-xs sm:text-sm text-[#6B5B4D] max-w-md mx-auto leading-relaxed italic mt-1">
+          <p className="font-serif-luxury text-xs sm:text-sm text-[#6A5365] max-w-md mx-auto leading-relaxed italic mt-1">
             “{currentDisplay === 'bank' ? gifts.message : gifts.registry?.message}”
           </p>
         </div>
@@ -113,32 +113,32 @@ export function GiftsSection({ giftType = 'bank' }: GiftsSectionProps) {
         {/* VISTA 1: CUENTA BANCARIA (APAP / Lluvia de Sobres) */}
         {/* ==================================================================== */}
         {currentDisplay === 'bank' && (
-          <div className="relative p-5 sm:p-7 rounded-2xl bg-gradient-to-b from-[#FAF6EE] to-[#EFE7D8] border border-[#DFC088]/50 shadow-xs text-left max-w-md mx-auto animate-fade-in">
+          <div className="relative p-5 sm:p-7 rounded-2xl bg-gradient-to-b from-[#F9F2FA] to-[#F1E5F3] border border-[#AB86B1]/45 shadow-xs text-left max-w-md mx-auto animate-fade-in">
             {/* Nombre de la entidad bancaria */}
-            <div className="flex items-start gap-3 pb-4 border-b border-[#DFC088]/30">
-              <div className="w-10 h-10 rounded-xl bg-[#FAF4E6] border border-[#DFC088]/40 flex items-center justify-center shrink-0 shadow-2xs">
-                <Building2 className="w-5 h-5 text-[#8C6A35]" />
+            <div className="flex items-start gap-3 pb-4 border-b border-[#AB86B1]/30">
+              <div className="w-10 h-10 rounded-xl bg-[#FCF9FD] border border-[#AB86B1]/40 flex items-center justify-center shrink-0 shadow-2xs">
+                <Building2 className="w-5 h-5 text-[#784A67]" />
               </div>
               <div>
-                <p className="font-sans-clean text-[10px] tracking-widest uppercase text-[#8C6A35] font-semibold">
+                <p className="font-sans-clean text-[10px] tracking-widest uppercase text-[#784A67] font-semibold">
                   Entidad Bancaria
                 </p>
-                <h3 className="font-serif-luxury text-base sm:text-lg text-[#2A2118] font-medium leading-tight mt-0.5">
+                <h3 className="font-serif-luxury text-base sm:text-lg text-[#2A1C28] font-medium leading-tight mt-0.5">
                   {gifts.bankName}
                 </h3>
-                <p className="font-sans-clean text-xs text-[#6B5B4D] mt-0.5">
+                <p className="font-sans-clean text-xs text-[#6A5365] mt-0.5">
                   {gifts.accountType} • {gifts.currency}
                 </p>
               </div>
             </div>
 
             {/* Bloque central del número de cuenta con botón de copiar */}
-            <div className="my-4 py-3.5 px-4 rounded-xl bg-[#FCFAF6] border border-[#DFC088]/40 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-2xs">
+            <div className="my-4 py-3.5 px-4 rounded-xl bg-[#FCF9FD] border border-[#AB86B1]/35 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-2xs">
               <div>
-                <span className="font-sans-clean text-[10px] tracking-wider uppercase text-[#8C6A35] block font-semibold">
+                <span className="font-sans-clean text-[10px] tracking-wider uppercase text-[#784A67] block font-semibold">
                   Número de Cuenta
                 </span>
-                <span className="font-mono text-lg sm:text-xl font-bold tracking-wider text-[#2A2118] select-all">
+                <span className="font-mono text-lg sm:text-xl font-bold tracking-wider text-[#5C3759] select-all">
                   {gifts.accountNumber}
                 </span>
               </div>
@@ -149,7 +149,7 @@ export function GiftsSection({ giftType = 'bank' }: GiftsSectionProps) {
                 className={`inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full font-sans-clean text-xs font-semibold tracking-wider transition-all duration-300 cursor-pointer shadow-xs active:scale-95 shrink-0 ${
                   copied
                     ? 'bg-emerald-50 text-emerald-700 border border-emerald-300'
-                    : 'bg-[#FAF4E6] hover:bg-[#F3E8CF] text-[#8C6A35] border border-[#DFC088]/60 hover:border-[#B89355]'
+                    : 'bg-[#F5EBF7] hover:bg-[#EBDCF0] text-[#5C3759] border border-[#AB86B1]/50'
                 }`}
                 title="Copiar número de cuenta al portapapeles"
               >
@@ -160,7 +160,7 @@ export function GiftsSection({ giftType = 'bank' }: GiftsSectionProps) {
                   </>
                 ) : (
                   <>
-                    <Copy className="w-3.5 h-3.5 text-[#B89355]" />
+                    <Copy className="w-3.5 h-3.5 text-[#9B709E]" />
                     <span>Copiar cuenta</span>
                   </>
                 )}
@@ -168,12 +168,12 @@ export function GiftsSection({ giftType = 'bank' }: GiftsSectionProps) {
             </div>
 
             {/* Titulares de la cuenta */}
-            <div className="pt-2 flex items-center justify-between text-xs text-[#6B5B4D]">
-              <span className="font-sans-clean text-[11px] uppercase tracking-wider text-[#8C6A35] font-semibold">
+            <div className="pt-2 flex items-center justify-between text-xs text-[#6A5365]">
+              <span className="font-sans-clean text-[11px] uppercase tracking-wider text-[#784A67] font-semibold">
                 Titulares:
               </span>
-              <span className="font-serif-luxury text-sm font-semibold text-[#2A2118] flex items-center gap-1.5">
-                <Heart className="w-3 h-3 text-[#B89355] fill-[#B89355]/40" />
+              <span className="font-serif-luxury text-sm font-semibold text-[#2A1C28] flex items-center gap-1.5">
+                <Heart className="w-3 h-3 text-[#9B709E] fill-[#9B709E]/40" />
                 <span>{gifts.holders}</span>
               </span>
             </div>
@@ -188,20 +188,20 @@ export function GiftsSection({ giftType = 'bank' }: GiftsSectionProps) {
             {gifts.registry.stores.map((store, idx) => (
               <div
                 key={idx}
-                className="p-4 sm:p-4.5 rounded-2xl bg-gradient-to-b from-[#FAF6EE] to-[#EFE7D8] border border-[#DFC088]/50 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+                className="p-4 sm:p-4.5 rounded-2xl bg-gradient-to-b from-[#F9F2FA] to-[#F1E5F3] border border-[#AB86B1]/45 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
               >
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#FAF4E6] border border-[#DFC088]/40 flex items-center justify-center shrink-0 shadow-2xs">
-                    <ShoppingBag className="w-5 h-5 text-[#8C6A35]" />
+                  <div className="w-10 h-10 rounded-xl bg-[#FCF9FD] border border-[#AB86B1]/40 flex items-center justify-center shrink-0 shadow-2xs">
+                    <ShoppingBag className="w-5 h-5 text-[#784A67]" />
                   </div>
                   <div>
-                    <h3 className="font-serif-luxury text-base font-semibold text-[#2A2118]">
+                    <h3 className="font-serif-luxury text-base font-semibold text-[#2A1C28]">
                       {store.name}
                     </h3>
-                    <p className="font-sans-clean text-xs text-[#6B5B4D]">
+                    <p className="font-sans-clean text-xs text-[#6A5365]">
                       {store.description}
                     </p>
-                    <span className="font-mono text-[11px] text-[#8C6A35] font-medium block mt-0.5">
+                    <span className="font-mono text-[11px] text-[#784A67] font-medium block mt-0.5">
                       Referencia: {store.code}
                     </span>
                   </div>
@@ -211,7 +211,7 @@ export function GiftsSection({ giftType = 'bank' }: GiftsSectionProps) {
                   <button
                     type="button"
                     onClick={() => handleCopyStoreCode(store.code)}
-                    className="p-2 rounded-full bg-[#FAF4E6] border border-[#DFC088]/40 text-[#8C6A35] hover:text-[#2A2118] transition-colors"
+                    className="p-2 rounded-full bg-[#FCF9FD] border border-[#AB86B1]/40 text-[#784A67] hover:text-[#5C3759] transition-colors"
                     title="Copiar código de referencia"
                   >
                     {copiedStore === store.code ? (
@@ -234,7 +234,7 @@ export function GiftsSection({ giftType = 'bank' }: GiftsSectionProps) {
               </div>
             ))}
 
-            <p className="font-sans-clean text-[11px] text-[#8C6A35] text-center pt-2 italic">
+            <p className="font-sans-clean text-[11px] text-[#784A67] text-center pt-2 italic">
               {gifts.registry.notice}
             </p>
           </div>
@@ -242,10 +242,10 @@ export function GiftsSection({ giftType = 'bank' }: GiftsSectionProps) {
 
         {/* Mensaje de agradecimiento final */}
         <div className="mt-5 text-center">
-          <p className="font-serif-luxury text-xs sm:text-sm text-[#8C6A35] italic flex items-center justify-center gap-1.5">
-            <Sparkles className="w-3 h-3 text-[#B89355] shrink-0" />
+          <p className="font-serif-luxury text-xs sm:text-sm text-[#784A67] italic flex items-center justify-center gap-1.5">
+            <Sparkles className="w-3 h-3 text-[#9B709E] shrink-0" />
             <span>{gifts.thanksMessage}</span>
-            <Sparkles className="w-3 h-3 text-[#B89355] shrink-0" />
+            <Sparkles className="w-3 h-3 text-[#9B709E] shrink-0" />
           </p>
         </div>
       </div>

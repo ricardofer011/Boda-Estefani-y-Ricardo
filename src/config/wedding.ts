@@ -76,9 +76,13 @@ export interface WeddingConfig {
   };
   theme: {
     colors: {
-      ivory: string;
-      beige: string;
-      champagne: string;
+      plumDeep: string;
+      mauveRich: string;
+      lilacDusty: string;
+      orchidSoft: string;
+      whisperLilac: string;
+      paperLight: string;
+      cardPaper: string;
       goldLight: string;
       goldDark: string;
       textDark: string;
@@ -180,13 +184,17 @@ export const WEDDING_CONFIG: WeddingConfig = {
   },
   theme: {
     colors: {
-      ivory: "#FAF7F2",
-      beige: "#F2ECE1",
-      champagne: "#E8D8C3",
-      goldLight: "#D4AF37",
-      goldDark: "#9E7D47",
-      textDark: "#2B2118",
-      textMuted: "#6B5B4D",
+      plumDeep: "#5C3759", // Círculo 1: Ciruela profundo / Deep plum
+      mauveRich: "#784A67", // Círculo 2: Malva intenso / Rich mauve
+      lilacDusty: "#9B709E", // Círculo 3: Lila empolvado / Dusty lilac
+      orchidSoft: "#AB86B1", // Círculo 4: Orquídea lavanda / Soft orchid
+      whisperLilac: "#DFC6E3", // Círculo 5: Lavanda tenue / Whisper lilac
+      paperLight: "#FAF6FA", // Fondo marfil suave con matiz lila
+      cardPaper: "#FCF9FD", // Fondo de papelería nupcial
+      goldLight: "#DFC088", // Acento oro champán
+      goldDark: "#9E7D47", // Oro envejecido
+      textDark: "#2A1C28", // Tipografía principal oscura con matiz ciruela
+      textMuted: "#6A5365", // Tipografía secundaria malva sutil
     },
   },
 };
