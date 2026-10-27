@@ -13,6 +13,7 @@ import { RsvpForm, VerifiedGuest } from '@/components/RsvpForm';
 import { ShareSection } from '@/components/ShareSection';
 import { MusicPlayer } from '@/components/MusicPlayer';
 import { Footer } from '@/components/Footer';
+import { FloralPetalsBackground } from '@/components/FloralPetalsBackground';
 import { Mail } from 'lucide-react';
 
 export default function WeddingInvitationPage() {
@@ -59,6 +60,9 @@ export default function WeddingInvitationPage() {
       >
         {/* Textura sutil y viñeta en el fondo */}
         <div className="fixed inset-0 paper-texture pointer-events-none opacity-80 z-0" aria-hidden="true" />
+
+        {/* Lluvia poética continua de pétalos de rosa y florecillas en caída suave */}
+        <FloralPetalsBackground className="z-1" />
 
         {/* Reproductor de música ambiental flotante */}
         <MusicPlayer />

@@ -5,6 +5,7 @@ import confetti from 'canvas-confetti';
 import { WaxSeal } from './WaxSeal';
 import { Sparkles } from 'lucide-react';
 import { VerifiedGuest } from './RsvpForm';
+import { FloralPetalsBackground } from './FloralPetalsBackground';
 
 interface EnvelopeProps {
   onOpenComplete: () => void;
@@ -171,6 +172,9 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
         className="absolute inset-0 bg-radial from-transparent via-[#F4EBF5]/50 to-[#E6D4E8]/70 pointer-events-none"
         aria-hidden="true"
       />
+
+      {/* Lluvia poética de pétalos de rosa y florecillas en caída suave */}
+      <FloralPetalsBackground className="z-2" />
 
       {/* Partículas luminosas tenues */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">

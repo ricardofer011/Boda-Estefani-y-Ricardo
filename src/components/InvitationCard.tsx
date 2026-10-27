@@ -1,6 +1,6 @@
 import React from 'react';
 import { WEDDING_CONFIG } from '@/config/wedding';
-import { CatholicCrossOrnament, OrnamentalDivider, CardCornerFlourish } from './Ornaments';
+import { CatholicCrossOrnament, OrnamentalDivider, FloralCornerFlourish } from './Ornaments';
 import { Sparkles, ShieldCheck } from 'lucide-react';
 
 interface VerifiedGuestInfo {
@@ -20,11 +20,11 @@ export function InvitationCard({ guest }: InvitationCardProps) {
     <div className="w-full max-w-xl mx-auto my-8 px-4">
       {/* Tarjeta con acabado de papelería nupcial tradicional */}
       <div className="relative bg-[#FCF9FD] border-2 border-[#AB86B1]/40 rounded-2xl p-6 sm:p-12 shadow-card-elevated text-center overflow-hidden card-paper-texture">
-        {/* Esquinas ornamentales con filigrana dorada/malva */}
-        <CardCornerFlourish position="top-left" />
-        <CardCornerFlourish position="top-right" />
-        <CardCornerFlourish position="bottom-left" />
-        <CardCornerFlourish position="bottom-right" />
+        {/* Esquinas botánicas con capullos de rosas y hojitas en lila, malva y oro */}
+        <FloralCornerFlourish position="top-left" />
+        <FloralCornerFlourish position="top-right" />
+        <FloralCornerFlourish position="bottom-left" />
+        <FloralCornerFlourish position="bottom-right" />
 
         {/* Marco interior sutil con línea doble */}
         <div className="border border-[#AB86B1]/25 rounded-xl p-5 sm:p-10 flex flex-col items-center">

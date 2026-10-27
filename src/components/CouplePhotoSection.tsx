@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { CardCornerFlourish, OrnamentalDivider } from './Ornaments';
+import { FloralCornerFlourish, OrnamentalDivider } from './Ornaments';
 import { Heart, Maximize2, X, Sparkles, Camera } from 'lucide-react';
 
 interface PhotoItem {
@@ -31,11 +31,11 @@ export function CouplePhotoSection() {
     <section className="w-full max-w-xl mx-auto my-10 px-4">
       {/* Marco de papelería nupcial tradicional con acabado de alta gama */}
       <div className="relative bg-[#FCF9FD] border-2 border-[#AB86B1]/40 rounded-3xl p-6 sm:p-10 shadow-card-elevated text-center overflow-hidden card-paper-texture">
-        {/* Esquinas ornamentales con filigrana dorada/malva */}
-        <CardCornerFlourish position="top-left" />
-        <CardCornerFlourish position="top-right" />
-        <CardCornerFlourish position="bottom-left" />
-        <CardCornerFlourish position="bottom-right" />
+        {/* Esquinas botánicas con capullos de rosas y hojitas en lila, malva y oro */}
+        <FloralCornerFlourish position="top-left" />
+        <FloralCornerFlourish position="top-right" />
+        <FloralCornerFlourish position="bottom-left" />
+        <FloralCornerFlourish position="bottom-right" />
 
         {/* Encabezado ceremonial de la sección */}
         <div className="flex flex-col items-center mb-6">
