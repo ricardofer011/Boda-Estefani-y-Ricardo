@@ -26,22 +26,10 @@ export default function WeddingInvitationPage() {
     if (typeof window === 'undefined') return;
 
     const params = new URLSearchParams(window.location.search);
-    const code = params.get('invitacion') || params.get('code') || params.get('invitado') || params.get('guest');
-    const roleParam = params.get('rol') || params.get('tipo') || params.get('dama') || params.get('damas');
+    const code = (params.get('invitacion') || params.get('code') || params.get('invitado') || params.get('guest') || '').trim();
+    const roleParam = (params.get('rol') || params.get('tipo') || params.get('dama') || params.get('damas') || '').trim().toLowerCase();
 
-    if (code) {
-      fetch(`/api/guests/verify?code=${encodeURIComponent(code.trim())}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success && data.data) {
-            setGuest(data.data);
-          }
-        })
-        .catch((err) => {
-          console.warn('Error verificando enlace de invitado:', err);
-        });
-    } else if (roleParam === 'dama' || roleParam === 'damas' || roleParam === '1' || roleParam === 'true') {
-      // Acceso directo a vista de damas mediante parámetro de enlace
+    if (code.toLowerCase() === 'damas' || code.toLowerCase() === 'dama' || roleParam === 'dama' || roleParam === 'damas' || roleParam === '1' || roleParam === 'true') {
       setGuest({
         code: 'damas',
         full_name: 'Queridas Damas de Honor',
@@ -51,6 +39,20 @@ export default function WeddingInvitationPage() {
         invitation_scope: 'church_and_reception',
         invitation_role: 'bridesmaid',
       });
+      return;
+    }
+
+    if (code) {
+      fetch(`/api/guests/verify?code=${encodeURIComponent(code)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.data) {
+            setGuest(data.data);
+          }
+        })
+        .catch((err) => {
+          console.warn('Error verificando enlace de invitado:', err);
+        });
     }
   }, []);
 
