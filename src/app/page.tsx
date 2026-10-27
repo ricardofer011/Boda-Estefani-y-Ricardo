@@ -99,39 +99,26 @@ export default function WeddingInvitationPage() {
 
         {/* Contenido principal estructurado */}
         <div className="relative z-10 flex flex-col items-center">
-          {/* Tarjeta de invitación oficial (Formato Damas de Honor o Invitación General) */}
           {guest?.invitation_role === 'bridesmaid' ? (
+            /* Vista EXCLUSIVA para Damas de Honor: Únicamente la tarjeta con diseño anexado */
             <BridesmaidInvitationCard guest={guest} />
           ) : (
-            <InvitationCard guest={guest} />
+            /* Vista General de Boda Completa */
+            <>
+              <InvitationCard guest={guest} />
+              <CouplePhotoSection />
+              <Countdown />
+              <CeremonySection scope={guest?.invitation_scope || 'church_and_reception'} />
+              <CalendarSection />
+              <GiftsSection giftType={guest?.gift_type || 'bank'} />
+              <RsvpForm
+                initialGuest={guest}
+                onGuestVerified={(g) => setGuest(g)}
+              />
+              <ShareSection />
+              <Footer />
+            </>
           )}
-
-          {/* Retrato oficial de los novios */}
-          <CouplePhotoSection />
-
-          {/* Cuenta regresiva en tiempo real */}
-          <Countdown />
-
-          {/* Sección de ceremonia y ubicación en mapa (Iglesia sola o Iglesia + Recepción Salón Vista Marina) */}
-          <CeremonySection scope={guest?.invitation_scope || 'church_and_reception'} />
-
-          {/* Guardar en Google Calendar & Apple Calendar */}
-          <CalendarSection />
-
-          {/* Muestra de cariño: Cuenta APAP / Lista de Regalos / Ambas */}
-          <GiftsSection giftType={guest?.gift_type || 'bank'} />
-
-          {/* Formulario real de confirmación (RSVP) */}
-          <RsvpForm
-            initialGuest={guest}
-            onGuestVerified={(g) => setGuest(g)}
-          />
-
-          {/* Compartir por WhatsApp y enlace */}
-          <ShareSection />
-
-          {/* Pie de página con nombres y fecha */}
-          <Footer />
         </div>
       </div>
     </main>
