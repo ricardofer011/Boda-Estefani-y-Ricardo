@@ -368,8 +368,8 @@ export default function AdminPage() {
 
     const scopeText =
       guest.invitation_scope === 'church_only'
-        ? `Te invitamos a celebrar nuestra boda religiosa este sábado 12 de diciembre de 2026 a las 11:00 a. m. en la Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo.`
-        : `Te invitamos a celebrar nuestra boda religiosa este sábado 12 de diciembre de 2026 a las 11:00 a. m. en la Iglesia Las Mercedes, Ciudad Colonial, y posteriormente acompañarnos al brindis y recepción en el Salón Vista Marina (Av. España 70, Santo Domingo Este).`;
+        ? `Te invitamos a celebrar nuestra boda religiosa este sábado 12 de diciembre de 2026 a la 1:00 p. m. en la Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo.`
+        : `Te invitamos a celebrar nuestra boda religiosa este sábado 12 de diciembre de 2026 a la 1:00 p. m. en la Iglesia Las Mercedes, Ciudad Colonial, y posteriormente acompañarnos al brindis y recepción en el Salón Vista Marina (Av. España 70, Santo Domingo Este).`;
 
     const text = `¡Hola ${guest.full_name}! 🕊️💌 Nos hace una inmensa ilusión compartir contigo un momento tan significativo en nuestras vidas.\n\n${scopeText}\n\nHemos preparado ${passesText}.\n\n*Nota formal:* La invitación es personal e intransferible, válida exclusivamente para el número de pases asignados.\n\nPuedes ver tu tarjeta personalizada y confirmar tu asistencia aquí:\n${url}`;
 

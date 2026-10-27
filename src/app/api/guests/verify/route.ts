@@ -13,13 +13,35 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const cleanQuery = query.trim().toLowerCase();
+
+    // Llave maestra para los novios / organizadores
+    if (
+      cleanQuery === 'novios' ||
+      cleanQuery === 'vip' ||
+      cleanQuery === 'estefaniricardo2026'
+    ) {
+      return NextResponse.json({
+        success: true,
+        data: {
+          code: 'novios',
+          full_name: 'Ricardo Fernandez & Estefani Cedeño',
+          max_guests: 2,
+          status: 'confirmed',
+          gift_type: 'both',
+          invitation_scope: 'church_and_reception',
+        },
+      });
+    }
+
     const guest = await findGuestByCodeOrName(query.trim());
 
     if (!guest) {
       return NextResponse.json(
         {
           success: false,
-          error: 'No encontramos una invitación registrada con ese nombre o código. Por favor comunícate directamente con Estefani y Ricardo.',
+          error:
+            'No encontramos una invitación registrada con ese nombre o código. Esta celebración es estrictamente privada y por invitación previa. Si consideras que se trata de un error, por favor comunícate directamente con Ricardo y Estefani.',
         },
         { status: 404 }
       );

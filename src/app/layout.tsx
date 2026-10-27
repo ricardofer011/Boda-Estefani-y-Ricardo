@@ -32,42 +32,42 @@ const pinyon = Pinyon_Script({
 });
 
 export const metadata: Metadata = {
-  title: 'Boda de Estefani & Ricardo | Invitación Oficial',
+  title: 'Boda de Ricardo Fernandez & Estefani Cedeño | Invitación Oficial',
   description:
-    'Con la bendición de Dios y el amor de nuestras familias, te invitamos a celebrar nuestra unión en el sacramento del matrimonio. Sábado 12 de diciembre de 2026, Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo.',
-  keywords: ['Boda Estefani y Ricardo', 'Invitación Digital', 'Iglesia Las Mercedes', 'Santo Domingo'],
-  authors: [{ name: 'Estefani & Ricardo' }],
+    'Con la bendición de Dios y el amor de nuestras familias, te invitamos a celebrar nuestra unión en el sacramento del matrimonio. Sábado 12 de diciembre de 2026, 1:00 p. m., Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo.',
+  keywords: ['Boda Ricardo Fernandez y Estefani Cedeño', 'Invitación Digital', 'Iglesia Las Mercedes', 'Santo Domingo'],
+  authors: [{ name: 'Ricardo Fernandez & Estefani Cedeño' }],
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://boda-estefani-y-ricardo.vercel.app'),
   openGraph: {
-    title: 'Boda de Estefani & Ricardo 💌',
+    title: 'Boda de Ricardo Fernandez & Estefani Cedeño 💌',
     description:
-      'Sábado 12 de diciembre de 2026 • 11:00 a. m. • Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo. Toca para abrir tu invitación.',
+      'Sábado 12 de diciembre de 2026 • 1:00 p. m. • Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo. Toca para abrir tu invitación.',
     type: 'website',
     locale: 'es_DO',
-    siteName: 'Boda Estefani & Ricardo',
+    siteName: 'Boda Ricardo Fernandez & Estefani Cedeño',
     url: 'https://boda-estefani-y-ricardo.vercel.app',
     images: [
       {
         url: 'https://boda-estefani-y-ricardo.vercel.app/images/og-seal.jpg',
         width: 800,
         height: 800,
-        alt: 'Sello Oficial de Boda Estefani & Ricardo',
+        alt: 'Sello Oficial de Boda Ricardo Fernandez & Estefani Cedeño',
         type: 'image/jpeg',
       },
       {
         url: 'https://boda-estefani-y-ricardo.vercel.app/images/og-banner.jpg',
         width: 1200,
         height: 630,
-        alt: 'Invitación de Boda Estefani & Ricardo',
+        alt: 'Invitación de Boda Ricardo Fernandez & Estefani Cedeño',
         type: 'image/jpeg',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Boda de Estefani & Ricardo | Invitación Oficial',
+    title: 'Boda de Ricardo Fernandez & Estefani Cedeño | Invitación Oficial',
     description:
-      'Te invitamos a celebrar nuestro sacramento de matrimonio el sábado 12 de diciembre de 2026 a las 11:00 a. m. en la Iglesia Las Mercedes.',
+      'Te invitamos a celebrar nuestro sacramento de matrimonio el sábado 12 de diciembre de 2026 a la 1:00 p. m. en la Iglesia Las Mercedes.',
     images: ['https://boda-estefani-y-ricardo.vercel.app/images/og-seal.jpg'],
   },
   icons: {

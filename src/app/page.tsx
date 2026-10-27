@@ -42,20 +42,25 @@ export default function WeddingInvitationPage() {
 
   return (
     <main className="min-h-screen bg-[#FAF7F2] relative overflow-x-hidden selection:bg-[#DFC088]/30">
-      {/* 1. SOBRE ANIMADO INICIAL (Se oculta al completarse la animación de apertura) */}
+      {/* 1. SOBRE ANIMADO INICIAL Y BARRERA DE PRIVACIDAD */}
       {!isOpened && (
         <Envelope
           onOpenComplete={() => setIsOpened(true)}
           coupleNames={WEDDING_CONFIG.couple.names}
+          guest={guest}
+          onVerifyGuest={(g) => {
+            setGuest(g);
+          }}
         />
       )}
 
-      {/* 2. EXPERIENCIA PRINCIPAL DE LA INVITACIÓN DIGITAL */}
-      <div
-        className={`transition-opacity duration-1000 ${
-          isOpened ? 'opacity-100' : 'opacity-0 pointer-events-none h-0 overflow-hidden'
-        }`}
-      >
+      {/* 2. EXPERIENCIA PRINCIPAL DE LA INVITACIÓN DIGITAL (Protegida solo para invitados autorizados) */}
+      {guest && (
+        <div
+          className={`transition-opacity duration-1000 ${
+            isOpened ? 'opacity-100' : 'opacity-0 pointer-events-none h-0 overflow-hidden'
+          }`}
+        >
         {/* Textura sutil y viñeta en el fondo */}
         <div className="fixed inset-0 paper-texture pointer-events-none opacity-80 z-0" aria-hidden="true" />
 
@@ -110,6 +115,7 @@ export default function WeddingInvitationPage() {
           <Footer />
         </div>
       </div>
+      )}
     </main>
   );
 }
