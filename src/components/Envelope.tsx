@@ -259,23 +259,46 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
                 />
               )}
 
-              <span className="text-[#784A67] text-[10px] font-serif-luxury tracking-[0.25em] uppercase mb-1 font-semibold">
-                {guest?.invitation_role === 'bridesmaid' ? '🌸 Corte de Honor • Damas' : 'Nuestra Boda Católica'}
-              </span>
-              <p className="font-serif-luxury text-lg sm:text-xl text-[#2A1C28] font-medium royal-text-gradient leading-tight">
-                Estefani Cedeño
-              </p>
-              <span className="font-script-romantic text-xl text-[#9B709E] block my-0.5">&</span>
-              <p className="font-serif-luxury text-lg sm:text-xl text-[#2A1C28] font-medium royal-text-gradient leading-tight">
-                Ricardo Fernandez
-              </p>
-              <div className="w-10 h-[1px] bg-[#9B709E]/50 my-1.5" />
-              <p className="font-sans-clean text-[10px] sm:text-xs text-[#6A5365] tracking-widest uppercase">
-                12 • Diciembre • 2026 • 11:00 a. m.
-              </p>
-              <p className="font-serif-luxury text-[11px] text-[#784A67] mt-1 font-medium">
-                Iglesia Las Mercedes • Santo Domingo
-              </p>
+              {guest?.invitation_role === 'bridesmaid' ? (
+                <>
+                  <span className="text-[#784A67] text-[10px] font-serif-luxury tracking-[0.25em] uppercase mb-0.5 font-semibold">
+                    🌸 Corte de Honor • Damas
+                  </span>
+                  <p className="font-serif-luxury text-[11px] text-[#784A67] uppercase tracking-wider">
+                    Una invitación hecha
+                  </p>
+                  <p className="font-script-romantic text-2xl sm:text-3xl text-[#5C3759] leading-tight my-0.5">
+                    desde el corazón
+                  </p>
+                  <div className="w-10 h-[1px] bg-[#9B709E]/50 my-1" />
+                  <p className="font-sans-clean text-[10px] sm:text-xs text-[#6A5365] tracking-widest uppercase">
+                    12 • Diciembre • 2026 • 11:00 a. m.
+                  </p>
+                  <p className="font-serif-luxury text-[11px] text-[#784A67] mt-0.5 font-medium">
+                    Iglesia Las Mercedes • Santo Domingo
+                  </p>
+                </>
+              ) : (
+                <>
+                  <span className="text-[#784A67] text-[10px] font-serif-luxury tracking-[0.25em] uppercase mb-1 font-semibold">
+                    Nuestra Boda Católica
+                  </span>
+                  <p className="font-serif-luxury text-lg sm:text-xl text-[#2A1C28] font-medium royal-text-gradient leading-tight">
+                    Estefani Cedeño
+                  </p>
+                  <span className="font-script-romantic text-xl text-[#9B709E] block my-0.5">&</span>
+                  <p className="font-serif-luxury text-lg sm:text-xl text-[#2A1C28] font-medium royal-text-gradient leading-tight">
+                    Ricardo Fernandez
+                  </p>
+                  <div className="w-10 h-[1px] bg-[#9B709E]/50 my-1.5" />
+                  <p className="font-sans-clean text-[10px] sm:text-xs text-[#6A5365] tracking-widest uppercase">
+                    12 • Diciembre • 2026 • 11:00 a. m.
+                  </p>
+                  <p className="font-serif-luxury text-[11px] text-[#784A67] mt-1 font-medium">
+                    Iglesia Las Mercedes • Santo Domingo
+                  </p>
+                </>
+              )}
             </div>
           </div>
 
