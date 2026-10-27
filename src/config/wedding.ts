@@ -100,9 +100,9 @@ export const WEDDING_CONFIG: WeddingConfig = {
   ceremony: {
     type: "Matrimonio Católico",
     dateFormatted: "Sábado, 12 de diciembre de 2026",
-    timeFormatted: "1:00 p. m.",
+    timeFormatted: "11:00 a. m.",
     // Santo Domingo está en UTC-4 durante todo el año (no tiene horario de verano)
-    dateTimeISO: "2026-12-12T13:00:00-04:00",
+    dateTimeISO: "2026-12-12T11:00:00-04:00",
     timezone: "America/Santo_Domingo",
     churchName: "Iglesia Las Mercedes",
     address: "Calle Las Mercedes esq. José Reyes, Ciudad Colonial",
@@ -117,7 +117,7 @@ export const WEDDING_CONFIG: WeddingConfig = {
     address: "Av. España 70, Santo Domingo Este 10080",
     city: "Santo Domingo Este",
     fullLocation: "Salón Vista Marina, Av. España 70, Santo Domingo Este 10080, República Dominicana",
-    timeFormatted: "3:00 p. m. (al término de la ceremonia)",
+    timeFormatted: "1:30 p. m. (al término de la ceremonia)",
     notes: "Acompáñanos a brindar y celebrar el banquete de bodas con vista al mar.",
     googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Salon+Vista+Marina,+Av.+Espa%C3%B1a+70,+Santo+Domingo+Este+10080",
   },
@@ -125,9 +125,9 @@ export const WEDDING_CONFIG: WeddingConfig = {
     title: "Boda de Ricardo Fernandez & Estefani Cedeño",
     description: "Invitación a la ceremonia católica de Ricardo Fernandez & Estefani Cedeño.",
     location: "Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo, República Dominicana",
-    // 1:00 PM AST (UTC-4) = 17:00 UTC
-    startTimeUTC: "20261212T170000Z",
-    endTimeUTC: "20261212T190000Z",
+    // 11:00 AM AST (UTC-4) = 15:00 UTC
+    startTimeUTC: "20261212T150000Z",
+    endTimeUTC: "20261212T170000Z",
   },
   rsvp: {
     maxCompanionsAllowed: 4,
@@ -176,7 +176,7 @@ export const WEDDING_CONFIG: WeddingConfig = {
   },
   share: {
     whatsappTemplate: (url: string) =>
-      `¡Hola! 💌 Nos hace mucha ilusión compartir contigo una fecha muy especial. Te invitamos a celebrar el matrimonio de Ricardo Fernandez & Estefani Cedeño el sábado 12 de diciembre de 2026 a la 1:00 p. m., en la Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo. Puedes ver tu invitación personal y confirmar tu asistencia aquí: ${url}`,
+      `¡Hola! 💌 Nos hace mucha ilusión compartir contigo una fecha muy especial. Te invitamos a celebrar el matrimonio de Ricardo Fernandez & Estefani Cedeño el sábado 12 de diciembre de 2026 a las 11:00 a. m., en la Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo. Puedes ver tu invitación personal y confirmar tu asistencia aquí: ${url}`,
   },
   theme: {
     colors: {

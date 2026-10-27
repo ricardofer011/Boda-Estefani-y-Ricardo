@@ -294,7 +294,7 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
               </p>
               <div className="w-10 h-[1px] bg-[#B89355]/60 my-1.5" />
               <p className="font-sans-clean text-[10px] sm:text-xs text-[#6B5B4D] tracking-widest uppercase">
-                12 • Diciembre • 2026 • 1:00 p. m.
+                12 • Diciembre • 2026 • 11:00 a. m.
               </p>
               <p className="font-serif-luxury text-[11px] text-[#8C6A35] mt-1">
                 Iglesia Las Mercedes • Santo Domingo
