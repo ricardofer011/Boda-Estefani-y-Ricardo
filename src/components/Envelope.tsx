@@ -3,17 +3,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import { WaxSeal } from './WaxSeal';
-import { Sparkles, Lock, KeyRound, AlertCircle, Loader2, CheckCircle2 } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { VerifiedGuest } from './RsvpForm';
 
 interface EnvelopeProps {
   onOpenComplete: () => void;
   coupleNames: string;
   guest?: VerifiedGuest | null;
-  onVerifyGuest?: (guest: VerifiedGuest) => void;
 }
 
-export function Envelope({ onOpenComplete, coupleNames, guest, onVerifyGuest }: EnvelopeProps) {
+export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) {
   // Estados de animación rápida y fluida
   const [stage, setStage] = useState<
     'idle' | 'sparkle-seal' | 'opening-flap' | 'rising-card' | 'transition-out'
@@ -22,12 +21,6 @@ export function Envelope({ onOpenComplete, coupleNames, guest, onVerifyGuest }: 
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [isReducedMotion, setIsReducedMotion] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Estados para validación de acceso privado
-  const [passInput, setPassInput] = useState('');
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [verifyError, setVerifyError] = useState<string | null>(null);
-  const [shakeLock, setShakeLock] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -42,8 +35,8 @@ export function Envelope({ onOpenComplete, coupleNames, guest, onVerifyGuest }: 
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
     setTilt({
-      x: -(y / (rect.height / 2)) * 5,
-      y: (x / (rect.width / 2)) * 5,
+      x: -(y / (rect.height / 2)) * 6,
+      y: (x / (rect.width / 2)) * 6,
     });
   };
 
@@ -128,7 +121,7 @@ export function Envelope({ onOpenComplete, coupleNames, guest, onVerifyGuest }: 
   };
 
   // Apertura cinemática
-  const triggerOpeningSequence = () => {
+  const handleOpenClick = () => {
     if (stage !== 'idle') return;
 
     if (isReducedMotion) {
@@ -163,66 +156,12 @@ export function Envelope({ onOpenComplete, coupleNames, guest, onVerifyGuest }: 
     }, 1200);
   };
 
-  // Clic en el sello de cera
-  const handleSealClick = () => {
-    if (guest) {
-      triggerOpeningSequence();
-    } else {
-      // Si aún no está verificado, animar el formulario de clave
-      setShakeLock(true);
-      setTimeout(() => setShakeLock(false), 800);
-      setVerifyError('Por favor ingresa tu código de invitación o nombre registrado para desbloquear el sobre.');
-    }
-  };
-
-  // Validación de acceso privado
-  const handleVerifyPass = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!passInput.trim()) return;
-
-    setIsVerifying(true);
-    setVerifyError(null);
-
-    try {
-      const res = await fetch(`/api/guests/verify?code=${encodeURIComponent(passInput.trim())}`);
-      const data = await res.json();
-
-      if (res.ok && data.success && data.data) {
-        const foundGuest: VerifiedGuest = data.data;
-        if (onVerifyGuest) {
-          onVerifyGuest(foundGuest);
-        }
-
-        // Actualizar la URL discretamente sin recargar la página
-        if (typeof window !== 'undefined') {
-          const currentUrl = new URL(window.location.href);
-          currentUrl.searchParams.set('invitacion', foundGuest.code);
-          window.history.replaceState({}, '', currentUrl.toString());
-        }
-
-        // Desencadenar la apertura mágica del sobre
-        triggerOpeningSequence();
-      } else {
-        setVerifyError(
-          data.error ||
-            'No encontramos una invitación registrada con ese nombre o código. Esta celebración es privada y por invitación previa.'
-        );
-        setShakeLock(true);
-        setTimeout(() => setShakeLock(false), 800);
-      }
-    } catch {
-      setVerifyError('Error al validar la invitación. Por favor intenta de nuevo.');
-    } finally {
-      setIsVerifying(false);
-    }
-  };
-
   const isFlapOpen = stage === 'opening-flap' || stage === 'rising-card' || stage === 'transition-out';
   const isCardEmerging = stage === 'rising-card' || stage === 'transition-out';
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col items-center justify-center p-4 bg-[#FAF7F2] select-none overflow-y-auto transition-all duration-700 ${
+      className={`fixed inset-0 z-50 flex flex-col items-center justify-center p-4 bg-[#FAF7F2] select-none overflow-hidden transition-all duration-700 ${
         stage === 'transition-out' ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'
       }`}
     >
@@ -244,37 +183,39 @@ export function Envelope({ onOpenComplete, coupleNames, guest, onVerifyGuest }: 
           className="absolute bottom-1/4 left-1/4 w-2.5 h-2.5 rounded-full bg-[#EED99E]/40 blur-[1px] animate-pulse"
           style={{ animationDelay: '2s' }}
         />
+        <div
+          className="absolute bottom-1/3 right-1/4 w-2 h-2 rounded-full bg-[#DFC088]/40 blur-[1px] animate-pulse"
+          style={{ animationDelay: '1.5s' }}
+        />
       </div>
 
       {/* Contenedor central */}
-      <div className="relative z-10 w-full max-w-sm sm:max-w-md flex flex-col items-center my-auto py-6">
+      <div className="relative z-10 w-full max-w-sm sm:max-w-md flex flex-col items-center">
         {/* Encabezado ceremonial con tipografía de lujo */}
-        <div className="text-center mb-4 transition-transform duration-500">
+        <div className="text-center mb-5 sm:mb-6 transition-transform duration-500">
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FAF4E6] border border-[#DFC088]/50 mb-2 shadow-2xs">
             <Sparkles className="w-3.5 h-3.5 text-[#B89355] animate-pulse" />
             <span className="font-serif-luxury text-[11px] sm:text-xs tracking-[0.28em] uppercase text-[#8C6A35] font-semibold">
-              Invitación de Matrimonio
+              Una invitación especial para ti
             </span>
           </div>
 
           <h1 className="font-serif-luxury text-2xl sm:text-3xl text-[#2A2118] font-normal tracking-wide gold-text-gradient">
             {coupleNames}
           </h1>
-          <div className="h-[1px] w-20 mx-auto mt-1.5 bg-gradient-to-r from-transparent via-[#B89355]/60 to-transparent" />
+          <div className="h-[1px] w-20 mx-auto mt-2 bg-gradient-to-r from-transparent via-[#B89355]/60 to-transparent" />
         </div>
 
-        {/* ==================================================================== */}
-        {/* MEMBRETE PERSONALIZADO DEL INVITADO SI YA ESTÁ VERIFICADO            */}
-        {/* ==================================================================== */}
+        {/* Membrete personalizado si el invitado ingresó con enlace único */}
         {guest && (
-          <div className="mb-4 px-5 py-2.5 rounded-2xl bg-[#FCFAF6] border border-[#DFC088]/60 shadow-xs text-center animate-fade-in max-w-xs">
+          <div className="mb-4 px-4 py-2 rounded-2xl bg-[#FCFAF6] border border-[#DFC088]/60 shadow-xs text-center animate-fade-in max-w-xs">
             <span className="font-serif-luxury text-[10px] tracking-widest uppercase text-[#8C6A35] font-semibold block">
               Invitación Reservada Para:
             </span>
-            <p className="font-serif-luxury text-base font-semibold text-[#2A2118] truncate mt-0.5">
+            <p className="font-serif-luxury text-sm sm:text-base font-semibold text-[#2A2118] truncate mt-0.5">
               {guest.full_name}
             </p>
-            <span className="inline-block mt-1 px-3 py-0.5 rounded-full bg-[#2A2118] text-[#DFC088] text-[11px] font-serif-luxury font-semibold shadow-2xs">
+            <span className="inline-block mt-0.5 px-3 py-0.5 rounded-full bg-[#2A2118] text-[#DFC088] text-[11px] font-serif-luxury font-semibold shadow-2xs">
               {guest.max_guests === 1 ? '1 Pase Reservado' : `${guest.max_guests} Pases Reservados`}
             </span>
           </div>
@@ -392,7 +333,7 @@ export function Envelope({ onOpenComplete, coupleNames, guest, onVerifyGuest }: 
             }}
           />
 
-          {/* 4. Solapa Superior Triangular */}
+          {/* 4. Solapa Superior Triangular (Se abre en 3D hacia arriba) */}
           <div
             className="absolute inset-x-0 top-0 h-[112px] sm:h-[135px] transition-transform duration-500 ease-in-out pointer-events-none"
             style={{
@@ -416,109 +357,38 @@ export function Envelope({ onOpenComplete, coupleNames, guest, onVerifyGuest }: 
             style={{
               transform: `translate(-50%, -50%) ${stage !== 'idle' ? 'scale(1.1) opacity(0)' : 'scale(1)'}`,
             }}
-            onClick={handleSealClick}
+            onClick={handleOpenClick}
             role="button"
             tabIndex={0}
-            title={guest ? 'Toca para abrir la invitación' : 'Ingresa tu código para abrir'}
+            title="Toca el sello para abrir la invitación"
           >
-            <WaxSeal size={92} isBroken={stage !== 'idle'} onClick={handleSealClick} />
-
-            {/* Candado flotante discreto si el sobre está bloqueado */}
-            {!guest && stage === 'idle' && (
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#2A2118] border border-[#DFC088] text-[#DFC088] flex items-center justify-center shadow-md animate-pulse pointer-events-none">
-                <Lock className="w-3 h-3" />
-              </div>
-            )}
+            <WaxSeal size={92} isBroken={stage !== 'idle'} onClick={handleOpenClick} />
           </div>
         </div>
 
         {/* ==================================================================== */}
-        {/* CONTROL DE ACCESO PRIVADO: INVITACIÓN EXCLUSIVA Y SEGURA             */}
+        {/* INDICACIÓN SENCILLA Y ENLACE DE ACCESIBILIDAD                        */}
         {/* ==================================================================== */}
-        {guest ? (
-          /* CASO 1: EL INVITADO YA ESTÁ VERIFICADO -> BOTÓN DIRECTO DE APERTURA */
-          <div className="mt-5 flex flex-col items-center gap-2 w-full animate-fade-in">
-            <div
-              onClick={handleSealClick}
-              role="button"
-              tabIndex={0}
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#FAF4E6] border border-[#DFC088]/60 shadow-xs cursor-pointer hover:bg-[#F3EAD7] active:scale-95 transition-all"
-            >
-              <Sparkles className="w-4 h-4 text-[#B89355] animate-pulse" />
-              <span className="font-serif-luxury text-xs sm:text-sm tracking-[0.2em] uppercase text-[#8C6A35] font-semibold">
-                Toca el sello para abrir su sobre
-              </span>
-            </div>
-
-            <button
-              onClick={onOpenComplete}
-              className="text-[11px] font-sans-clean text-[#8C7A6B] hover:text-[#2A2118] tracking-wider underline underline-offset-4 decoration-[#B89355]/30 hover:decoration-[#B89355] transition-colors cursor-pointer pt-1"
-            >
-              Saltar animación y ver invitación directamente
-            </button>
-          </div>
-        ) : (
-          /* CASO 2: ACCESO PRIVADO -> CAJA ELEGANTE PARA INGRESAR CÓDIGO O NOMBRE */
+        <div className="mt-6 sm:mt-7 flex flex-col items-center gap-2.5 w-full">
           <div
-            className={`mt-6 w-full max-w-sm p-5 sm:p-6 rounded-3xl bg-[#FCFAF6]/95 border-2 border-[#DFC088]/60 shadow-card-elevated text-center backdrop-blur-xs transition-all ${
-              shakeLock ? 'animate-shake border-amber-500' : ''
-            }`}
+            onClick={handleOpenClick}
+            role="button"
+            tabIndex={0}
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#FAF4E6]/90 border border-[#DFC088]/40 shadow-xs cursor-pointer hover:bg-[#FAF4E6] active:scale-95 transition-all"
           >
-            <div className="w-10 h-10 rounded-full bg-[#FAF4E6] border border-[#DFC088]/60 flex items-center justify-center mx-auto mb-2.5 text-[#8C6A35] shadow-2xs">
-              <Lock className="w-4 h-4 stroke-[2]" />
-            </div>
-
-            <h2 className="font-serif-luxury text-xl sm:text-2xl text-[#2A2118] font-normal leading-tight">
-              Invitación Privada
-            </h2>
-
-            <p className="font-sans-clean text-xs text-[#6B5B4D] mt-1 mb-4 leading-relaxed">
-              Para garantizar una celebración íntima, el acceso es exclusivo para invitados registrados. Por favor ingresa tu código de invitación o tu nombre:
-            </p>
-
-            <form onSubmit={handleVerifyPass} className="space-y-3">
-              {verifyError && (
-                <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs text-left flex items-start gap-2 animate-shake">
-                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
-                  <span className="leading-snug">{verifyError}</span>
-                </div>
-              )}
-
-              <div className="relative">
-                <input
-                  type="text"
-                  required
-                  value={passInput}
-                  onChange={(e) => setPassInput(e.target.value)}
-                  placeholder="Ej. Familia Rodríguez o tu código..."
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#DFC088]/50 bg-white text-xs sm:text-sm font-sans-clean text-[#2A2118] focus:outline-none focus:ring-2 focus:ring-[#B89355]/40 text-center shadow-xs"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isVerifying}
-                className="gold-button w-full py-2.5 rounded-xl font-serif-luxury text-xs tracking-widest uppercase flex items-center justify-center gap-2 cursor-pointer shadow-xs disabled:opacity-60"
-              >
-                {isVerifying ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin text-white" />
-                    <span>Verificando pases...</span>
-                  </>
-                ) : (
-                  <>
-                    <KeyRound className="w-4 h-4" />
-                    <span>Validar y Abrir Sobre</span>
-                  </>
-                )}
-              </button>
-            </form>
-
-            <p className="font-serif-luxury text-[11px] text-[#8C6A35] italic mt-3 pt-2.5 border-t border-[#DFC088]/30">
-              «Celebración bajo reserva y confirmación previa de los novios»
-            </p>
+            <Sparkles className="w-3.5 h-3.5 text-[#B89355] animate-pulse" />
+            <span className="font-serif-luxury text-xs sm:text-sm tracking-[0.2em] uppercase text-[#8C6A35] font-semibold">
+              Toca el sello para abrir
+            </span>
           </div>
-        )}
+
+          <button
+            onClick={onOpenComplete}
+            className="text-[11px] font-sans-clean text-[#8C7A6B] hover:text-[#2A2118] tracking-wider underline underline-offset-4 decoration-[#B89355]/30 hover:decoration-[#B89355] transition-colors cursor-pointer pt-1"
+          >
+            Saltar animación y ver invitación directamente
+          </button>
+        </div>
       </div>
     </div>
   );

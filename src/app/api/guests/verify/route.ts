@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
         {
           success: false,
           error:
-            'No encontramos una invitación registrada con ese nombre o código. Esta celebración es estrictamente privada y por invitación previa. Si consideras que se trata de un error, por favor comunícate directamente con Ricardo y Estefani.',
+            'No encontramos una invitación registrada con ese nombre o código. Por favor comunícate directamente con Ricardo y Estefani.',
         },
         { status: 404 }
       );
