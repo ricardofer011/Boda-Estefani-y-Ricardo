@@ -5,6 +5,7 @@ import confetti from 'canvas-confetti';
 import { WaxSeal } from './WaxSeal';
 import { Sparkles } from 'lucide-react';
 import { VerifiedGuest } from './RsvpForm';
+import { startWeddingMusic } from './MusicPlayer';
 
 interface EnvelopeProps {
   onOpenComplete: () => void;
@@ -42,36 +43,6 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
 
   const handleMouseLeave = () => {
     setTilt({ x: 0, y: 0 });
-  };
-
-  // Sonido suave de arpa celestial
-  const playOpenChime = () => {
-    try {
-      const AudioCtx =
-        window.AudioContext ||
-        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      const ctx = new AudioCtx();
-      const now = ctx.currentTime;
-
-      const notes = [587.33, 739.99, 880.0, 1174.66];
-      notes.forEach((freq, idx) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
-
-        gain.gain.setValueAtTime(0.001, now + idx * 0.08);
-        gain.gain.linearRampToValueAtTime(0.03, now + idx * 0.08 + 0.04);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.08 + 0.9);
-
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now + idx * 0.08);
-        osc.stop(now + idx * 0.08 + 1.0);
-      });
-    } catch {
-      // Ignorar si el navegador bloquea audio sin interacción
-    }
   };
 
   // Ráfaga celestial de crucecitas doradas y perla al abrir el sello
@@ -124,12 +95,14 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
   const handleOpenClick = () => {
     if (stage !== 'idle') return;
 
+    // Iniciar inmediatamente la hermosa melodía instrumental en el gesto del usuario
+    startWeddingMusic();
+
     if (isReducedMotion) {
       onOpenComplete();
       return;
     }
 
-    playOpenChime();
     fireCrossConfetti();
 
     // 1. Desvanecer sello suavemente (0ms)
@@ -387,7 +360,10 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
           </div>
 
           <button
-            onClick={onOpenComplete}
+            onClick={() => {
+              startWeddingMusic();
+              onOpenComplete();
+            }}
             className="text-[11px] font-sans-clean text-[#784A67] hover:text-[#5C3759] tracking-wider underline underline-offset-4 decoration-[#9B709E]/40 hover:decoration-[#5C3759] transition-colors cursor-pointer pt-1"
           >
             Saltar animación y ver invitación directamente

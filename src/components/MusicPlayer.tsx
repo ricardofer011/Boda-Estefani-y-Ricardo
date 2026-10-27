@@ -1,148 +1,210 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Volume2, VolumeX, Music } from 'lucide-react';
+import { Volume2, VolumeX, Music, Play, Pause } from 'lucide-react';
 
-export function MusicPlayer() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const isPlayingRef = useRef<boolean>(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+export const WEDDING_AUDIO_ID = 'wedding-audio';
+export const WEDDING_AUDIO_SRC = '/audio/canon-in-d.mp3';
 
-  // Arpegio romántico clásico (acordes inspirados en Canon en Re Mayor)
-  // Frecuencias en Hz: Re, La, Si, Fa#, Sol, Re, Sol, La
-  const chordFrequencies = [
-    [293.66, 369.99, 440.0, 587.33], // D Mayor
-    [220.0, 277.18, 329.63, 440.0],  // A Mayor
-    [246.94, 293.66, 369.99, 493.88], // B menor
-    [185.0, 220.0, 277.18, 369.99],  // F# menor
-    [196.0, 246.94, 293.66, 392.0],  // G Mayor
-    [146.83, 220.0, 293.66, 369.99], // D Mayor
-    [196.0, 246.94, 293.66, 392.0],  // G Mayor
-    [220.0, 277.18, 329.63, 440.0],  // A Mayor
-  ];
+/**
+ * Inicia la reproducción de la música instrumental con un suave fade-in.
+ * Debe invocarse de forma síncrona o directa ante un evento de interacción del usuario (como tocar el sello del sobre).
+ */
+export function startWeddingMusic(): Promise<void> {
+  if (typeof window === 'undefined') return Promise.resolve();
 
-  const playRomanticNote = (ctx: AudioContext, freq: number, startTime: number, duration: number) => {
-    try {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      const filter = ctx.createBiquadFilter();
+  const audio = document.getElementById(WEDDING_AUDIO_ID) as HTMLAudioElement | null;
+  if (!audio) {
+    console.warn('Elemento de audio de boda no encontrado en el DOM');
+    return Promise.resolve();
+  }
 
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, startTime);
+  // Si ya está sonando, no reiniciar
+  if (!audio.paused && audio.currentTime > 0) {
+    return Promise.resolve();
+  }
 
-      // Filtro suave acústico
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(950, startTime);
+  // Comenzar con volumen bajo y desvanecer hacia arriba (fade in celestial)
+  audio.volume = 0.05;
+  const playPromise = audio.play();
 
-      // Envolvente acústica tipo arpa/caja de música
-      gain.gain.setValueAtTime(0.001, startTime);
-      gain.gain.linearRampToValueAtTime(0.035, startTime + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+  if (playPromise !== undefined) {
+    return playPromise
+      .then(() => {
+        let currentVol = 0.05;
+        const targetVol = 0.55;
+        const step = 0.05;
+        const interval = 120; // ~1.2 segundos para alcanzar 0.55
 
-      osc.connect(filter);
-      filter.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(startTime);
-      osc.stop(startTime + duration);
-    } catch (e) {
-      console.warn('Audio playback note skipped:', e);
-    }
-  };
-
-  const startSynthesizedMelody = () => {
-    if (!audioContextRef.current) {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      audioContextRef.current = new AudioCtx();
-    }
-
-    const ctx = audioContextRef.current;
-    if (ctx.state === 'suspended') {
-      ctx.resume();
-    }
-
-    isPlayingRef.current = true;
-    let chordIndex = 0;
-
-    const playLoop = () => {
-      if (!isPlayingRef.current || !ctx) return;
-
-      const chord = chordFrequencies[chordIndex % chordFrequencies.length];
-      const now = ctx.currentTime;
-
-      // Reproducir notas en arpegio ascendente suave
-      chord.forEach((freq, i) => {
-        playRomanticNote(ctx, freq, now + i * 0.45, 2.2);
+        const fadeTimer = setInterval(() => {
+          if (!audio || audio.paused) {
+            clearInterval(fadeTimer);
+            return;
+          }
+          currentVol = Math.min(targetVol, currentVol + step);
+          audio.volume = Number(currentVol.toFixed(2));
+          if (currentVol >= targetVol) {
+            clearInterval(fadeTimer);
+          }
+        }, interval);
+      })
+      .catch((err) => {
+        console.warn('Reproducción de audio sujeta a interacción del usuario:', err);
       });
+  }
 
-      chordIndex++;
-      timerRef.current = setTimeout(playLoop, 2100);
-    };
+  return Promise.resolve();
+}
 
-    playLoop();
-  };
+/**
+ * Pausa la música de la boda suavemente.
+ */
+export function pauseWeddingMusic() {
+  if (typeof window === 'undefined') return;
+  const audio = document.getElementById(WEDDING_AUDIO_ID) as HTMLAudioElement | null;
+  if (audio && !audio.paused) {
+    audio.pause();
+  }
+}
 
-  const stopSynthesizedMelody = () => {
-    isPlayingRef.current = false;
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-    if (audioContextRef.current && audioContextRef.current.state === 'running') {
-      audioContextRef.current.suspend();
-    }
-  };
+interface MusicPlayerProps {
+  isEnvelopeOpen?: boolean;
+}
 
-  const toggleMusic = () => {
-    if (isPlaying) {
-      stopSynthesizedMelody();
-      setIsPlaying(false);
-    } else {
-      startSynthesizedMelody();
-      setIsPlaying(true);
-    }
-  };
+export function MusicPlayer({ isEnvelopeOpen = true }: MusicPlayerProps) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+    const handleEnded = () => setIsPlaying(false);
+
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('pause', handlePause);
+    audio.addEventListener('ended', handleEnded);
+
+    // Comprobar estado inicial
+    if (!audio.paused && audio.currentTime > 0) {
+      setIsPlaying(true);
+    }
+
     return () => {
-      stopSynthesizedMelody();
-      if (audioContextRef.current) {
-        audioContextRef.current.close().catch(() => {});
-      }
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('pause', handlePause);
+      audio.removeEventListener('ended', handleEnded);
     };
   }, []);
 
+  const toggleMusic = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isPlaying) {
+      audio.pause();
+    } else {
+      if (audio.volume < 0.1) {
+        audio.volume = 0.55;
+      }
+      audio.play().catch((err) => {
+        console.warn('Error al reproducir audio:', err);
+      });
+    }
+  };
+
   return (
-    <div className="fixed bottom-5 right-5 z-40">
-      <button
-        onClick={toggleMusic}
-        aria-label={isPlaying ? 'Pausar música instrumental' : 'Reproducir música instrumental'}
-        title={isPlaying ? 'Pausar música' : 'Reproducir música instrumental de fondo'}
-        className="group relative flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-[#FCF9FD]/90 backdrop-blur-md border border-[#AB86B1]/45 shadow-lg text-[#2A1C28] hover:border-[#784A67] transition-all cursor-pointer active:scale-95"
+    <>
+      {/* Elemento de audio HTML5 pre-cargado */}
+      <audio
+        id={WEDDING_AUDIO_ID}
+        ref={audioRef}
+        src={WEDDING_AUDIO_SRC}
+        preload="auto"
+        loop
+        className="hidden"
+      />
+
+      {/* Control flotante visual de la música */}
+      <div
+        className={`fixed bottom-5 right-5 z-40 transition-all duration-700 ${
+          isEnvelopeOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'
+        }`}
       >
-        {isPlaying ? (
-          <>
-            <Volume2 className="w-4 h-4 text-[#9B709E] animate-pulse" />
-            <div className="flex items-end gap-[2px] h-3">
-              <span className="w-0.5 h-3 bg-[#9B709E] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-              <span className="w-0.5 h-2 bg-[#9B709E] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-              <span className="w-0.5 h-3 bg-[#9B709E] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-            </div>
-            <span className="font-serif-luxury text-xs text-[#5C3759] font-medium hidden sm:inline">
-              Música activada
-            </span>
-          </>
-        ) : (
-          <>
-            <Music className="w-4 h-4 text-[#784A67]" />
-            <span className="font-serif-luxury text-xs text-[#6A5365] font-medium hidden sm:inline">
-              Música ambiental
-            </span>
-            <VolumeX className="w-3.5 h-3.5 text-[#6A5365] sm:hidden" />
-          </>
-        )}
-      </button>
-    </div>
+        <button
+          onClick={toggleMusic}
+          type="button"
+          aria-label={isPlaying ? 'Pausar música instrumental' : 'Reproducir música instrumental'}
+          title={isPlaying ? 'Pausar música: Johann Pachelbel - Canon in D' : 'Reproducir música instrumental'}
+          className={`group relative flex items-center gap-2.5 px-4 py-2.5 rounded-full backdrop-blur-md border shadow-xl transition-all duration-300 cursor-pointer active:scale-95 ${
+            isPlaying
+              ? 'bg-[#FCF9FD]/95 border-[#9B709E]/50 text-[#5C3759] shadow-[#5C3759]/15 ring-2 ring-[#DFC6E3]/60'
+              : 'bg-[#FCF9FD]/90 border-[#AB86B1]/40 text-[#6A5365] hover:border-[#784A67] shadow-md'
+          }`}
+        >
+          {isPlaying ? (
+            <>
+              {/* Icono de volumen con aura suave */}
+              <div className="relative flex items-center justify-center">
+                <Volume2 className="w-4 h-4 text-[#784A67] animate-pulse" />
+                <span className="absolute -inset-1 rounded-full bg-[#DFC6E3]/40 animate-ping opacity-40 pointer-events-none" />
+              </div>
+
+              {/* Ondas / Ecualizador animado */}
+              <div className="flex items-end gap-[3px] h-3.5 px-0.5" aria-hidden="true">
+                <span
+                  className="w-[2.5px] bg-[#9B709E] rounded-full animate-bounce"
+                  style={{ height: '70%', animationDuration: '0.8s', animationDelay: '0ms' }}
+                />
+                <span
+                  className="w-[2.5px] bg-[#784A67] rounded-full animate-bounce"
+                  style={{ height: '100%', animationDuration: '0.6s', animationDelay: '150ms' }}
+                />
+                <span
+                  className="w-[2.5px] bg-[#9B709E] rounded-full animate-bounce"
+                  style={{ height: '40%', animationDuration: '0.9s', animationDelay: '300ms' }}
+                />
+                <span
+                  className="w-[2.5px] bg-[#AB86B1] rounded-full animate-bounce"
+                  style={{ height: '85%', animationDuration: '0.7s', animationDelay: '200ms' }}
+                />
+              </div>
+
+              {/* Texto de la melodía */}
+              <div className="flex flex-col text-left">
+                <span className="font-serif-luxury text-[11px] font-semibold text-[#5C3759] leading-tight">
+                  Canon en Re Mayor
+                </span>
+                <span className="font-sans-clean text-[9px] text-[#9B709E] tracking-wider uppercase leading-none hidden sm:inline">
+                  Instrumental
+                </span>
+              </div>
+
+              {/* Indicador de pausa al hacer hover */}
+              <Pause className="w-3.5 h-3.5 text-[#784A67] ml-0.5 opacity-60 group-hover:opacity-100 transition-opacity" />
+            </>
+          ) : (
+            <>
+              <div className="relative flex items-center justify-center">
+                <VolumeX className="w-4 h-4 text-[#6A5365]" />
+              </div>
+
+              <div className="flex flex-col text-left">
+                <span className="font-serif-luxury text-[11px] font-medium text-[#6A5365] leading-tight">
+                  Música de fondo
+                </span>
+                <span className="font-sans-clean text-[9px] text-[#9B709E] tracking-wider uppercase leading-none hidden sm:inline">
+                  Tocar para escuchar
+                </span>
+              </div>
+
+              <Play className="w-3.5 h-3.5 text-[#784A67] ml-0.5 fill-[#784A67]/20 group-hover:fill-[#784A67] transition-all" />
+            </>
+          )}
+        </button>
+      </div>
+    </>
   );
 }

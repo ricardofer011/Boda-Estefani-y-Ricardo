@@ -56,6 +56,9 @@ export default function WeddingInvitationPage() {
 
   return (
     <main className="min-h-screen bg-[#FAF6FA] relative overflow-x-hidden selection:bg-[#DFC6E3] selection:text-[#5C3759]">
+      {/* Reproductor de música instrumental flotante (siempre montado para precarga y reproducción continua) */}
+      <MusicPlayer isEnvelopeOpen={isOpened} />
+
       {/* 1. SOBRE ANIMADO INICIAL */}
       {!isOpened && (
         <Envelope
@@ -76,9 +79,6 @@ export default function WeddingInvitationPage() {
 
         {/* Lluvia poética continua de pétalos de rosa y florecillas solo cuando se abre el sobre */}
         {isOpened && <FloralPetalsBackground className="z-1" />}
-
-        {/* Reproductor de música ambiental flotante */}
-        <MusicPlayer />
 
         {/* Barra superior discreta con opción de reabrir el sobre */}
         <header className="relative z-10 w-full py-4 px-6 flex items-center justify-between border-b border-[#AB86B1]/25 bg-[#FAF6FA]/85 backdrop-blur-xs">
