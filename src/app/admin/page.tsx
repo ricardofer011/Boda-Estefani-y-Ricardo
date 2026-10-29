@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { RSVPRecord, GuestInvite, GiftPreferenceType, InvitationScopeType, InvitationRoleType } from '@/lib/types';
+import { RSVPRecord, GuestInvite, GiftPreferenceType, InvitationScopeType, InvitationRoleType, InvitedByType } from '@/lib/types';
 import { WEDDING_CONFIG } from '@/config/wedding';
 import {
   Lock,
@@ -57,6 +57,7 @@ export default function AdminPage() {
   const [guestSearchTerm, setGuestSearchTerm] = useState('');
   const [guestGroupFilter, setGuestGroupFilter] = useState<string>('all');
   const [guestRoleFilter, setGuestRoleFilter] = useState<'all' | 'standard' | 'bridesmaid'>('all');
+  const [guestInvitedByFilter, setGuestInvitedByFilter] = useState<'all' | 'estefani' | 'ricardo' | 'both'>('all');
 
   // Formulario nuevo invitado
   const [newGuestName, setNewGuestName] = useState('');
@@ -67,6 +68,7 @@ export default function AdminPage() {
   const [newGuestGiftType, setNewGuestGiftType] = useState<GiftPreferenceType>('bank');
   const [newGuestScope, setNewGuestScope] = useState<InvitationScopeType>('church_and_reception');
   const [newGuestRole, setNewGuestRole] = useState<InvitationRoleType>('standard');
+  const [newGuestInvitedBy, setNewGuestInvitedBy] = useState<InvitedByType>('estefani');
   const [isAddingGuest, setIsAddingGuest] = useState(false);
   const [guestFeedback, setGuestFeedback] = useState<string | null>(null);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
@@ -190,6 +192,7 @@ export default function AdminPage() {
           gift_type: newGuestGiftType,
           invitation_scope: newGuestScope,
           invitation_role: newGuestRole,
+          invited_by: newGuestInvitedBy,
         }),
       });
 
@@ -203,7 +206,9 @@ export default function AdminPage() {
         setNewGuestGiftType('bank');
         setNewGuestScope('church_and_reception');
         setNewGuestRole('standard');
-        setGuestFeedback(`¡Invitación para ${data.data.full_name} (${data.data.invitation_role === 'bridesmaid' ? '🌸 Dama de Honor' : 'General'}) creada con éxito!`);
+        setNewGuestInvitedBy('estefani');
+        const invitedByLabel = data.data.invited_by === 'ricardo' ? '🤵 De Ricardo' : data.data.invited_by === 'both' ? '🕊️ De Ambos' : '👰 De Estefani';
+        setGuestFeedback(`¡Invitación para ${data.data.full_name} (${data.data.invitation_role === 'bridesmaid' ? '🌸 Dama' : 'General'} • ${invitedByLabel}) creada con éxito!`);
         setTimeout(() => setGuestFeedback(null), 5000);
       } else {
         setGuestFeedback(data.error || 'Error al guardar el invitado.');
@@ -235,6 +240,7 @@ export default function AdminPage() {
           gift_type: editingGuest.gift_type || 'bank',
           invitation_scope: editingGuest.invitation_scope || 'church_and_reception',
           invitation_role: editingGuest.invitation_role || 'standard',
+          invited_by: editingGuest.invited_by || 'estefani',
         }),
       });
 
@@ -303,6 +309,15 @@ export default function AdminPage() {
     const totalAssignedPasses = guests.reduce((sum, g) => sum + (Number(g.max_guests) || 1), 0);
     const pendingGuests = guests.filter((g) => g.status === 'pending');
 
+    // Desglose por quién invita (Estefani vs Ricardo vs Ambos)
+    const estefaniGuests = guests.filter((g) => (g.invited_by || 'estefani') === 'estefani');
+    const ricardoGuests = guests.filter((g) => g.invited_by === 'ricardo');
+    const bothGuests = guests.filter((g) => g.invited_by === 'both');
+
+    const estefaniPasses = estefaniGuests.reduce((sum, g) => sum + (Number(g.max_guests) || 1), 0);
+    const ricardoPasses = ricardoGuests.reduce((sum, g) => sum + (Number(g.max_guests) || 1), 0);
+    const bothPasses = bothGuests.reduce((sum, g) => sum + (Number(g.max_guests) || 1), 0);
+
     return {
       totalResponses,
       attendingCount: attendingResponses.length,
@@ -312,6 +327,12 @@ export default function AdminPage() {
       totalAssignedPasses,
       totalInvitedGuests: guests.length,
       pendingGuestsCount: pendingGuests.length,
+      estefaniCount: estefaniGuests.length,
+      ricardoCount: ricardoGuests.length,
+      bothCount: bothGuests.length,
+      estefaniPasses,
+      ricardoPasses,
+      bothPasses,
     };
   }, [rsvps, guests]);
 
@@ -339,10 +360,14 @@ export default function AdminPage() {
         if (guestRoleFilter === 'bridesmaid' && !isBridesmaid) return false;
         if (guestRoleFilter === 'standard' && isBridesmaid) return false;
       }
+      if (guestInvitedByFilter !== 'all') {
+        const by = g.invited_by || 'estefani';
+        if (by !== guestInvitedByFilter) return false;
+      }
 
       return true;
     });
-  }, [guests, guestSearchTerm, guestGroupFilter, guestRoleFilter]);
+  }, [guests, guestSearchTerm, guestGroupFilter, guestRoleFilter, guestInvitedByFilter]);
 
   // Filtrado de confirmaciones (RSVPs)
   const filteredRsvps = useMemo(() => {
@@ -659,6 +684,66 @@ export default function AdminPage() {
         {/* ==================================================================== */}
         {activeTab === 'guests' && (
           <section className="space-y-8">
+            {/* Desglose de invitaciones por novio/novia (Estefani vs Ricardo) */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+              <div className="p-4 rounded-2xl bg-rose-50/80 border border-rose-200/90 shadow-2xs flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-white border border-rose-200 flex items-center justify-center text-xl shadow-2xs">
+                    👰
+                  </div>
+                  <div>
+                    <span className="text-xs uppercase font-sans-clean font-bold tracking-wider text-rose-900 block">
+                      Invitados de Estefani
+                    </span>
+                    <span className="text-[11px] text-rose-700 font-sans-clean font-medium">
+                      {stats.estefaniPasses} pases en {stats.estefaniCount} invitaciones
+                    </span>
+                  </div>
+                </div>
+                <span className="font-serif-luxury text-3xl font-semibold text-rose-950">
+                  {stats.estefaniCount}
+                </span>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-blue-50/80 border border-blue-200/90 shadow-2xs flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-white border border-blue-200 flex items-center justify-center text-xl shadow-2xs">
+                    🤵
+                  </div>
+                  <div>
+                    <span className="text-xs uppercase font-sans-clean font-bold tracking-wider text-blue-900 block">
+                      Invitados de Ricardo
+                    </span>
+                    <span className="text-[11px] text-blue-700 font-sans-clean font-medium">
+                      {stats.ricardoPasses} pases en {stats.ricardoCount} invitaciones
+                    </span>
+                  </div>
+                </div>
+                <span className="font-serif-luxury text-3xl font-semibold text-blue-950">
+                  {stats.ricardoCount}
+                </span>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-purple-50/80 border border-purple-200/90 shadow-2xs flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-white border border-purple-200 flex items-center justify-center text-xl shadow-2xs">
+                    🕊️
+                  </div>
+                  <div>
+                    <span className="text-xs uppercase font-sans-clean font-bold tracking-wider text-purple-900 block">
+                      Invitaciones Mutuas (Ambos)
+                    </span>
+                    <span className="text-[11px] text-purple-700 font-sans-clean font-medium">
+                      {stats.bothPasses} pases en {stats.bothCount} invitaciones
+                    </span>
+                  </div>
+                </div>
+                <span className="font-serif-luxury text-3xl font-semibold text-purple-950">
+                  {stats.bothCount}
+                </span>
+              </div>
+            </div>
+
             {/* Formulario para añadir invitado con pases asignados */}
             <div className="bg-[#FCFAF6] border border-[#DFC088]/40 rounded-2xl p-6 shadow-xs">
               <h3 className="font-serif-luxury text-xl text-[#2A2118] font-medium mb-1">
@@ -685,7 +770,7 @@ export default function AdminPage() {
                 </div>
               )}
 
-              <form onSubmit={handleAddGuest} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+              <form onSubmit={handleAddGuest} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
                 <div className="sm:col-span-2 lg:col-span-1">
                   <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
                     Nombre o Familia del Invitado <span className="text-[#8C6A35]">*</span>
@@ -719,6 +804,28 @@ export default function AdminPage() {
                 </div>
 
                 <div>
+                  <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean flex items-center justify-between">
+                    <span>¿De parte de quién?</span>
+                    <span className="text-[#8C6A35] font-bold">*</span>
+                  </label>
+                  <select
+                    value={newGuestInvitedBy}
+                    onChange={(e) => setNewGuestInvitedBy(e.target.value as InvitedByType)}
+                    className={`w-full px-3.5 py-2.5 rounded-lg border text-xs sm:text-sm font-sans-clean focus:outline-none focus:ring-1 focus:ring-[#B89355] ${
+                      newGuestInvitedBy === 'estefani'
+                        ? 'border-rose-300 bg-rose-50 text-rose-900 font-semibold'
+                        : newGuestInvitedBy === 'ricardo'
+                        ? 'border-blue-300 bg-blue-50 text-blue-900 font-semibold'
+                        : 'border-purple-300 bg-purple-50 text-purple-900 font-semibold'
+                    }`}
+                  >
+                    <option value="estefani">👰 De Estefani (Novia)</option>
+                    <option value="ricardo">🤵 De Ricardo (Novio)</option>
+                    <option value="both">🕊️ De Ambos (Mutuo)</option>
+                  </select>
+                </div>
+
+                <div>
                   <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean">
                     Grupo / Mesa
                   </label>
@@ -726,7 +833,7 @@ export default function AdminPage() {
                     type="text"
                     value={newGuestGroup}
                     onChange={(e) => setNewGuestGroup(e.target.value)}
-                    placeholder="Ej. Familia Novia, Amigos, etc."
+                    placeholder="Ej. Familia Novia, Amigos..."
                     className="w-full px-3.5 py-2.5 rounded-lg border border-[#DFC088]/50 bg-white text-xs sm:text-sm font-sans-clean focus:outline-none focus:ring-1 focus:ring-[#B89355]"
                   />
                 </div>
@@ -786,6 +893,7 @@ export default function AdminPage() {
                       if (role === 'bridesmaid') {
                         if (!newGuestGroup || newGuestGroup === 'Familia') setNewGuestGroup('Damas de Honor');
                         setNewGuestPasses(1);
+                        setNewGuestInvitedBy('estefani');
                       }
                     }}
                     className={`w-full px-3.5 py-2.5 rounded-lg border text-xs sm:text-sm font-sans-clean focus:outline-none focus:ring-1 focus:ring-[#B89355] ${
@@ -799,7 +907,7 @@ export default function AdminPage() {
                   </select>
                 </div>
 
-                <div className="sm:col-span-2 lg:col-span-2">
+                <div className="sm:col-span-2 lg:col-span-3">
                   <input
                     type="text"
                     value={newGuestNotes}
@@ -868,6 +976,18 @@ export default function AdminPage() {
                     <option value="standard">💌 Invitados Generales</option>
                     <option value="bridesmaid">🌸 Damas de Honor</option>
                   </select>
+
+                  {/* Filtro por a quién pertenece la invitación */}
+                  <select
+                    value={guestInvitedByFilter}
+                    onChange={(e) => setGuestInvitedByFilter(e.target.value as 'all' | 'estefani' | 'ricardo' | 'both')}
+                    className="px-2.5 py-1.5 rounded-lg border border-[#DFC088]/40 bg-white text-xs font-sans-clean text-[#2A2118] font-medium"
+                  >
+                    <option value="all">👥 Todos ({guests.length})</option>
+                    <option value="estefani">👰 De Estefani ({stats.estefaniCount})</option>
+                    <option value="ricardo">🤵 De Ricardo ({stats.ricardoCount})</option>
+                    <option value="both">🕊️ De Ambos ({stats.bothCount})</option>
+                  </select>
                 </div>
               </div>
 
@@ -876,6 +996,7 @@ export default function AdminPage() {
                   <thead>
                     <tr className="border-b border-[#DFC088]/30 text-[#8C6A35] font-serif-luxury text-xs uppercase tracking-wider">
                       <th className="py-3 px-3">Invitado</th>
+                      <th className="py-3 px-3">De Parte de</th>
                       <th className="py-3 px-3">Grupo / Mesa</th>
                       <th className="py-3 px-3 text-center">Pases</th>
                       <th className="py-3 px-3">Alcance & Regalo</th>
@@ -887,7 +1008,7 @@ export default function AdminPage() {
                   <tbody className="divide-y divide-[#DFC088]/20">
                     {filteredGuests.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="py-8 text-center text-[#6B5B4D] italic">
+                        <td colSpan={8} className="py-8 text-center text-[#6B5B4D] italic">
                           No hay invitados registrados con esos criterios.
                         </td>
                       </tr>
@@ -896,6 +1017,7 @@ export default function AdminPage() {
                         const isConfirmed = g.status === 'confirmed';
                         const isDeclined = g.status === 'declined';
                         const isBridesmaid = g.invitation_role === 'bridesmaid';
+                        const invitedBy = g.invited_by || 'estefani';
 
                         return (
                           <tr key={g.id} className="hover:bg-[#FAF7F2] transition-colors">
@@ -909,6 +1031,22 @@ export default function AdminPage() {
                                 )}
                               </div>
                               {g.phone && <span className="block text-[11px] text-[#8C6A35]">{g.phone}</span>}
+                            </td>
+
+                            <td className="py-3.5 px-3">
+                              {invitedBy === 'estefani' ? (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-800 border border-rose-200 text-[11px] font-semibold">
+                                  👰 Estefani
+                                </span>
+                              ) : invitedBy === 'ricardo' ? (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200 text-[11px] font-semibold">
+                                  🤵 Ricardo
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-800 border border-purple-200 text-[11px] font-semibold">
+                                  🕊️ Ambos
+                                </span>
+                              )}
                             </td>
 
                             <td className="py-3.5 px-3">
@@ -1384,6 +1522,33 @@ export default function AdminPage() {
                 >
                   <option value="standard">💌 Invitación General de Boda</option>
                   <option value="bridesmaid">🌸 Exclusiva para Damas de Honor</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#2A2118] mb-1 font-sans-clean flex items-center justify-between">
+                  <span>¿A quién pertenece la invitación?</span>
+                  <span className="text-[#8C6A35] font-bold">*</span>
+                </label>
+                <select
+                  value={editingGuest.invited_by || 'estefani'}
+                  onChange={(e) =>
+                    setEditingGuest({
+                      ...editingGuest,
+                      invited_by: e.target.value as InvitedByType,
+                    })
+                  }
+                  className={`w-full px-3.5 py-2.5 rounded-lg border text-xs font-sans-clean ${
+                    editingGuest.invited_by === 'ricardo'
+                      ? 'border-blue-300 bg-blue-50 text-blue-900 font-semibold'
+                      : editingGuest.invited_by === 'both'
+                      ? 'border-purple-300 bg-purple-50 text-purple-900 font-semibold'
+                      : 'border-rose-300 bg-rose-50 text-rose-900 font-semibold'
+                  }`}
+                >
+                  <option value="estefani">👰 De Estefani (Novia)</option>
+                  <option value="ricardo">🤵 De Ricardo (Novio)</option>
+                  <option value="both">🕊️ De Ambos (Mutuo)</option>
                 </select>
               </div>
 

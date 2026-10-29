@@ -166,7 +166,28 @@ async function saveGuestsData(records: GuestInvite[]): Promise<void> {
   }
 }
 
+function parseNotesAndInvitedBy(rawNotes: string | null | undefined, explicitInvitedBy?: unknown): { cleanNotes: string | null; invitedBy: 'estefani' | 'ricardo' | 'both' } {
+  // 1. Si viene explícito por columna de BD
+  if (explicitInvitedBy === 'estefani' || explicitInvitedBy === 'ricardo' || explicitInvitedBy === 'both') {
+    const cleanNotes = (rawNotes || '').replace(/\[invitado_por:(estefani|ricardo|both)\]/gi, '').trim();
+    return { cleanNotes: cleanNotes || null, invitedBy: explicitInvitedBy };
+  }
+
+  // 2. Si no, extraer del tag en el texto de notas [invitado_por:...]
+  const match = (rawNotes || '').match(/\[invitado_por:(estefani|ricardo|both)\]/i);
+  const invitedBy: 'estefani' | 'ricardo' | 'both' = match ? (match[1].toLowerCase() as 'estefani' | 'ricardo' | 'both') : 'estefani';
+  const cleanNotes = (rawNotes || '').replace(/\[invitado_por:(estefani|ricardo|both)\]/gi, '').trim();
+  return { cleanNotes: cleanNotes || null, invitedBy };
+}
+
+function encodeNotesWithInvitedBy(notes: string | null | undefined, invitedBy: 'estefani' | 'ricardo' | 'both' = 'estefani'): string {
+  const cleanNotes = (notes || '').replace(/\[invitado_por:(estefani|ricardo|both)\]/gi, '').trim();
+  return cleanNotes ? `${cleanNotes} [invitado_por:${invitedBy}]` : `[invitado_por:${invitedBy}]`;
+}
+
 function mapSupabaseGuest(row: Record<string, unknown>): GuestInvite {
+  const { cleanNotes, invitedBy } = parseNotesAndInvitedBy(row.notes as string | null | undefined, row.invited_by);
+
   return {
     id: String(row.id),
     code: String(row.code || ''),
@@ -176,10 +197,11 @@ function mapSupabaseGuest(row: Record<string, unknown>): GuestInvite {
     status: (row.status as 'pending' | 'confirmed' | 'declined') || 'pending',
     confirmed_count: Number(row.confirmed_count) || 0,
     group: (row.group as string) || (row.group_name as string) || null,
-    notes: (row.notes as string | null) || null,
+    notes: cleanNotes,
     gift_type: (row.gift_type as 'bank' | 'registry' | 'both') || 'bank',
     invitation_scope: (row.invitation_scope as 'church_only' | 'church_and_reception') || 'church_and_reception',
     invitation_role: (row.invitation_role as 'standard' | 'bridesmaid') || 'standard',
+    invited_by: invitedBy,
     created_at: String(row.created_at || new Date().toISOString()),
     updated_at: row.updated_at ? String(row.updated_at) : undefined,
   };
@@ -283,43 +305,64 @@ export async function saveGuestInvite(
     .replace(/^-+|-+$/g, '');
   const cleanCode = (guest.code ? guest.code.trim().toLowerCase() : generatedCode) || 'invitado';
 
+  const invitedBy: 'estefani' | 'ricardo' | 'both' = guest.invited_by || 'estefani';
+  const encodedNotes = encodeNotesWithInvitedBy(guest.notes, invitedBy);
   const isDemo = !isSupabaseConfigured();
 
   if (isSupabaseConfigured()) {
     const supabase = getSupabaseAdmin();
     if (supabase) {
-      const payload = {
+      const basePayload = {
         code: cleanCode,
         full_name: guest.full_name.trim(),
         phone: guest.phone || null,
         max_guests: guest.max_guests,
         status: guest.status || 'pending',
         group_name: guest.group || null,
-        notes: guest.notes || null,
+        notes: encodedNotes,
         gift_type: guest.gift_type || 'bank',
         invitation_scope: guest.invitation_scope || 'church_and_reception',
         invitation_role: guest.invitation_role || 'standard',
       };
 
       if (guest.id) {
-        const { data, error } = await supabase
+        let res = await supabase
           .from('guests')
-          .update(payload)
+          .update({ ...basePayload, invited_by: invitedBy })
           .eq('id', guest.id)
           .select()
           .single();
 
-        if (!error && data) return { record: mapSupabaseGuest(data as Record<string, unknown>), isDemoMode: false };
-        if (error) console.error('Error actualizando en Supabase:', error);
+        // Si la columna invited_by aún no existe en Supabase (PGRST204), actualizar sin ella
+        if (res.error && (res.error.code === 'PGRST204' || res.error.message.includes('invited_by'))) {
+          res = await supabase
+            .from('guests')
+            .update(basePayload)
+            .eq('id', guest.id)
+            .select()
+            .single();
+        }
+
+        if (!res.error && res.data) return { record: mapSupabaseGuest(res.data as Record<string, unknown>), isDemoMode: false };
+        if (res.error) console.error('Error actualizando en Supabase:', res.error);
       } else {
-        const { data, error } = await supabase
+        let res = await supabase
           .from('guests')
-          .insert([payload])
+          .insert([{ ...basePayload, invited_by: invitedBy }])
           .select()
           .single();
 
-        if (!error && data) return { record: mapSupabaseGuest(data as Record<string, unknown>), isDemoMode: false };
-        if (error) console.error('Error insertando en Supabase:', error);
+        // Si la columna invited_by aún no existe en Supabase (PGRST204), insertar sin ella
+        if (res.error && (res.error.code === 'PGRST204' || res.error.message.includes('invited_by'))) {
+          res = await supabase
+            .from('guests')
+            .insert([basePayload])
+            .select()
+            .single();
+        }
+
+        if (!res.error && res.data) return { record: mapSupabaseGuest(res.data as Record<string, unknown>), isDemoMode: false };
+        if (res.error) console.error('Error insertando en Supabase:', res.error);
       }
     }
   }
@@ -341,6 +384,7 @@ export async function saveGuestInvite(
         gift_type: guest.gift_type || guests[idx].gift_type || 'bank',
         invitation_scope: guest.invitation_scope || guests[idx].invitation_scope || 'church_and_reception',
         invitation_role: guest.invitation_role || guests[idx].invitation_role || 'standard',
+        invited_by: invitedBy,
         updated_at: now,
       };
       await saveGuestsData(guests);
@@ -360,6 +404,7 @@ export async function saveGuestInvite(
     gift_type: guest.gift_type || 'bank',
     invitation_scope: guest.invitation_scope || 'church_and_reception',
     invitation_role: guest.invitation_role || 'standard',
+    invited_by: invitedBy,
     created_at: now,
   };
 

@@ -17,6 +17,7 @@ export interface RSVPRecord {
 export type GiftPreferenceType = 'bank' | 'registry' | 'both';
 export type InvitationScopeType = 'church_only' | 'church_and_reception';
 export type InvitationRoleType = 'standard' | 'bridesmaid';
+export type InvitedByType = 'estefani' | 'ricardo' | 'both';
 
 export interface GuestInvite {
   id: string;
@@ -31,6 +32,7 @@ export interface GuestInvite {
   gift_type?: GiftPreferenceType;
   invitation_scope?: InvitationScopeType;
   invitation_role?: InvitationRoleType;
+  invited_by?: InvitedByType;
   created_at: string;
   updated_at?: string;
 }

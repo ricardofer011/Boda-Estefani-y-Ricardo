@@ -37,8 +37,15 @@ CREATE TABLE IF NOT EXISTS public.guests (
     gift_type TEXT DEFAULT 'bank',
     invitation_scope TEXT DEFAULT 'church_and_reception',
     invitation_role TEXT DEFAULT 'standard',
+    invited_by TEXT DEFAULT 'estefani',
     created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
 );
+
+-- Si la tabla ya existía, añadir columnas nuevas con seguridad:
+ALTER TABLE public.guests ADD COLUMN IF NOT EXISTS invited_by TEXT DEFAULT 'estefani';
+ALTER TABLE public.guests ADD COLUMN IF NOT EXISTS invitation_role TEXT DEFAULT 'standard';
+ALTER TABLE public.guests ADD COLUMN IF NOT EXISTS invitation_scope TEXT DEFAULT 'church_and_reception';
+ALTER TABLE public.guests ADD COLUMN IF NOT EXISTS gift_type TEXT DEFAULT 'bank';
 
 -- 4. Índices para consultas rápidas
 CREATE INDEX IF NOT EXISTS idx_rsvps_created_at ON public.rsvps (created_at DESC);
@@ -58,7 +65,7 @@ DROP POLICY IF EXISTS "Permitir todo en guests" ON public.guests;
 CREATE POLICY "Permitir todo en guests" ON public.guests FOR ALL USING (true) WITH CHECK (true);
 
 -- 6. Insertar código base para Damas de Honor y muestra inicial
-INSERT INTO public.guests (code, full_name, max_guests, status, group_name, notes, invitation_scope, invitation_role)
+INSERT INTO public.guests (code, full_name, max_guests, status, group_name, notes, invitation_scope, invitation_role, invited_by)
 VALUES 
-    ('damas', 'Queridas Damas de Honor', 1, 'pending', 'Corte de Honor', 'Acceso general Damas de Boda', 'church_and_reception', 'bridesmaid')
+    ('damas', 'Queridas Damas de Honor', 1, 'pending', 'Corte de Honor', 'Acceso general Damas de Boda', 'church_and_reception', 'bridesmaid', 'estefani')
 ON CONFLICT (code) DO NOTHING;
