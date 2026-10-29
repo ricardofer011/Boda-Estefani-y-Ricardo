@@ -76,6 +76,13 @@ export default function AdminPage() {
   const [isSavingEdit, setIsSavingEdit] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search);
+      const tab = p.get('tab');
+      if (tab === 'rsvps' || tab === 'respuestas' || tab === 'confirmaciones') {
+        setActiveTab('rsvps');
+      }
+    }
     checkSession();
   }, []);
 

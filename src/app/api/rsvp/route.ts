@@ -33,6 +33,8 @@ export async function POST(request: Request) {
 
     const { record, isDemoMode } = await saveRSVP(body);
 
+    console.log('🌸 NUEVA RESPUESTA DE DAMA / INVITADO RECIBIDA:', JSON.stringify(record, null, 2));
+
     const message = body.attendance_status === 'attending'
       ? '¡Gracias por responder! Nos alegra compartir este momento tan especial contigo.'
       : 'Gracias por avisarnos con anticipación. Sentiremos tu ausencia y te tendremos muy presente en nuestras oraciones.';
