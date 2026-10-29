@@ -395,7 +395,7 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
                   <span className="font-serif-luxury text-[11px] tracking-widest uppercase text-[#784A67] font-semibold block">
                     Invitación Personalizada
                   </span>
-                  <h3 className="font-serif-luxury text-xl sm:text-2xl text-[#2A1C28] font-medium">
+                  <h3 className="font-serif-luxury text-xl sm:text-2xl text-[#2A1C28] font-medium break-words leading-snug mt-0.5">
                     {verifiedGuest.full_name}
                   </h3>
                 </div>

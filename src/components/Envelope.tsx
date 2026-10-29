@@ -164,7 +164,7 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
       </div>
 
       {/* Contenedor central */}
-      <div className="relative z-10 w-full max-w-sm sm:max-w-md flex flex-col items-center">
+      <div className="relative z-10 w-full max-w-md sm:max-w-xl flex flex-col items-center px-3">
         {/* Encabezado ceremonial con tipografía de lujo */}
         <div className="text-center mb-5 sm:mb-6 transition-transform duration-500">
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FBF5FC] border border-[#AB86B1]/45 mb-2 shadow-2xs">
@@ -182,14 +182,14 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
 
         {/* Membrete personalizado si el invitado ingresó con enlace único */}
         {guest && (
-          <div className="mb-4 px-4 py-2 rounded-2xl bg-[#FCF9FD] border border-[#AB86B1]/50 shadow-xs text-center animate-fade-in max-w-xs">
-            <span className="font-serif-luxury text-[10px] tracking-widest uppercase text-[#784A67] font-semibold block">
+          <div className="mb-4 px-4 sm:px-6 py-2.5 rounded-2xl bg-[#FCF9FD] border border-[#AB86B1]/50 shadow-xs text-center animate-fade-in w-full max-w-[360px] sm:max-w-[480px]">
+            <span className="font-serif-luxury text-[10px] sm:text-[11px] tracking-widest uppercase text-[#784A67] font-semibold block">
               {guest.invitation_role === 'bridesmaid' ? '🌸 Invitación Especial • Damas de Honor' : 'Invitación Reservada Para:'}
             </span>
-            <p className="font-serif-luxury text-sm sm:text-base font-semibold text-[#2A1C28] truncate mt-0.5">
+            <p className="font-serif-luxury text-sm sm:text-base font-semibold text-[#2A1C28] leading-snug break-words mt-1">
               {guest.full_name}
             </p>
-            <span className="inline-block mt-0.5 px-3 py-0.5 rounded-full bg-[#5C3759] text-[#DFC6E3] text-[11px] font-serif-luxury font-semibold shadow-2xs">
+            <span className="inline-block mt-1.5 px-3.5 py-0.5 rounded-full bg-[#5C3759] text-[#DFC6E3] text-[11px] font-serif-luxury font-semibold shadow-2xs">
               {guest.invitation_role === 'bridesmaid'
                 ? '🌸 Dama de Honor Oficial'
                 : guest.max_guests === 1

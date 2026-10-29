@@ -77,7 +77,7 @@ export function InvitationCard({ guest }: InvitationCardProps) {
               <p className="font-serif-luxury text-base sm:text-lg text-[#2A1C28] font-medium leading-snug">
                 Reservada con cariño en honor de:
               </p>
-              <p className="font-serif-luxury text-lg sm:text-xl font-bold text-[#5C3759] mt-0.5">
+              <p className="font-serif-luxury text-lg sm:text-xl font-bold text-[#5C3759] mt-0.5 break-words leading-snug px-2 max-w-xl mx-auto">
                 {guest.full_name}
               </p>
 
