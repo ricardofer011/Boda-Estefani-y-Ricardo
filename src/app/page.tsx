@@ -28,8 +28,10 @@ export default function WeddingInvitationPage() {
     const params = new URLSearchParams(window.location.search);
     const code = (params.get('invitacion') || params.get('code') || params.get('invitado') || params.get('guest') || '').trim();
     const roleParam = (params.get('rol') || params.get('tipo') || params.get('dama') || params.get('damas') || '').trim().toLowerCase();
+    const isBridesmaidParam = roleParam === 'dama' || roleParam === 'damas' || roleParam === '1' || roleParam === 'true';
 
-    if (code.toLowerCase() === 'damas' || code.toLowerCase() === 'dama' || roleParam === 'dama' || roleParam === 'damas' || roleParam === '1' || roleParam === 'true') {
+    // 1. Acceso genérico a Damas de Honor (código 'damas' o sin código específico con rol dama)
+    if (code.toLowerCase() === 'damas' || code.toLowerCase() === 'dama' || (!code && isBridesmaidParam)) {
       setGuest({
         code: 'damas',
         full_name: 'Queridas Damas de Honor',
@@ -42,12 +44,33 @@ export default function WeddingInvitationPage() {
       return;
     }
 
+    // 2. Acceso con código individual (ej. "jeiry--cede-o", "jeiry-cedeno")
     if (code) {
+      // Si la URL ya traía rol=dama explícito, activar vista de dama inmediatamente mientras carga el API
+      if (isBridesmaidParam) {
+        setGuest({
+          code,
+          full_name: code.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+          max_guests: 1,
+          status: 'pending',
+          gift_type: 'bank',
+          invitation_scope: 'church_and_reception',
+          invitation_role: 'bridesmaid',
+        });
+      }
+
       fetch(`/api/guests/verify?code=${encodeURIComponent(code)}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.success && data.data) {
-            setGuest(data.data);
+            setGuest((prev) => ({
+              ...data.data,
+              // Mantener rol bridesmaid si venía en el API o en la URL
+              invitation_role:
+                data.data.invitation_role === 'bridesmaid' || isBridesmaidParam
+                  ? 'bridesmaid'
+                  : (data.data.invitation_role || 'standard'),
+            }));
           }
         })
         .catch((err) => {

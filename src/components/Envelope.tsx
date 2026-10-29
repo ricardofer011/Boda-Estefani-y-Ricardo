@@ -237,7 +237,7 @@ export function Envelope({ onOpenComplete, coupleNames, guest }: EnvelopeProps) 
             >
               <div className="w-16 h-16 rounded-full border border-[#DFC088]/50 flex items-center justify-center opacity-60">
                 <span className="font-serif-luxury text-2xl text-[#FAF6FA] font-light tracking-widest drop-shadow-xs">
-                  R&E
+                  E&R
                 </span>
               </div>
             </div>

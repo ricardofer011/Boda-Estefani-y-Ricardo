@@ -166,6 +166,25 @@ async function saveGuestsData(records: GuestInvite[]): Promise<void> {
   }
 }
 
+function mapSupabaseGuest(row: Record<string, unknown>): GuestInvite {
+  return {
+    id: String(row.id),
+    code: String(row.code || ''),
+    full_name: String(row.full_name || ''),
+    phone: (row.phone as string | null) || null,
+    max_guests: Number(row.max_guests) || 1,
+    status: (row.status as 'pending' | 'confirmed' | 'declined') || 'pending',
+    confirmed_count: Number(row.confirmed_count) || 0,
+    group: (row.group as string) || (row.group_name as string) || null,
+    notes: (row.notes as string | null) || null,
+    gift_type: (row.gift_type as 'bank' | 'registry' | 'both') || 'bank',
+    invitation_scope: (row.invitation_scope as 'church_only' | 'church_and_reception') || 'church_and_reception',
+    invitation_role: (row.invitation_role as 'standard' | 'bridesmaid') || 'standard',
+    created_at: String(row.created_at || new Date().toISOString()),
+    updated_at: row.updated_at ? String(row.updated_at) : undefined,
+  };
+}
+
 /**
  * Obtener todos los invitados pre-aprobados
  */
@@ -179,7 +198,7 @@ export async function getAllGuests(): Promise<{ records: GuestInvite[]; isDemoMo
         .order('created_at', { ascending: false });
 
       if (!error && data) {
-        return { records: data as GuestInvite[], isDemoMode: false };
+        return { records: data.map((r) => mapSupabaseGuest(r as Record<string, unknown>)), isDemoMode: false };
       }
       console.error('Error al consultar Supabase guests:', error);
     }
@@ -196,24 +215,43 @@ export async function findGuestByCodeOrName(query: string): Promise<GuestInvite 
   const clean = query.trim().toLowerCase();
   if (!clean) return null;
 
+  // Variantes para búsqueda flexible (ej. "jeiry--cede-o", "jeiry-cedeno", acentos)
+  const normalizedClean = clean
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/-+/g, '-');
+
   if (isSupabaseConfigured()) {
     const supabase = getSupabaseAdmin();
     if (supabase) {
+      // 1. Por código exacto
       const { data: byCode } = await supabase
         .from('guests')
         .select('*')
         .ilike('code', clean)
         .limit(1);
 
-      if (byCode && byCode.length > 0) return byCode[0] as GuestInvite;
+      if (byCode && byCode.length > 0) return mapSupabaseGuest(byCode[0] as Record<string, unknown>);
 
+      // 1.b Por código normalizado
+      if (normalizedClean !== clean) {
+        const { data: byNormCode } = await supabase
+          .from('guests')
+          .select('*')
+          .ilike('code', normalizedClean)
+          .limit(1);
+
+        if (byNormCode && byNormCode.length > 0) return mapSupabaseGuest(byNormCode[0] as Record<string, unknown>);
+      }
+
+      // 2. Por coincidencia en nombre completo
       const { data: byName } = await supabase
         .from('guests')
         .select('*')
         .ilike('full_name', `%${clean}%`)
         .limit(1);
 
-      if (byName && byName.length > 0) return byName[0] as GuestInvite;
+      if (byName && byName.length > 0) return mapSupabaseGuest(byName[0] as Record<string, unknown>);
     }
   }
 
@@ -222,6 +260,7 @@ export async function findGuestByCodeOrName(query: string): Promise<GuestInvite 
     guests.find(
       (g) =>
         g.code.toLowerCase() === clean ||
+        g.code.toLowerCase() === normalizedClean ||
         g.full_name.toLowerCase().includes(clean)
     ) || null
   );
@@ -234,48 +273,52 @@ export async function saveGuestInvite(
   guest: Omit<GuestInvite, 'id' | 'created_at'> & { id?: string }
 ): Promise<{ record: GuestInvite; isDemoMode: boolean }> {
   const now = new Date().toISOString();
-  const cleanCode = (guest.code || guest.full_name.toLowerCase().replace(/[^a-z0-9]/g, '-')).toLowerCase();
+  
+  // Limpieza de código slug elegante y amigable (ej. "Jeiry Cedeño" -> "jeiry-cedeno")
+  const generatedCode = guest.full_name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  const cleanCode = (guest.code ? guest.code.trim().toLowerCase() : generatedCode) || 'invitado';
+
   const isDemo = !isSupabaseConfigured();
 
   if (isSupabaseConfigured()) {
     const supabase = getSupabaseAdmin();
     if (supabase) {
+      const payload = {
+        code: cleanCode,
+        full_name: guest.full_name.trim(),
+        phone: guest.phone || null,
+        max_guests: guest.max_guests,
+        status: guest.status || 'pending',
+        group_name: guest.group || null,
+        notes: guest.notes || null,
+        gift_type: guest.gift_type || 'bank',
+        invitation_scope: guest.invitation_scope || 'church_and_reception',
+        invitation_role: guest.invitation_role || 'standard',
+      };
+
       if (guest.id) {
         const { data, error } = await supabase
           .from('guests')
-          .update({
-            code: cleanCode,
-            full_name: guest.full_name,
-            phone: guest.phone || null,
-            max_guests: guest.max_guests,
-            status: guest.status || 'pending',
-            group_name: guest.group || null,
-            notes: guest.notes || null,
-          })
+          .update(payload)
           .eq('id', guest.id)
           .select()
           .single();
 
-        if (!error && data) return { record: data as GuestInvite, isDemoMode: false };
+        if (!error && data) return { record: mapSupabaseGuest(data as Record<string, unknown>), isDemoMode: false };
         if (error) console.error('Error actualizando en Supabase:', error);
       } else {
         const { data, error } = await supabase
           .from('guests')
-          .insert([
-            {
-              code: cleanCode,
-              full_name: guest.full_name,
-              phone: guest.phone || null,
-              max_guests: guest.max_guests,
-              status: guest.status || 'pending',
-              group_name: guest.group || null,
-              notes: guest.notes || null,
-            },
-          ])
+          .insert([payload])
           .select()
           .single();
 
-        if (!error && data) return { record: data as GuestInvite, isDemoMode: false };
+        if (!error && data) return { record: mapSupabaseGuest(data as Record<string, unknown>), isDemoMode: false };
         if (error) console.error('Error insertando en Supabase:', error);
       }
     }
