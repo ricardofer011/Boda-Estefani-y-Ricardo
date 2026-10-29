@@ -99,6 +99,22 @@ export function BridesmaidInvitationCard({ guest }: BridesmaidInvitationCardProp
       if (attendance === 'attending') {
         triggerCelebration();
       }
+
+      // Respaldo inmediato: Abrir WhatsApp con la respuesta para que nunca se pierda
+      const directText =
+        attendance === 'attending'
+          ? `¡Hola Estefani! 🌸💕 Acabo de confirmar en la invitación: ¡SÍ, acepto con todo mi corazón ser tu Dama de Boda! 👰✨\n\n${
+              message.trim() ? `"${message.trim()}"\n\n` : ''
+            }Con mucho cariño,\n${trimmedName}`
+          : `Hola Estefani, con todo mi cariño he recibido tu hermosa invitación de dama. Por motivos de fuerza mayor no podré acompañarte, pero te deseo a ti y a Ricardo toda la felicidad y bendición de Dios. 💕\n\n${
+              message.trim() ? `"${message.trim()}"\n\n` : ''
+            }Con cariño,\n${trimmedName}`;
+      const directUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(directText)}`;
+      try {
+        window.open(directUrl, '_blank');
+      } catch {
+        // fallback si el navegador bloquea popup
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Error al enviar tu respuesta.';
       setErrorMsg(msg);
