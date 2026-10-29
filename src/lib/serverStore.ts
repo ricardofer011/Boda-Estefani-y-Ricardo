@@ -44,21 +44,28 @@ async function ensureLocalDataFile(): Promise<RSVPRecord[]> {
     globalThis.__weddingRsvps = parsed;
     return parsed;
   } catch {
-    const initialData: RSVPRecord[] = [
-      {
-        id: 'demo-1',
-        guest_name: 'María Alejandra Fernández',
-        phone: '+1 809 555 0192',
-        attendance_status: 'attending',
-        guest_count: 2,
-        companion_names: ['Carlos Fernández'],
-        dietary_restrictions: 'Vegetariana',
-        message: '¡Muchas felicidades a ambos! Qué alegría verlos dar este hermoso paso ante Dios.',
-        invitation_code: 'maria-fernandez',
-        created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-        updated_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-      },
-    ];
+    // Intentar sembrar desde data/local_rsvps.json si existe en el proyecto
+    let initialData: RSVPRecord[] = [];
+    try {
+      const seedContent = await fs.readFile(path.join(process.cwd(), 'data', 'local_rsvps.json'), 'utf-8');
+      initialData = JSON.parse(seedContent);
+    } catch {
+      initialData = [
+        {
+          id: 'demo-1',
+          guest_name: 'María Alejandra Fernández',
+          phone: '+1 809 555 0192',
+          attendance_status: 'attending',
+          guest_count: 2,
+          companion_names: ['Carlos Fernández'],
+          dietary_restrictions: 'Vegetariana',
+          message: '¡Muchas felicidades a ambos! Qué alegría verlos dar este hermoso paso ante Dios.',
+          invitation_code: 'maria-fernandez',
+          created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+          updated_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+        },
+      ];
+    }
     globalThis.__weddingRsvps = initialData;
     try {
       const dir = path.dirname(filePath);
@@ -100,35 +107,41 @@ async function ensureGuestsFile(): Promise<GuestInvite[]> {
     globalThis.__weddingGuests = parsed;
     return parsed;
   } catch {
-    const defaultGuests: GuestInvite[] = [
-      {
-        id: 'guest-1',
-        code: 'maria-fernandez',
-        full_name: 'María Alejandra Fernández',
-        phone: '+1 809 555 0192',
-        max_guests: 2,
-        status: 'confirmed',
-        confirmed_count: 2,
-        group: 'Familia',
-        notes: 'Familia cercana',
-        gift_type: 'bank',
-        invitation_scope: 'church_and_reception',
-        created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-      },
-      {
-        id: 'guest-2',
-        code: 'guillermo-mendoza',
-        full_name: 'Guillermo y Laura Mendoza',
-        phone: '+1 829 555 0341',
-        max_guests: 2,
-        status: 'pending',
-        group: 'Amigos',
-        notes: 'Amigos de la universidad',
-        gift_type: 'registry',
-        invitation_scope: 'church_and_reception',
-        created_at: new Date().toISOString(),
-      },
-    ];
+    let defaultGuests: GuestInvite[] = [];
+    try {
+      const seedContent = await fs.readFile(path.join(process.cwd(), 'data', 'local_guests.json'), 'utf-8');
+      defaultGuests = JSON.parse(seedContent);
+    } catch {
+      defaultGuests = [
+        {
+          id: 'guest-1',
+          code: 'maria-fernandez',
+          full_name: 'María Alejandra Fernández',
+          phone: '+1 809 555 0192',
+          max_guests: 2,
+          status: 'confirmed',
+          confirmed_count: 2,
+          group: 'Familia',
+          notes: 'Familia cercana',
+          gift_type: 'bank',
+          invitation_scope: 'church_and_reception',
+          created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+        },
+        {
+          id: 'guest-2',
+          code: 'guillermo-mendoza',
+          full_name: 'Guillermo y Laura Mendoza',
+          phone: '+1 829 555 0341',
+          max_guests: 2,
+          status: 'pending',
+          group: 'Amigos',
+          notes: 'Amigos de la universidad',
+          gift_type: 'registry',
+          invitation_scope: 'church_and_reception',
+          created_at: new Date().toISOString(),
+        },
+      ];
+    }
     globalThis.__weddingGuests = defaultGuests;
     try {
       const dir = path.dirname(filePath);
