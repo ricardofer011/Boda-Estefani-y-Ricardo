@@ -48,6 +48,19 @@ export interface WeddingConfig {
     estimatedGuestsMax: number;
     deadlineFormatted: string;
   };
+  dressCode: {
+    badge: string;
+    title: string;
+    subtitle: string;
+    description: string;
+    gentlemenTitle: string;
+    gentlemenDescription: string;
+    gentlemenAvoid: string;
+    ladiesTitle: string;
+    ladiesDescription: string;
+    ladiesAvoid: string;
+    etiquetteNote: string;
+  };
   gifts: {
     badge: string;
     title: string;
@@ -139,6 +152,25 @@ export const WEDDING_CONFIG: WeddingConfig = {
     estimatedGuestsMax: 100,
     deadlineFormatted: "15 de noviembre de 2026",
   },
+  dressCode: {
+    badge: "Etiqueta y Protocolo",
+    title: "Código de Vestimenta",
+    subtitle: "Traje Formal",
+    description:
+      "Para celebrar este sagrado sacramento y compartir una velada distinguida e inolvidable junto a nuestros seres queridos, les rogamos acompañarnos en riguroso traje formal.",
+    gentlemenTitle: "Caballeros",
+    gentlemenDescription:
+      "Traje formal con saco y corbata, o pantalón de vestir con camisa formal de manga larga y zapatos de vestir.",
+    gentlemenAvoid:
+      "Agradecemos con especial afecto prescindir de calzado deportivo (tenis), camisetas, jeans o prendas casuales/sport.",
+    ladiesTitle: "Damas",
+    ladiesDescription:
+      "Vestido largo o midi elegante de fiesta.",
+    ladiesAvoid:
+      "Recordamos con afecto y delicadeza que los tonos blanco, marfil y crema están reservados exclusivamente para la novia.",
+    etiquetteNote:
+      "«Deseamos compartir una ocasión solemne y llena de distinción tanto en la Casa de Dios como en nuestra recepción junto al mar. Agradecemos profundamente su complicidad vistiendo sus mejores galas para celebrar juntos este gran día.»",
+  },
   gifts: {
     badge: "Muestra de Cariño",
     title: "Lluvia de Sobres",
@@ -180,7 +212,7 @@ export const WEDDING_CONFIG: WeddingConfig = {
   },
   share: {
     whatsappTemplate: (url: string) =>
-      `¡Hola! 💌 Nos hace mucha ilusión compartir contigo una fecha muy especial. Te invitamos a celebrar el matrimonio de Estefani Cedeño & Ricardo Fernandez el sábado 12 de diciembre de 2026 a las 11:00 a. m., en la Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo. Puedes ver tu invitación personal y confirmar tu asistencia aquí: ${url}`,
+      `¡Hola! 💌 Nos hace mucha ilusión compartir contigo una fecha muy especial. Te invitamos a celebrar el matrimonio de Estefani Cedeño & Ricardo Fernandez el sábado 12 de diciembre de 2026 a las 11:00 a. m., en la Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo (Código de vestimenta: Traje Formal). Puedes ver tu invitación personal y confirmar tu asistencia aquí: ${url}`,
   },
   theme: {
     colors: {

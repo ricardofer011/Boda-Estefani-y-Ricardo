@@ -422,7 +422,7 @@ export default function AdminPage() {
         ? `Te invitamos a celebrar nuestra boda religiosa este sábado 12 de diciembre de 2026 a las 11:00 a. m. en la Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo.`
         : `Te invitamos a celebrar nuestra boda religiosa este sábado 12 de diciembre de 2026 a las 11:00 a. m. en la Iglesia Las Mercedes, Ciudad Colonial, y posteriormente acompañarnos al brindis y recepción en el Salón Vista Marina (Av. España 70, Santo Domingo Este).`;
 
-    const text = `¡Hola ${guest.full_name}! 🕊️💌 Nos hace una inmensa ilusión compartir contigo un momento tan significativo en nuestras vidas.\n\n${scopeText}\n\nHemos preparado ${passesText}.\n\n*Nota formal:* La invitación es personal e intransferible, válida exclusivamente para el número de pases asignados.\n\nPuedes ver tu tarjeta personalizada y confirmar tu asistencia aquí:\n${url}`;
+    const text = `¡Hola ${guest.full_name}! 🕊️💌 Nos hace una inmensa ilusión compartir contigo un momento tan significativo en nuestras vidas.\n\n${scopeText}\n\nHemos preparado ${passesText}.\n\n*Código de vestimenta:* Traje Formal (Rigurosa formalidad, agradecemos con especial afecto prescindir de vestimenta o calzado deportivo).\n\n*Nota formal:* La invitación es personal e intransferible, válida exclusivamente para el número de pases asignados.\n\nPuedes ver tu tarjeta personalizada y confirmar tu asistencia aquí:\n${url}`;
 
     const cleanPhone = guest.phone ? guest.phone.replace(/[^0-9]/g, '') : '';
     const phoneParam = cleanPhone ? `phone=${cleanPhone}&` : '';

@@ -14,7 +14,7 @@ interface InvitationCardProps {
 }
 
 export function InvitationCard({ guest }: InvitationCardProps) {
-  const { couple, ceremony } = WEDDING_CONFIG;
+  const { couple, ceremony, dressCode } = WEDDING_CONFIG;
 
   return (
     <div className="w-full max-w-xl mx-auto my-8 px-4">
@@ -116,6 +116,20 @@ export function InvitationCard({ guest }: InvitationCardProps) {
             </p>
             <p className="font-sans-clean text-xs sm:text-sm text-[#6A5365] mt-1 leading-relaxed">
               Ciudad Colonial, Santo Domingo, República Dominicana.
+            </p>
+          </div>
+
+          {/* Código de Vestimenta Formal */}
+          <div className="mt-4 pt-3.5 border-t border-[#AB86B1]/30 max-w-sm w-full mx-auto text-center">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F5EBF7] border border-[#AB86B1]/40 text-[#5C3759] text-[10px] sm:text-xs font-serif-luxury tracking-widest uppercase font-semibold mb-1 shadow-2xs">
+              <Sparkles className="w-3 h-3 text-[#9B709E]" />
+              <span>{dressCode.title}</span>
+            </div>
+            <p className="font-serif-luxury text-base sm:text-lg font-bold text-[#2A1C28] tracking-wide">
+              {dressCode.subtitle}
+            </p>
+            <p className="font-serif-luxury text-[11px] sm:text-xs text-[#6A5365] italic max-w-xs mx-auto leading-relaxed mt-0.5">
+              Rigurosa formalidad • Agradecemos con especial afecto prescindir de vestimenta o calzado deportivo.
             </p>
           </div>
         </div>

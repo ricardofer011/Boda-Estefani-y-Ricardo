@@ -8,6 +8,7 @@ import { BridesmaidInvitationCard } from '@/components/BridesmaidInvitationCard'
 import { CouplePhotoSection } from '@/components/CouplePhotoSection';
 import { Countdown } from '@/components/Countdown';
 import { CeremonySection } from '@/components/CeremonySection';
+import { DressCodeSection } from '@/components/DressCodeSection';
 import { CalendarSection } from '@/components/CalendarSection';
 import { GiftsSection } from '@/components/GiftsSection';
 import { RsvpForm, VerifiedGuest } from '@/components/RsvpForm';
@@ -135,6 +136,7 @@ export default function WeddingInvitationPage() {
               <CouplePhotoSection />
               <Countdown />
               <CeremonySection scope={guest?.invitation_scope || 'church_and_reception'} />
+              <DressCodeSection />
               <CalendarSection />
               <GiftsSection giftType={guest?.gift_type || 'bank'} />
               <RsvpForm
