@@ -63,7 +63,7 @@ export function CouplePhotoSection() {
         <div className="relative p-2.5 sm:p-4 rounded-2xl bg-gradient-to-b from-[#F9F2FA] to-[#F1E5F3] border border-[#AB86B1]/45 shadow-inner">
           <div
             onClick={() => setSelectedPhoto(activePhoto)}
-            className="group relative w-full aspect-4/3 sm:aspect-3/2 rounded-xl overflow-hidden cursor-pointer shadow-lg border border-[#AB86B1]/40 bg-[#2A1C28]"
+            className="group relative w-full aspect-4/3 rounded-xl overflow-hidden cursor-pointer shadow-lg border border-[#AB86B1]/40 bg-[#2A1C28]"
           >
             {/* Fotografía oficial de los novios */}
             <Image
@@ -72,6 +72,7 @@ export function CouplePhotoSection() {
               fill
               sizes="(max-width: 640px) 100vw, 600px"
               priority
+              unoptimized
               className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
             />
 
@@ -153,7 +154,7 @@ export function CouplePhotoSection() {
             </button>
 
             {/* Imagen ampliada */}
-            <div className="relative w-full aspect-4/3 sm:aspect-3/2 rounded-2xl overflow-hidden border-2 border-[#DFC088]/60 shadow-2xl">
+            <div className="relative w-full aspect-4/3 rounded-2xl overflow-hidden border-2 border-[#DFC088]/60 shadow-2xl">
               <Image
                 src={selectedPhoto.url}
                 alt={selectedPhoto.title}
@@ -161,6 +162,7 @@ export function CouplePhotoSection() {
                 sizes="(max-width: 1024px) 100vw, 1024px"
                 className="object-contain bg-black"
                 priority
+                unoptimized
               />
             </div>
 
