@@ -138,7 +138,7 @@ export default function WeddingInvitationPage() {
               <CeremonySection scope={guest?.invitation_scope || 'church_and_reception'} />
               <DressCodeSection />
               <CalendarSection />
-              <GiftsSection giftType={guest?.gift_type || 'bank'} />
+              <GiftsSection giftType={guest?.gift_type || 'both'} />
               <RsvpForm
                 initialGuest={guest}
                 onGuestVerified={(g) => setGuest(g)}

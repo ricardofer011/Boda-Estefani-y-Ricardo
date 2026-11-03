@@ -47,7 +47,16 @@ export function GiftsSection({ giftType = 'bank' }: GiftsSectionProps) {
       setCopiedStore(code);
       setTimeout(() => setCopiedStore(null), 3000);
     } catch {
-      // ignore
+      const textArea = document.createElement('textarea');
+      textArea.value = code;
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopiedStore(code);
+      setTimeout(() => setCopiedStore(null), 3000);
     }
   };
 
@@ -188,49 +197,72 @@ export function GiftsSection({ giftType = 'bank' }: GiftsSectionProps) {
             {gifts.registry.stores.map((store, idx) => (
               <div
                 key={idx}
-                className="p-4 sm:p-4.5 rounded-2xl bg-gradient-to-b from-[#F9F2FA] to-[#F1E5F3] border border-[#AB86B1]/45 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+                className="p-5 sm:p-6 rounded-2xl bg-gradient-to-b from-[#F9F2FA] to-[#F1E5F3] border border-[#AB86B1]/45 shadow-xs flex flex-col gap-4"
               >
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#FCF9FD] border border-[#AB86B1]/40 flex items-center justify-center shrink-0 shadow-2xs">
+                {/* Encabezado de la tienda */}
+                <div className="flex items-start gap-3.5 pb-3 border-b border-[#AB86B1]/30">
+                  <div className="w-11 h-11 rounded-xl bg-[#FCF9FD] border border-[#AB86B1]/40 flex items-center justify-center shrink-0 shadow-2xs">
                     <ShoppingBag className="w-5 h-5 text-[#784A67]" />
                   </div>
                   <div>
-                    <h3 className="font-serif-luxury text-base font-semibold text-[#2A1C28]">
+                    <span className="font-sans-clean text-[10px] tracking-widest uppercase text-[#784A67] font-semibold block">
+                      Tienda Departamental & Mesa de Bodas
+                    </span>
+                    <h3 className="font-serif-luxury text-lg sm:text-xl font-medium text-[#2A1C28] leading-tight mt-0.5">
                       {store.name}
                     </h3>
-                    <p className="font-sans-clean text-xs text-[#6A5365]">
+                    <p className="font-sans-clean text-xs text-[#6A5365] mt-0.5">
                       {store.description}
                     </p>
-                    <span className="font-mono text-[11px] text-[#784A67] font-medium block mt-0.5">
-                      Referencia: {store.code}
-                    </span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 self-end sm:self-center">
+                {/* Código de referencia / evento con botón de copiar */}
+                <div className="py-3 px-4 rounded-xl bg-[#FCF9FD] border border-[#AB86B1]/35 flex items-center justify-between gap-3 shadow-2xs">
+                  <div>
+                    <span className="font-sans-clean text-[10px] tracking-wider uppercase text-[#784A67] block font-semibold">
+                      Código del Evento
+                    </span>
+                    <span className="font-mono text-sm sm:text-base font-bold tracking-wider text-[#5C3759] select-all">
+                      {store.code}
+                    </span>
+                  </div>
+
                   <button
                     type="button"
                     onClick={() => handleCopyStoreCode(store.code)}
-                    className="p-2 rounded-full bg-[#FCF9FD] border border-[#AB86B1]/40 text-[#784A67] hover:text-[#5C3759] transition-colors"
-                    title="Copiar código de referencia"
+                    className={`inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full font-sans-clean text-xs font-semibold tracking-wider transition-all duration-300 cursor-pointer shadow-xs active:scale-95 shrink-0 ${
+                      copiedStore === store.code
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-300'
+                        : 'bg-[#F5EBF7] hover:bg-[#EBDCF0] text-[#5C3759] border border-[#AB86B1]/50'
+                    }`}
+                    title="Copiar código del evento"
                   >
                     {copiedStore === store.code ? (
-                      <Check className="w-4 h-4 text-emerald-600" />
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>¡Copiado!</span>
+                      </>
                     ) : (
-                      <Copy className="w-4 h-4" />
+                      <>
+                        <Copy className="w-3.5 h-3.5 text-[#9B709E]" />
+                        <span>Copiar código</span>
+                      </>
                     )}
                   </button>
-
-                  <a
-                    href={store.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="gold-button inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-serif-luxury text-xs uppercase tracking-wider shadow-2xs"
-                  >
-                    <span>Ver lista</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
                 </div>
+
+                {/* Botón principal directo a la lista de regalos de Casa Cuesta */}
+                <a
+                  href={store.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="gold-button w-full inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-serif-luxury text-sm tracking-wider shadow-md hover:shadow-lg transition-all duration-300 active:scale-[0.99] text-center"
+                >
+                  <ShoppingBag className="w-4 h-4" />
+                  <span>Ver Lista de Regalos en Casa Cuesta</span>
+                  <ExternalLink className="w-4 h-4 ml-0.5" />
+                </a>
               </div>
             ))}
 

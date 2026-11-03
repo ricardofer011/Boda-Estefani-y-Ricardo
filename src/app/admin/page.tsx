@@ -65,7 +65,7 @@ export default function AdminPage() {
   const [newGuestGroup, setNewGuestGroup] = useState('Familia');
   const [newGuestPhone, setNewGuestPhone] = useState('');
   const [newGuestNotes, setNewGuestNotes] = useState('');
-  const [newGuestGiftType, setNewGuestGiftType] = useState<GiftPreferenceType>('bank');
+  const [newGuestGiftType, setNewGuestGiftType] = useState<GiftPreferenceType>('both');
   const [newGuestScope, setNewGuestScope] = useState<InvitationScopeType>('church_and_reception');
   const [newGuestRole, setNewGuestRole] = useState<InvitationRoleType>('standard');
   const [newGuestInvitedBy, setNewGuestInvitedBy] = useState<InvitedByType>('estefani');
@@ -203,7 +203,7 @@ export default function AdminPage() {
         setNewGuestPasses(2);
         setNewGuestPhone('');
         setNewGuestNotes('');
-        setNewGuestGiftType('bank');
+        setNewGuestGiftType('both');
         setNewGuestScope('church_and_reception');
         setNewGuestRole('standard');
         setNewGuestInvitedBy('estefani');

@@ -186,28 +186,16 @@ export const WEDDING_CONFIG: WeddingConfig = {
       badge: "Muestra de Cariño",
       title: "Mesa de Regalos",
       message:
-        "El regalo más valioso para nosotros es su compañía y bendición en el inicio de nuestro matrimonio. Si desean tener un detalle para acompañar la construcción de nuestro nuevo hogar, hemos seleccionado algunas opciones en nuestras tiendas preferidas:",
+        "El regalo más valioso para nosotros es contar con su presencia y bendición en el inicio de nuestro matrimonio. Si desean tener un detalle para acompañar la construcción de nuestro nuevo hogar, pueden consultar nuestra lista oficial de regalos en Casa Cuesta:",
       stores: [
         {
           name: "Casa Cuesta",
-          description: "Mesa de Bodas • Boda Estefani Cedeño & Ricardo Fernandez",
-          code: "Estefani Cedeño & Ricardo Fernandez",
-          link: "https://casacuesta.com",
-        },
-        {
-          name: "Ilumel",
-          description: "Colección Muebles & Decoración",
-          code: "Estefani & Ricardo",
-          link: "https://ilumel.com",
-        },
-        {
-          name: "Amazon Wedding Registry",
-          description: "Mesa de Regalos Online",
-          code: "Estefani Cedeño & Ricardo Fernandez",
-          link: "https://www.amazon.com/wedding",
+          description: "Mesa de Bodas Oficial • Estefani & Ricardo",
+          code: "ESTEFANI-RICARDO",
+          link: "https://listaderegalos.casacuesta.com/Event/ESTEFANI-RICARDO?utm_source=share",
         },
       ],
-      notice: "Si deseas hacernos llegar un detalle o necesitas ayuda con la lista de regalos, no dudes en contactarnos.",
+      notice: "Al pulsar «Ver lista» accederás directamente a nuestra mesa de regalos en el portal de Casa Cuesta.",
     },
   },
   share: {
