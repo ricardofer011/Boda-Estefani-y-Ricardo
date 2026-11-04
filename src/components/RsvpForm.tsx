@@ -420,7 +420,7 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
               {/* Protocolo formal estricto */}
               <div className="mt-3 pt-2.5 border-t border-[#AB86B1]/30">
                 <p className="font-serif-luxury text-[11px] text-[#6A5365] italic leading-relaxed">
-                  «Rogamos tomar en consideración que esta invitación es personal e intransferible y aplica estrictamente para el número de personas indicado. Agradecemos su generosa comprensión.»
+                  «Rogamos tomar en consideración que esta invitación es personal e intransferible y aplica estrictamente para el número de personas indicado. Por razones de espacio y protocolo, nuestra recepción es un evento reservado exclusivamente para adultos. Agradecemos su generosa comprensión.»
                 </p>
               </div>
             </div>
@@ -512,9 +512,14 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
                 {/* Nombres de acompañantes si confirma más de 1 persona */}
                 {formData.guest_count > 1 && (
                   <div className="space-y-3 bg-[#F9F2FA] p-4 rounded-xl border border-[#AB86B1]/30">
-                    <p className="font-serif-luxury text-xs tracking-wider uppercase text-[#784A67] font-semibold">
-                      Nombre(s) de tu(s) acompañante(s)
-                    </p>
+                    <div className="flex items-center justify-between">
+                      <p className="font-serif-luxury text-xs tracking-wider uppercase text-[#784A67] font-semibold">
+                        Nombre(s) de tu(s) acompañante(s)
+                      </p>
+                      <span className="text-[10px] text-[#784A67] font-serif-luxury italic">
+                        Recepción solo adultos
+                      </span>
+                    </div>
                     {formData.companion_names.map((compName, index) => (
                       <div key={index}>
                         <label

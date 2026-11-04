@@ -61,6 +61,15 @@ export interface WeddingConfig {
     ladiesAvoid: string;
     etiquetteNote: string;
   };
+  adultsOnly: {
+    badge: string;
+    title: string;
+    subtitle: string;
+    description: string;
+    cardNote: string;
+    receptionNote: string;
+    rsvpNote: string;
+  };
   gifts: {
     badge: string;
     title: string;
@@ -171,6 +180,19 @@ export const WEDDING_CONFIG: WeddingConfig = {
     etiquetteNote:
       "«Deseamos compartir una ocasión solemne y llena de distinción tanto en la Casa de Dios como en nuestra recepción junto al mar. Agradecemos profundamente su complicidad vistiendo sus mejores galas para celebrar juntos este gran día.»",
   },
+  adultsOnly: {
+    badge: "Solo Adultos",
+    title: "Protocolo de Asistencia",
+    subtitle: "Recepción Solo Adultos",
+    description:
+      "Amamos con todo el corazón a los más pequeños de la familia; sin embargo, deseamos regalarles a todos una velada de celebración, descanso y disfrute pleno. Por razones de espacio y protocolo, nuestra recepción será un evento reservado exclusivamente para adultos.",
+    cardNote:
+      "«Amamos con cariño a los pequeños de la familia; sin embargo, deseamos regalarles una velada de celebración y desconexión entre adultos. Agradecemos con el corazón su generosa comprensión.»",
+    receptionNote:
+      "Adoramos a los pequeños, pero hemos reservado este festejo exclusivamente para adultos para que disfruten con nosotros al máximo.",
+    rsvpNote:
+      "Recordatorio cordial: Por razones de capacidad y formato de la velada, la recepción será un evento exclusivamente para adultos.",
+  },
   gifts: {
     badge: "Muestra de Cariño",
     title: "Lluvia de Sobres",
@@ -200,7 +222,7 @@ export const WEDDING_CONFIG: WeddingConfig = {
   },
   share: {
     whatsappTemplate: (url: string) =>
-      `¡Hola! 💌 Nos hace mucha ilusión compartir contigo una fecha muy especial. Te invitamos a celebrar el matrimonio de Estefani Cedeño & Ricardo Fernandez el sábado 12 de diciembre de 2026 a las 11:00 a. m., en la Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo (Código de vestimenta: Traje Formal). Puedes ver tu invitación personal y confirmar tu asistencia aquí: ${url}`,
+      `¡Hola! 💌 Nos hace mucha ilusión compartir contigo una fecha muy especial. Te invitamos a celebrar el matrimonio de Estefani Cedeño & Ricardo Fernandez el sábado 12 de diciembre de 2026 a las 11:00 a. m., en la Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo (Código de vestimenta: Traje Formal • Recepción solo adultos). Puedes ver tu invitación personal y confirmar tu asistencia aquí: ${url}`,
   },
   theme: {
     colors: {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { WEDDING_CONFIG } from '@/config/wedding';
-import { Navigation, Church, Wine, Clock, MapPin } from 'lucide-react';
+import { Navigation, Church, Wine, Clock, MapPin, Sparkles } from 'lucide-react';
 import { OrnamentalDivider } from './Ornaments';
 
 interface CeremonySectionProps {
@@ -8,7 +8,7 @@ interface CeremonySectionProps {
 }
 
 export function CeremonySection({ scope = 'church_and_reception' }: CeremonySectionProps) {
-  const { ceremony, reception } = WEDDING_CONFIG;
+  const { ceremony, reception, adultsOnly } = WEDDING_CONFIG;
   const showReception = scope === 'church_and_reception';
 
   return (
@@ -85,10 +85,21 @@ export function CeremonySection({ scope = 'church_and_reception' }: CeremonySect
               “{reception.notes}”
             </p>
 
-            <div className="inline-block py-2 px-5 bg-[#F5EBF7] border border-[#AB86B1]/35 rounded-full mb-6 shadow-2xs">
+            <div className="inline-block py-2 px-5 bg-[#F5EBF7] border border-[#AB86B1]/35 rounded-full mb-4 shadow-2xs">
               <p className="font-serif-luxury text-xs sm:text-sm text-[#5C3759] font-semibold tracking-wide flex items-center justify-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-[#9B709E]" />
                 <span>{reception.timeFormatted}</span>
+              </p>
+            </div>
+
+            {/* Distintivo delicado de Recepción Solo Adultos */}
+            <div className="mb-6 p-3.5 rounded-xl bg-[#FBF5FC] border border-[#AB86B1]/35 max-w-md mx-auto text-center">
+              <span className="inline-flex items-center gap-1.5 font-serif-luxury text-[11px] tracking-widest uppercase text-[#784A67] font-semibold mb-1">
+                <Sparkles className="w-3.5 h-3.5 text-[#9B709E]" />
+                <span>{adultsOnly.subtitle}</span>
+              </span>
+              <p className="font-serif-luxury text-xs text-[#6A5365] italic leading-relaxed">
+                {adultsOnly.receptionNote}
               </p>
             </div>
 

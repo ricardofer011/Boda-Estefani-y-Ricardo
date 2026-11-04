@@ -14,7 +14,7 @@ interface InvitationCardProps {
 }
 
 export function InvitationCard({ guest }: InvitationCardProps) {
-  const { couple, ceremony, dressCode } = WEDDING_CONFIG;
+  const { couple, ceremony, dressCode, adultsOnly } = WEDDING_CONFIG;
 
   return (
     <div className="w-full max-w-xl mx-auto my-8 px-4">
@@ -87,14 +87,14 @@ export function InvitationCard({ guest }: InvitationCardProps) {
 
               <div className="mt-2.5 pt-2.5 border-t border-[#AB86B1]/35">
                 <p className="font-serif-luxury text-[11px] sm:text-xs text-[#6A5365] italic max-w-md mx-auto leading-relaxed">
-                  «Rogamos tomar en consideración que esta invitación ha sido reservada exclusivamente para el número de personas indicado. Por razones de espacio y protocolo, es personal e intransferible. Agradecemos profundamente su comprensión y el cariño de siempre.»
+                  «Rogamos tomar en consideración que esta invitación ha sido reservada exclusivamente para el número de personas indicado. Por razones de espacio y protocolo, es personal e intransferible. Asimismo, les recordamos con afecto que nuestra recepción será una ocasión exclusivamente para adultos. Agradecemos profundamente su comprensión y el cariño de siempre.»
                 </p>
               </div>
             </div>
           ) : (
             <div className="w-full my-4 py-2 px-4 rounded-xl bg-[#F9F2FA]/70 border border-[#AB86B1]/30 text-center">
               <p className="font-serif-luxury text-xs text-[#784A67] italic">
-                Invitación personal y numerada según los pases asignados en su enlace exclusivo.
+                Invitación personal y numerada según los pases asignados en su enlace exclusivo • Recepción solo adultos.
               </p>
             </div>
           )}
@@ -130,6 +130,20 @@ export function InvitationCard({ guest }: InvitationCardProps) {
             </p>
             <p className="font-serif-luxury text-[11px] sm:text-xs text-[#6A5365] italic max-w-xs mx-auto leading-relaxed mt-0.5">
               Rigurosa formalidad • Agradecemos con especial afecto prescindir de vestimenta o calzado deportivo.
+            </p>
+          </div>
+
+          {/* Protocolo de Asistencia: Recepción Solo Adultos */}
+          <div className="mt-3.5 pt-3.5 border-t border-[#AB86B1]/30 max-w-sm w-full mx-auto text-center">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F5EBF7] border border-[#AB86B1]/40 text-[#5C3759] text-[10px] sm:text-xs font-serif-luxury tracking-widest uppercase font-semibold mb-1 shadow-2xs">
+              <Sparkles className="w-3 h-3 text-[#9B709E]" />
+              <span>{adultsOnly.badge}</span>
+            </div>
+            <p className="font-serif-luxury text-base sm:text-lg font-bold text-[#2A1C28] tracking-wide">
+              {adultsOnly.subtitle}
+            </p>
+            <p className="font-serif-luxury text-[11px] sm:text-xs text-[#6A5365] italic max-w-xs mx-auto leading-relaxed mt-0.5">
+              {adultsOnly.cardNote}
             </p>
           </div>
         </div>
