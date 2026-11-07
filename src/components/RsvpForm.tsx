@@ -256,6 +256,8 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
   const guestMsg = isAttending
     ? isDama
       ? `¡Hola Estefani & Ricardo! 🌸✨ ¡Acepto con todo el corazón ser su Dama de Honor y confirmo mi asistencia a su boda! (${successResponse.guestName}). ¡Nos vemos el 12 de diciembre!`
+      : isChurchOnly
+      ? `¡Hola Estefani & Ricardo! 🕊️ Acabo de confirmar mi asistencia a su ceremonia religiosa (${successResponse.guestName}, ${successResponse.confirmedCount} ${successResponse.confirmedCount === 1 ? 'persona' : 'personas'}). ¡Nos vemos el 12 de diciembre en la Iglesia Las Mercedes!`
       : `¡Hola Estefani & Ricardo! 🕊️ Acabo de confirmar mi asistencia a su boda (${successResponse.guestName}, ${successResponse.confirmedCount} ${successResponse.confirmedCount === 1 ? 'persona' : 'personas'}). ¡Nos vemos el 12 de diciembre!`
     : `¡Hola Estefani & Ricardo! 🕊️ Les escribe ${successResponse?.guestName}. Lamentablemente no podré acompañarlos físicamente, pero les deseo de corazón todas las bendiciones del cielo en su matrimonio.`;
 
@@ -274,7 +276,9 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
         <p className="font-serif-luxury text-xs sm:text-sm text-[#6A5365] max-w-md mx-auto italic">
           Por favor confírmanos antes del{' '}
           <strong className="text-[#5C3759] font-semibold">{WEDDING_CONFIG.rsvp.deadlineFormatted}</strong>{' '}
-          para coordinar todos los preparativos de la boda.
+          {isChurchOnly
+            ? 'para acompañarnos en nuestra ceremonia religiosa.'
+            : 'para coordinar todos los preparativos de la boda.'}
         </p>
       </div>
 
@@ -546,20 +550,22 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
                   </div>
                 )}
 
-                {/* Restricciones alimentarias (opcional) */}
-                <div>
-                  <label htmlFor="dietary_restrictions" className="block font-serif-luxury text-sm font-semibold text-[#2A1C28] mb-1">
-                    Restricciones alimentarias o alergias <span className="text-[#784A67] text-xs font-normal">(opcional)</span>
-                  </label>
-                  <input
-                    id="dietary_restrictions"
-                    type="text"
-                    value={formData.dietary_restrictions || ''}
-                    onChange={(e) => setFormData({ ...formData, dietary_restrictions: e.target.value })}
-                    placeholder="Ej. Celíaco, alergia a mariscos, vegetariano, etc."
-                    className="w-full px-4 py-2.5 rounded-lg border border-[#AB86B1]/40 bg-white/80 focus:bg-white text-[#2A1C28] text-sm focus:outline-none focus:ring-2 focus:ring-[#9B709E]/40 transition-all font-sans-clean"
-                  />
-                </div>
+                {/* Restricciones alimentarias (solo cuando la invitación incluye recepción/banquete) */}
+                {!isChurchOnly && (
+                  <div>
+                    <label htmlFor="dietary_restrictions" className="block font-serif-luxury text-sm font-semibold text-[#2A1C28] mb-1">
+                      Restricciones alimentarias o alergias <span className="text-[#784A67] text-xs font-normal">(opcional)</span>
+                    </label>
+                    <input
+                      id="dietary_restrictions"
+                      type="text"
+                      value={formData.dietary_restrictions || ''}
+                      onChange={(e) => setFormData({ ...formData, dietary_restrictions: e.target.value })}
+                      placeholder="Ej. Celíaco, alergia a mariscos, vegetariano, etc."
+                      className="w-full px-4 py-2.5 rounded-lg border border-[#AB86B1]/40 bg-white/80 focus:bg-white text-[#2A1C28] text-sm focus:outline-none focus:ring-2 focus:ring-[#9B709E]/40 transition-all font-sans-clean"
+                    />
+                  </div>
+                )}
               </div>
             )}
 

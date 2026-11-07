@@ -29,7 +29,9 @@ export default function WeddingInvitationPage() {
     const params = new URLSearchParams(window.location.search);
     const code = (params.get('invitacion') || params.get('code') || params.get('invitado') || params.get('guest') || '').trim();
     const roleParam = (params.get('rol') || params.get('tipo') || params.get('dama') || params.get('damas') || '').trim().toLowerCase();
+    const scopeParam = (params.get('alcance') || params.get('scope') || '').trim().toLowerCase();
     const isBridesmaidParam = roleParam === 'dama' || roleParam === 'damas' || roleParam === '1' || roleParam === 'true';
+    const isChurchOnlyParam = scopeParam === 'iglesia' || scopeParam === 'church_only' || scopeParam === 'solo_iglesia';
 
     // 1. Acceso genérico a Damas de Honor (código 'damas' o sin código específico con rol dama)
     if (code.toLowerCase() === 'damas' || code.toLowerCase() === 'dama' || (!code && isBridesmaidParam)) {
@@ -64,14 +66,18 @@ export default function WeddingInvitationPage() {
         .then((res) => res.json())
         .then((data) => {
           if (data.success && data.data) {
-            setGuest((prev) => ({
+            setGuest({
               ...data.data,
+              invitation_scope:
+                data.data.invitation_scope === 'church_only' || isChurchOnlyParam
+                  ? 'church_only'
+                  : (data.data.invitation_scope || 'church_and_reception'),
               // Mantener rol bridesmaid si venía en el API o en la URL
               invitation_role:
                 data.data.invitation_role === 'bridesmaid' || isBridesmaidParam
                   ? 'bridesmaid'
                   : (data.data.invitation_role || 'standard'),
-            }));
+            });
           }
         })
         .catch((err) => {
@@ -143,7 +149,7 @@ export default function WeddingInvitationPage() {
                 initialGuest={guest}
                 onGuestVerified={(g) => setGuest(g)}
               />
-              <ShareSection />
+              <ShareSection scope={guest?.invitation_scope || 'church_and_reception'} />
               <Footer />
             </>
           )}

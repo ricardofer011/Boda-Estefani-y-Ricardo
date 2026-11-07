@@ -99,7 +99,7 @@ export function InvitationCard({ guest }: InvitationCardProps) {
           ) : (
             <div className="w-full my-4 py-2 px-4 rounded-xl bg-[#F9F2FA]/70 border border-[#AB86B1]/30 text-center">
               <p className="font-serif-luxury text-xs text-[#784A67] italic">
-                Invitación personal y numerada según los pases asignados en su enlace exclusivo • Recepción solo adultos.
+                Invitación personal y numerada según los pases asignados en su enlace exclusivo.
               </p>
             </div>
           )}

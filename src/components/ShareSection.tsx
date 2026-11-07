@@ -4,7 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { WEDDING_CONFIG } from '@/config/wedding';
 import { Share2, Copy, Check, MessageCircle } from 'lucide-react';
 
-export function ShareSection() {
+interface ShareSectionProps {
+  scope?: 'church_only' | 'church_and_reception';
+}
+
+export function ShareSection({ scope = 'church_and_reception' }: ShareSectionProps) {
   const [currentUrl, setCurrentUrl] = useState('');
   const [copied, setCopied] = useState(false);
 
@@ -15,7 +19,10 @@ export function ShareSection() {
   }, []);
 
   const invitationUrl = currentUrl || process.env.NEXT_PUBLIC_SITE_URL || 'https://boda-estefani-ricardo.vercel.app';
-  const whatsappMessage = WEDDING_CONFIG.share.whatsappTemplate(invitationUrl);
+  const whatsappMessage =
+    scope === 'church_only'
+      ? `¡Hola! 💌 Nos hace mucha ilusión compartir contigo una fecha muy especial. Te invitamos a celebrar el matrimonio religioso de Estefani Cedeño & Ricardo Fernandez el sábado 12 de diciembre de 2026 a las 11:00 a. m., en la Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo (Código de vestimenta: Traje Formal). Puedes ver tu invitación personal y confirmar tu asistencia aquí: ${invitationUrl}`
+      : WEDDING_CONFIG.share.whatsappTemplate(invitationUrl);
   const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(whatsappMessage)}`;
 
   const handleCopyLink = async () => {

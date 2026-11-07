@@ -92,7 +92,9 @@ export function DressCodeSection({ scope = 'church_and_reception' }: DressCodeSe
           {dressCode.subtitle}
         </p>
         <p className="font-sans-clean text-xs sm:text-sm text-[#6A5365] max-w-md mx-auto mt-2 leading-relaxed">
-          {dressCode.description}
+          {showReception
+            ? dressCode.description
+            : 'Para acompañarnos en la celebración de este sagrado sacramento en la Casa de Dios junto a nuestros seres queridos, les rogamos asistir en riguroso traje formal.'}
         </p>
       </div>
 
@@ -145,7 +147,7 @@ export function DressCodeSection({ scope = 'church_and_reception' }: DressCodeSe
             </div>
 
             <p className="font-sans-clean text-xs text-[#2A1C28] leading-relaxed mb-3">
-              {dressCode.ladiesDescription}
+              {showReception ? dressCode.ladiesDescription : 'Vestido largo o midi elegante y formal.'}
             </p>
 
             <div className="mt-auto pt-3 border-t border-[#AB86B1]/25">
