@@ -420,7 +420,9 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
               {/* Protocolo formal estricto */}
               <div className="mt-3 pt-2.5 border-t border-[#AB86B1]/30">
                 <p className="font-serif-luxury text-[11px] text-[#6A5365] italic leading-relaxed">
-                  «Rogamos tomar en consideración que esta invitación es personal e intransferible y aplica estrictamente para el número de personas indicado. Por razones de espacio y protocolo, nuestra recepción es un evento reservado exclusivamente para adultos. Agradecemos su generosa comprensión.»
+                  {isChurchOnly
+                    ? '«Rogamos tomar en consideración que esta invitación es personal e intransferible y aplica estrictamente para el número de personas indicado. Agradecemos su generosa comprensión.»'
+                    : '«Rogamos tomar en consideración que esta invitación es personal e intransferible y aplica estrictamente para el número de personas indicado. Por razones de espacio y protocolo, nuestra recepción es un evento reservado exclusivamente para adultos. Agradecemos su generosa comprensión.»'}
                 </p>
               </div>
             </div>
@@ -516,9 +518,11 @@ export function RsvpForm({ initialGuest, onGuestVerified }: RsvpFormProps) {
                       <p className="font-serif-luxury text-xs tracking-wider uppercase text-[#784A67] font-semibold">
                         Nombre(s) de tu(s) acompañante(s)
                       </p>
-                      <span className="text-[10px] text-[#784A67] font-serif-luxury italic">
-                        Recepción solo adultos
-                      </span>
+                      {!isChurchOnly && (
+                        <span className="text-[10px] text-[#784A67] font-serif-luxury italic">
+                          Recepción solo adultos
+                        </span>
+                      )}
                     </div>
                     {formData.companion_names.map((compName, index) => (
                       <div key={index}>

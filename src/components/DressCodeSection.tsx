@@ -70,8 +70,13 @@ function EveningDressIcon({ className = 'w-7 h-7' }: { className?: string }) {
   );
 }
 
-export function DressCodeSection() {
+interface DressCodeSectionProps {
+  scope?: 'church_only' | 'church_and_reception';
+}
+
+export function DressCodeSection({ scope = 'church_and_reception' }: DressCodeSectionProps) {
   const { dressCode, adultsOnly } = WEDDING_CONFIG;
+  const showReception = scope === 'church_and_reception';
 
   return (
     <section className="w-full max-w-xl mx-auto my-12 px-4" aria-labelledby="dresscode-heading">
@@ -160,20 +165,24 @@ export function DressCodeSection() {
             <span>Nuestra Mayor Ilusión</span>
           </div>
           <p className="font-serif-luxury text-xs sm:text-sm text-[#5C3759] italic max-w-lg mx-auto leading-relaxed">
-            {dressCode.etiquetteNote}
+            {showReception
+              ? dressCode.etiquetteNote
+              : '«Deseamos compartir una ocasión solemne y llena de distinción en la Casa de Dios. Agradecemos profundamente su complicidad vistiendo sus mejores galas para celebrar juntos este gran día.»'}
           </p>
         </div>
 
-        {/* Protocolo de Asistencia: Recepción Solo Adultos */}
-        <div className="mt-4 pt-4 border-t border-[#AB86B1]/25 text-center max-w-md mx-auto">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F5EBF7] border border-[#AB86B1]/40 text-[#5C3759] text-[10px] sm:text-xs font-serif-luxury tracking-widest uppercase font-semibold mb-2 shadow-2xs">
-            <Sparkles className="w-3 h-3 text-[#9B709E]" />
-            <span>{adultsOnly.subtitle}</span>
+        {/* Protocolo de Asistencia: Recepción Solo Adultos (solo si incluye recepción) */}
+        {showReception && (
+          <div className="mt-4 pt-4 border-t border-[#AB86B1]/25 text-center max-w-md mx-auto">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F5EBF7] border border-[#AB86B1]/40 text-[#5C3759] text-[10px] sm:text-xs font-serif-luxury tracking-widest uppercase font-semibold mb-2 shadow-2xs">
+              <Sparkles className="w-3 h-3 text-[#9B709E]" />
+              <span>{adultsOnly.subtitle}</span>
+            </div>
+            <p className="font-serif-luxury text-xs text-[#6A5365] italic leading-relaxed">
+              {adultsOnly.cardNote}
+            </p>
           </div>
-          <p className="font-serif-luxury text-xs text-[#6A5365] italic leading-relaxed">
-            {adultsOnly.cardNote}
-          </p>
-        </div>
+        )}
       </div>
     </section>
   );

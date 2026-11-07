@@ -136,7 +136,7 @@ export default function WeddingInvitationPage() {
               <CouplePhotoSection />
               <Countdown />
               <CeremonySection scope={guest?.invitation_scope || 'church_and_reception'} />
-              <DressCodeSection />
+              <DressCodeSection scope={guest?.invitation_scope || 'church_and_reception'} />
               <CalendarSection />
               <GiftsSection giftType={guest?.gift_type || 'both'} />
               <RsvpForm

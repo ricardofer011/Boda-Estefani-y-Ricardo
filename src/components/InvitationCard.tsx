@@ -1,5 +1,6 @@
 import React from 'react';
 import { WEDDING_CONFIG } from '@/config/wedding';
+import { InvitationScopeType } from '@/lib/types';
 import { CatholicCrossOrnament, OrnamentalDivider, FloralCornerFlourish } from './Ornaments';
 import { Sparkles, ShieldCheck } from 'lucide-react';
 
@@ -7,6 +8,7 @@ interface VerifiedGuestInfo {
   code: string;
   full_name: string;
   max_guests: number;
+  invitation_scope?: InvitationScopeType;
 }
 
 interface InvitationCardProps {
@@ -15,6 +17,7 @@ interface InvitationCardProps {
 
 export function InvitationCard({ guest }: InvitationCardProps) {
   const { couple, ceremony, dressCode, adultsOnly } = WEDDING_CONFIG;
+  const isChurchOnly = guest?.invitation_scope === 'church_only';
 
   return (
     <div className="w-full max-w-xl mx-auto my-8 px-4">
@@ -87,7 +90,9 @@ export function InvitationCard({ guest }: InvitationCardProps) {
 
               <div className="mt-2.5 pt-2.5 border-t border-[#AB86B1]/35">
                 <p className="font-serif-luxury text-[11px] sm:text-xs text-[#6A5365] italic max-w-md mx-auto leading-relaxed">
-                  «Rogamos tomar en consideración que esta invitación ha sido reservada exclusivamente para el número de personas indicado. Por razones de espacio y protocolo, es personal e intransferible. Asimismo, les recordamos con afecto que nuestra recepción será una ocasión exclusivamente para adultos. Agradecemos profundamente su comprensión y el cariño de siempre.»
+                  {isChurchOnly
+                    ? '«Rogamos tomar en consideración que esta invitación ha sido reservada exclusivamente para el número de personas indicado. Por razones de espacio y protocolo, es personal e intransferible. Agradecemos profundamente su comprensión y el cariño de siempre.»'
+                    : '«Rogamos tomar en consideración que esta invitación ha sido reservada exclusivamente para el número de personas indicado. Por razones de espacio y protocolo, es personal e intransferible. Asimismo, les recordamos con afecto que nuestra recepción será una ocasión exclusivamente para adultos. Agradecemos profundamente su comprensión y el cariño de siempre.»'}
                 </p>
               </div>
             </div>
@@ -133,19 +138,21 @@ export function InvitationCard({ guest }: InvitationCardProps) {
             </p>
           </div>
 
-          {/* Protocolo de Asistencia: Recepción Solo Adultos */}
-          <div className="mt-3.5 pt-3.5 border-t border-[#AB86B1]/30 max-w-sm w-full mx-auto text-center">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F5EBF7] border border-[#AB86B1]/40 text-[#5C3759] text-[10px] sm:text-xs font-serif-luxury tracking-widest uppercase font-semibold mb-1 shadow-2xs">
-              <Sparkles className="w-3 h-3 text-[#9B709E]" />
-              <span>{adultsOnly.badge}</span>
+          {/* Protocolo de Asistencia: Recepción Solo Adultos (solo si incluye recepción) */}
+          {!isChurchOnly && (
+            <div className="mt-3.5 pt-3.5 border-t border-[#AB86B1]/30 max-w-sm w-full mx-auto text-center">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F5EBF7] border border-[#AB86B1]/40 text-[#5C3759] text-[10px] sm:text-xs font-serif-luxury tracking-widest uppercase font-semibold mb-1 shadow-2xs">
+                <Sparkles className="w-3 h-3 text-[#9B709E]" />
+                <span>{adultsOnly.badge}</span>
+              </div>
+              <p className="font-serif-luxury text-base sm:text-lg font-bold text-[#2A1C28] tracking-wide">
+                {adultsOnly.subtitle}
+              </p>
+              <p className="font-serif-luxury text-[11px] sm:text-xs text-[#6A5365] italic max-w-xs mx-auto leading-relaxed mt-0.5">
+                {adultsOnly.cardNote}
+              </p>
             </div>
-            <p className="font-serif-luxury text-base sm:text-lg font-bold text-[#2A1C28] tracking-wide">
-              {adultsOnly.subtitle}
-            </p>
-            <p className="font-serif-luxury text-[11px] sm:text-xs text-[#6A5365] italic max-w-xs mx-auto leading-relaxed mt-0.5">
-              {adultsOnly.cardNote}
-            </p>
-          </div>
+          )}
         </div>
       </div>
     </div>
