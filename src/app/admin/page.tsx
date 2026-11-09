@@ -390,7 +390,7 @@ export default function AdminPage() {
   }, [rsvps, searchTerm, statusFilter]);
 
   const getPersonalizedUrl = (code: string, role?: string, giftType?: string, scope?: string) => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://boda-estefani-ricardo.vercel.app';
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://boda-estefani-y-ricardo.vercel.app';
     const roleParam = role === 'bridesmaid' ? '&rol=dama' : '';
     const scopeParam = scope === 'church_only' ? '&alcance=iglesia' : '';
     const giftParam = giftType === 'bank' ? '&regalo=cuenta' : giftType === 'registry' ? '&regalo=lista' : '';

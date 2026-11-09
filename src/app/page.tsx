@@ -70,18 +70,15 @@ export default function WeddingInvitationPage() {
 
     // 2. Acceso con código individual (ej. "jeiry--cede-o", "jeiry-cedeno")
     if (code) {
-      // Si la URL ya traía rol=dama explícito, activar vista de dama inmediatamente mientras carga el API
-      if (isBridesmaidParam) {
-        setGuest({
-          code,
-          full_name: code.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
-          max_guests: 1,
-          status: 'pending',
-          gift_type: 'bank',
-          invitation_scope: 'church_and_reception',
-          invitation_role: 'bridesmaid',
-        });
-      }
+      setGuest({
+        code,
+        full_name: code.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+        max_guests: 1,
+        status: 'pending',
+        gift_type: explicitGiftType || 'bank',
+        invitation_scope: isChurchOnlyParam ? 'church_only' : 'church_and_reception',
+        invitation_role: isBridesmaidParam ? 'bridesmaid' : 'standard',
+      });
 
       fetch(`/api/guests/verify?code=${encodeURIComponent(code)}`)
         .then((res) => res.json())

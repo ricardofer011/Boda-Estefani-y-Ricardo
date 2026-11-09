@@ -18,7 +18,7 @@ export function ShareSection({ scope = 'church_and_reception' }: ShareSectionPro
     }
   }, []);
 
-  const invitationUrl = currentUrl || process.env.NEXT_PUBLIC_SITE_URL || 'https://boda-estefani-ricardo.vercel.app';
+  const invitationUrl = currentUrl || process.env.NEXT_PUBLIC_SITE_URL || 'https://boda-estefani-y-ricardo.vercel.app';
   const whatsappMessage =
     scope === 'church_only'
       ? `¡Hola! 💌 Nos hace mucha ilusión compartir contigo una fecha muy especial. Te invitamos a celebrar el matrimonio religioso de Estefani Cedeño & Ricardo Fernandez el sábado 12 de diciembre de 2026 a las 11:00 a. m., en la Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo (Código de vestimenta: Traje Formal). Puedes ver tu invitación personal y confirmar tu asistencia aquí: ${invitationUrl}`
