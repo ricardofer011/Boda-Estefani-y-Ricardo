@@ -1,6 +1,6 @@
 import React from 'react';
 import { WEDDING_CONFIG } from '@/config/wedding';
-import { Sparkles, HeartHandshake, CheckCircle2 } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { OrnamentalDivider } from './Ornaments';
 
 /**
@@ -37,7 +37,7 @@ function BowtieIcon({ className = 'w-7 h-7' }: { className?: string }) {
 }
 
 /**
- * Icono estilizado de vestido largo de gala para damas
+ * Icono estilizado de vestido formal para damas
  */
 function EveningDressIcon({ className = 'w-7 h-7' }: { className?: string }) {
   return (
@@ -48,14 +48,12 @@ function EveningDressIcon({ className = 'w-7 h-7' }: { className?: string }) {
       className={className}
       aria-hidden="true"
     >
-      {/* Tirantes y escote elegante */}
       <path
         d="M8 3L9.5 7H14.5L16 3"
         stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
       />
-      {/* Silueta del vestido largo */}
       <path
         d="M9.5 7C9.5 7 8.5 10 9 12C9.5 14 6 21 6 21H18C18 21 14.5 14 15 12C15.5 10 14.5 7 14.5 7H9.5Z"
         fill="currentColor"
@@ -64,7 +62,6 @@ function EveningDressIcon({ className = 'w-7 h-7' }: { className?: string }) {
         strokeWidth="1.2"
         strokeLinejoin="round"
       />
-      {/* Cinturón o detalle sutil en la cintura */}
       <line x1="9" y1="12" x2="15" y2="12" stroke="#DFC088" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
@@ -92,84 +89,51 @@ export function DressCodeSection({ scope = 'church_and_reception' }: DressCodeSe
           {dressCode.subtitle}
         </p>
         <p className="font-sans-clean text-xs sm:text-sm text-[#6A5365] max-w-md mx-auto mt-2 leading-relaxed">
-          {showReception
-            ? dressCode.description
-            : 'Para acompañarnos en la celebración de este sagrado sacramento en la Casa de Dios junto a nuestros seres queridos, les rogamos asistir en riguroso traje formal.'}
+          {dressCode.description}
         </p>
       </div>
 
       <div className="bg-[#FCF9FD] border border-[#AB86B1]/40 rounded-2xl p-6 sm:p-8 shadow-card-elevated relative overflow-hidden card-paper-texture">
-        {/* Guías visuales para Caballeros y Damas */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {/* Tarjeta Caballeros */}
-          <div className="flex flex-col bg-gradient-to-b from-[#F9F2FA] to-[#F5EAF7] rounded-xl p-5 border border-[#AB86B1]/35 shadow-xs">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-11 h-11 rounded-full bg-[#5C3759] text-[#DFC6E3] flex items-center justify-center shadow-xs shrink-0">
-                <BowtieIcon className="w-6 h-6 text-[#DFC088]" />
-              </div>
-              <div>
-                <span className="font-serif-luxury text-[10px] tracking-widest uppercase text-[#784A67] font-semibold block">
-                  Etiqueta Masculina
-                </span>
-                <h3 className="font-serif-luxury text-lg font-bold text-[#2A1C28] leading-tight">
-                  {dressCode.gentlemenTitle}
-                </h3>
-              </div>
+        {/* Presentación estética y armoniosa para Damas y Caballeros */}
+        <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+          {/* Caballeros */}
+          <div className="flex flex-col items-center text-center p-4 rounded-xl bg-gradient-to-b from-[#F9F2FA] to-[#F5EAF7] border border-[#AB86B1]/35 shadow-xs">
+            <div className="w-12 h-12 rounded-full bg-[#5C3759] text-[#DFC6E3] flex items-center justify-center shadow-xs mb-2.5">
+              <BowtieIcon className="w-6 h-6 text-[#DFC088]" />
             </div>
-
-            <p className="font-sans-clean text-xs text-[#2A1C28] leading-relaxed mb-3">
+            <h3 className="font-serif-luxury text-base font-bold text-[#2A1C28]">
+              {dressCode.gentlemenTitle}
+            </h3>
+            <p className="font-sans-clean text-xs text-[#6A5365] mt-1">
               {dressCode.gentlemenDescription}
             </p>
-
-            <div className="mt-auto pt-3 border-t border-[#AB86B1]/25">
-              <div className="bg-[#FCF9FD]/90 rounded-lg p-2.5 border border-[#AB86B1]/30">
-                <p className="font-serif-luxury text-[11px] text-[#784A67] leading-snug italic">
-                  ✨ <strong className="font-semibold text-[#5C3759]">Agradecimiento especial:</strong> {dressCode.gentlemenAvoid}
-                </p>
-              </div>
-            </div>
           </div>
 
-          {/* Tarjeta Damas */}
-          <div className="flex flex-col bg-gradient-to-b from-[#F9F2FA] to-[#F5EAF7] rounded-xl p-5 border border-[#AB86B1]/35 shadow-xs">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-11 h-11 rounded-full bg-[#5C3759] text-[#DFC6E3] flex items-center justify-center shadow-xs shrink-0">
-                <EveningDressIcon className="w-6 h-6 text-[#DFC088]" />
-              </div>
-              <div>
-                <span className="font-serif-luxury text-[10px] tracking-widest uppercase text-[#784A67] font-semibold block">
-                  Etiqueta Femenina
-                </span>
-                <h3 className="font-serif-luxury text-lg font-bold text-[#2A1C28] leading-tight">
-                  {dressCode.ladiesTitle}
-                </h3>
-              </div>
+          {/* Damas */}
+          <div className="flex flex-col items-center text-center p-4 rounded-xl bg-gradient-to-b from-[#F9F2FA] to-[#F5EAF7] border border-[#AB86B1]/35 shadow-xs">
+            <div className="w-12 h-12 rounded-full bg-[#5C3759] text-[#DFC6E3] flex items-center justify-center shadow-xs mb-2.5">
+              <EveningDressIcon className="w-6 h-6 text-[#DFC088]" />
             </div>
-
-            <p className="font-sans-clean text-xs text-[#2A1C28] leading-relaxed mb-3">
-              {showReception ? dressCode.ladiesDescription : 'Vestido largo o midi elegante y formal.'}
+            <h3 className="font-serif-luxury text-base font-bold text-[#2A1C28]">
+              {dressCode.ladiesTitle}
+            </h3>
+            <p className="font-sans-clean text-xs text-[#6A5365] mt-1">
+              {dressCode.ladiesDescription}
             </p>
-
-            <div className="mt-auto pt-3 border-t border-[#AB86B1]/25">
-              <div className="bg-[#FCF9FD]/90 rounded-lg p-2.5 border border-[#AB86B1]/30">
-                <p className="font-serif-luxury text-[11px] text-[#784A67] leading-snug italic">
-                  🤍 <strong className="font-semibold text-[#5C3759]">Reserva de color:</strong> {dressCode.ladiesAvoid}
-                </p>
-              </div>
-            </div>
           </div>
         </div>
 
+        {/* Delicada nota de cortesía para el color de la novia */}
+        <div className="mt-5 text-center max-w-sm mx-auto">
+          <p className="font-serif-luxury text-xs text-[#784A67] italic leading-relaxed">
+            🤍 {dressCode.ladiesAvoid}
+          </p>
+        </div>
+
         {/* Mensaje de cortesía y afecto de los novios */}
-        <div className="mt-6 pt-5 border-t border-[#AB86B1]/35 text-center">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F5EBF7] border border-[#AB86B1]/40 text-[#5C3759] text-[10px] sm:text-xs font-serif-luxury tracking-widest uppercase font-semibold mb-2.5 shadow-2xs">
-            <Sparkles className="w-3 h-3 text-[#9B709E]" />
-            <span>Nuestra Mayor Ilusión</span>
-          </div>
+        <div className="mt-5 pt-4 border-t border-[#AB86B1]/30 text-center">
           <p className="font-serif-luxury text-xs sm:text-sm text-[#5C3759] italic max-w-lg mx-auto leading-relaxed">
-            {showReception
-              ? dressCode.etiquetteNote
-              : '«Deseamos compartir una ocasión solemne y llena de distinción en la Casa de Dios. Agradecemos profundamente su complicidad vistiendo sus mejores galas para celebrar juntos este gran día.»'}
+            {dressCode.etiquetteNote}
           </p>
         </div>
 

@@ -429,7 +429,7 @@ export default function AdminPage() {
         ? ''
         : '\n\n*Recepción:* Exclusiva para adultos (agradecemos con cariño su comprensión).';
 
-    const text = `¡Hola ${guest.full_name}! 🕊️💌 Nos hace una inmensa ilusión compartir contigo un momento tan significativo en nuestras vidas.\n\n${scopeText}\n\nHemos preparado ${passesText}.\n\n*Código de vestimenta:* Traje Formal (Rigurosa formalidad, agradecemos con especial afecto prescindir de vestimenta o calzado deportivo).${adultsOnlyText}\n\n*Nota formal:* La invitación es personal e intransferible, válida exclusivamente para el número de pases asignados.\n\nPuedes ver tu tarjeta personalizada y confirmar tu asistencia aquí:\n${url}`;
+    const text = `¡Hola ${guest.full_name}! 🕊️💌 Nos hace una inmensa ilusión compartir contigo un momento tan significativo en nuestras vidas.\n\n${scopeText}\n\nHemos preparado ${passesText}.\n\n*Código de vestimenta:* Traje Formal.${adultsOnlyText}\n\n*Nota formal:* La invitación es personal e intransferible, válida exclusivamente para el número de pases asignados.\n\nPuedes ver tu tarjeta personalizada y confirmar tu asistencia aquí:\n${url}`;
 
     const cleanPhone = guest.phone ? guest.phone.replace(/[^0-9]/g, '') : '';
     const phoneParam = cleanPhone ? `phone=${cleanPhone}&` : '';

@@ -134,7 +134,7 @@ export function InvitationCard({ guest }: InvitationCardProps) {
               {dressCode.subtitle}
             </p>
             <p className="font-serif-luxury text-[11px] sm:text-xs text-[#6A5365] italic max-w-xs mx-auto leading-relaxed mt-0.5">
-              Rigurosa formalidad • Agradecemos con especial afecto prescindir de vestimenta o calzado deportivo.
+              Les invitamos con cariño a acompañarnos luciendo sus mejores galas.
             </p>
           </div>
 

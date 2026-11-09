@@ -162,23 +162,23 @@ export const WEDDING_CONFIG: WeddingConfig = {
     deadlineFormatted: "15 de noviembre de 2026",
   },
   dressCode: {
-    badge: "Etiqueta y Protocolo",
+    badge: "Etiqueta",
     title: "Código de Vestimenta",
     subtitle: "Traje Formal",
     description:
-      "Para celebrar este sagrado sacramento y compartir una velada distinguida e inolvidable junto a nuestros seres queridos, les rogamos acompañarnos en riguroso traje formal.",
+      "Deseamos compartir una ocasión llena de distinción y alegría. Les invitamos con cariño a acompañarnos en traje formal para celebrar juntos este día tan esperado.",
     gentlemenTitle: "Caballeros",
     gentlemenDescription:
-      "Traje formal con saco y corbata, o pantalón de vestir con camisa formal de manga larga y zapatos de vestir.",
+      "Traje formal.",
     gentlemenAvoid:
-      "Agradecemos con especial afecto prescindir de calzado deportivo (tenis), camisetas, jeans o prendas casuales/sport.",
+      "",
     ladiesTitle: "Damas",
     ladiesDescription:
-      "Vestido largo o midi elegante de fiesta.",
+      "Vestido elegante.",
     ladiesAvoid:
-      "Recordamos con afecto y delicadeza que los tonos blanco, marfil y crema están reservados exclusivamente para la novia.",
+      "Recordamos con afecto reservar los tonos blanco y marfil exclusivamente para la novia.",
     etiquetteNote:
-      "«Deseamos compartir una ocasión solemne y llena de distinción tanto en la Casa de Dios como en nuestra recepción junto al mar. Agradecemos profundamente su complicidad vistiendo sus mejores galas para celebrar juntos este gran día.»",
+      "«Nos hace una inmensa ilusión compartir este momento tan significativo junto a ustedes y celebrar unidos este gran día.»",
   },
   adultsOnly: {
     badge: "Solo Adultos",
