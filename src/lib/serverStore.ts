@@ -231,7 +231,7 @@ function mapSupabaseGuest(row: Record<string, unknown>): GuestInvite {
     confirmed_count: Number(row.confirmed_count) || 0,
     group: (row.group as string) || (row.group_name as string) || null,
     notes: cleanNotes,
-    gift_type: (row.gift_type as 'bank' | 'registry' | 'both') || 'bank',
+    gift_type: (row.gift_type as 'bank' | 'registry' | 'both') || 'both',
     invitation_scope: scope,
     invitation_role: (row.invitation_role as 'standard' | 'bridesmaid') || 'standard',
     invited_by: invitedBy,
