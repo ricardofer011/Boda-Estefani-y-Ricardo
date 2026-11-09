@@ -169,17 +169,20 @@ async function saveGuestsData(records: GuestInvite[]): Promise<void> {
 function parseNotesAndMetadata(
   rawNotes: string | null | undefined,
   explicitInvitedBy?: unknown,
-  explicitScope?: unknown
+  explicitScope?: unknown,
+  explicitGiftType?: unknown
 ): {
   cleanNotes: string | null;
   invitedBy: 'estefani' | 'ricardo' | 'both';
   scope: 'church_only' | 'church_and_reception';
+  giftType: 'bank' | 'registry' | 'both';
 } {
   const notesStr = rawNotes || '';
 
   // Extraer tags de respaldo en notes si existen
   const invitedMatch = notesStr.match(/\[invitado_por:(estefani|ricardo|both)\]/i);
   const scopeMatch = notesStr.match(/\[alcance:(church_only|church_and_reception)\]/i);
+  const giftMatch = notesStr.match(/\[regalo:(bank|registry|both)\]/i);
 
   const invitedBy: 'estefani' | 'ricardo' | 'both' =
     explicitInvitedBy === 'estefani' || explicitInvitedBy === 'ricardo' || explicitInvitedBy === 'both'
@@ -193,32 +196,43 @@ function parseNotesAndMetadata(
       ? 'church_only'
       : 'church_and_reception';
 
+  const giftType: 'bank' | 'registry' | 'both' =
+    explicitGiftType === 'bank' || explicitGiftType === 'registry' || explicitGiftType === 'both'
+      ? explicitGiftType
+      : giftMatch
+      ? (giftMatch[1].toLowerCase() as 'bank' | 'registry' | 'both')
+      : 'bank';
+
   const cleanNotes = notesStr
     .replace(/\[invitado_por:(estefani|ricardo|both)\]/gi, '')
     .replace(/\[alcance:(church_only|church_and_reception)\]/gi, '')
+    .replace(/\[regalo:(bank|registry|both)\]/gi, '')
     .trim();
 
-  return { cleanNotes: cleanNotes || null, invitedBy, scope };
+  return { cleanNotes: cleanNotes || null, invitedBy, scope, giftType };
 }
 
 function encodeNotesWithMetadata(
   notes: string | null | undefined,
   invitedBy: 'estefani' | 'ricardo' | 'both' = 'estefani',
-  scope: 'church_only' | 'church_and_reception' = 'church_and_reception'
+  scope: 'church_only' | 'church_and_reception' = 'church_and_reception',
+  giftType: 'bank' | 'registry' | 'both' = 'bank'
 ): string {
   const cleanNotes = (notes || '')
     .replace(/\[invitado_por:(estefani|ricardo|both)\]/gi, '')
     .replace(/\[alcance:(church_only|church_and_reception)\]/gi, '')
+    .replace(/\[regalo:(bank|registry|both)\]/gi, '')
     .trim();
-  const tags = `[invitado_por:${invitedBy}] [alcance:${scope}]`;
+  const tags = `[invitado_por:${invitedBy}] [alcance:${scope}] [regalo:${giftType}]`;
   return cleanNotes ? `${cleanNotes} ${tags}` : tags;
 }
 
 function mapSupabaseGuest(row: Record<string, unknown>): GuestInvite {
-  const { cleanNotes, invitedBy, scope } = parseNotesAndMetadata(
+  const { cleanNotes, invitedBy, scope, giftType } = parseNotesAndMetadata(
     row.notes as string | null | undefined,
     row.invited_by,
-    row.invitation_scope
+    row.invitation_scope,
+    row.gift_type
   );
 
   return {
@@ -231,7 +245,7 @@ function mapSupabaseGuest(row: Record<string, unknown>): GuestInvite {
     confirmed_count: Number(row.confirmed_count) || 0,
     group: (row.group as string) || (row.group_name as string) || null,
     notes: cleanNotes,
-    gift_type: (row.gift_type as 'bank' | 'registry' | 'both') || 'both',
+    gift_type: giftType,
     invitation_scope: scope,
     invitation_role: (row.invitation_role as 'standard' | 'bridesmaid') || 'standard',
     invited_by: invitedBy,
@@ -340,7 +354,8 @@ export async function saveGuestInvite(
 
   const invitedBy: 'estefani' | 'ricardo' | 'both' = guest.invited_by || 'estefani';
   const scope: 'church_only' | 'church_and_reception' = guest.invitation_scope || 'church_and_reception';
-  const encodedNotes = encodeNotesWithMetadata(guest.notes, invitedBy, scope);
+  const giftType: 'bank' | 'registry' | 'both' = guest.gift_type || 'bank';
+  const encodedNotes = encodeNotesWithMetadata(guest.notes, invitedBy, scope, giftType);
   const isDemo = !isSupabaseConfigured();
 
   if (isSupabaseConfigured()) {

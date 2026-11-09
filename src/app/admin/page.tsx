@@ -389,21 +389,23 @@ export default function AdminPage() {
     });
   }, [rsvps, searchTerm, statusFilter]);
 
-  const getPersonalizedUrl = (code: string, role?: string) => {
+  const getPersonalizedUrl = (code: string, role?: string, giftType?: string, scope?: string) => {
     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://boda-estefani-ricardo.vercel.app';
     const roleParam = role === 'bridesmaid' ? '&rol=dama' : '';
-    return `${origin}/?invitacion=${encodeURIComponent(code)}${roleParam}`;
+    const scopeParam = scope === 'church_only' ? '&alcance=iglesia' : '';
+    const giftParam = giftType === 'bank' ? '&regalo=cuenta' : giftType === 'registry' ? '&regalo=lista' : '';
+    return `${origin}/?invitacion=${encodeURIComponent(code)}${roleParam}${scopeParam}${giftParam}`;
   };
 
-  const handleCopyPersonalizedLink = async (code: string, role?: string) => {
-    const url = getPersonalizedUrl(code, role);
+  const handleCopyPersonalizedLink = async (code: string, role?: string, giftType?: string, scope?: string) => {
+    const url = getPersonalizedUrl(code, role, giftType, scope);
     await navigator.clipboard.writeText(url);
     setCopiedCode(code);
     setTimeout(() => setCopiedCode(null), 3000);
   };
 
   const getGuestWhatsAppInviteUrl = (guest: GuestInvite) => {
-    const url = getPersonalizedUrl(guest.code, guest.invitation_role);
+    const url = getPersonalizedUrl(guest.code, guest.invitation_role, guest.gift_type, guest.invitation_scope);
 
     if (guest.invitation_role === 'bridesmaid') {
       const damaText = `¡Hola ${guest.full_name}! 🌸💌\n\nNos llena de una emoción inmensa compartir contigo una noticia que sale desde lo más profundo de nuestro corazón.\n\nHemos preparado una invitación hecha especialmente para ti, porque soñamos con que nos acompañes como una de nuestras *Damas de Honor* el día de nuestra boda:\n\n📅 Sábado, 12 de diciembre de 2026\n⏰ 11:00 a. m. (Hora Oficial)\n⛪ Iglesia Las Mercedes, Ciudad Colonial, Santo Domingo\n\nPuedes abrir tu sobre exclusivo para damas aquí:\n${url}\n\nCon todo nuestro cariño,\nEstefani Cedeño & Ricardo Fernández`;
@@ -1140,7 +1142,7 @@ export default function AdminPage() {
 
                                 {/* Botón Copiar Enlace */}
                                 <button
-                                  onClick={() => handleCopyPersonalizedLink(g.code, g.invitation_role)}
+                                  onClick={() => handleCopyPersonalizedLink(g.code, g.invitation_role, g.gift_type, g.invitation_scope)}
                                   className="p-1.5 rounded-lg bg-stone-100 text-[#2A2118] hover:bg-stone-200 transition-colors cursor-pointer"
                                   title="Copiar enlace personalizado"
                                 >

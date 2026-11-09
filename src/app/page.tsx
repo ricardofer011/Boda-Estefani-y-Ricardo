@@ -30,8 +30,17 @@ export default function WeddingInvitationPage() {
     const code = (params.get('invitacion') || params.get('code') || params.get('invitado') || params.get('guest') || '').trim();
     const roleParam = (params.get('rol') || params.get('tipo') || params.get('dama') || params.get('damas') || '').trim().toLowerCase();
     const scopeParam = (params.get('alcance') || params.get('scope') || '').trim().toLowerCase();
+    const giftParam = (params.get('regalo') || params.get('gift') || params.get('tipo_regalo') || '').trim().toLowerCase();
     const isBridesmaidParam = roleParam === 'dama' || roleParam === 'damas' || roleParam === '1' || roleParam === 'true';
     const isChurchOnlyParam = scopeParam === 'iglesia' || scopeParam === 'church_only' || scopeParam === 'solo_iglesia';
+    const explicitGiftType: 'bank' | 'registry' | 'both' | undefined =
+      giftParam === 'cuenta' || giftParam === 'banco' || giftParam === 'bank' || giftParam === 'sobres'
+        ? 'bank'
+        : giftParam === 'lista' || giftParam === 'regalos' || giftParam === 'registry' || giftParam === 'cuesta'
+        ? 'registry'
+        : giftParam === 'ambos' || giftParam === 'both'
+        ? 'both'
+        : undefined;
 
     // 1. Acceso genérico a Damas de Honor (código 'damas' o sin código específico con rol dama)
     if (code.toLowerCase() === 'damas' || code.toLowerCase() === 'dama' || (!code && isBridesmaidParam)) {
@@ -40,11 +49,23 @@ export default function WeddingInvitationPage() {
         full_name: 'Queridas Damas de Honor',
         max_guests: 1,
         status: 'pending',
-        gift_type: 'bank',
+        gift_type: explicitGiftType || 'bank',
         invitation_scope: 'church_and_reception',
         invitation_role: 'bridesmaid',
       });
       return;
+    }
+
+    // Si viene parámetro de regalo explícito en enlace sin código aún verificado
+    if (!code && explicitGiftType) {
+      setGuest({
+        code: '',
+        full_name: '',
+        max_guests: 1,
+        status: 'pending',
+        gift_type: explicitGiftType,
+        invitation_scope: isChurchOnlyParam ? 'church_only' : 'church_and_reception',
+      });
     }
 
     // 2. Acceso con código individual (ej. "jeiry--cede-o", "jeiry-cedeno")
@@ -68,6 +89,10 @@ export default function WeddingInvitationPage() {
           if (data.success && data.data) {
             setGuest({
               ...data.data,
+              gift_type:
+                explicitGiftType ||
+                data.data.gift_type ||
+                'bank',
               invitation_scope:
                 data.data.invitation_scope === 'church_only' || isChurchOnlyParam
                   ? 'church_only'

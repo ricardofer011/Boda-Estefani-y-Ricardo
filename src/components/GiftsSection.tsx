@@ -15,8 +15,8 @@ export function GiftsSection({ giftType = 'both' }: GiftsSectionProps) {
   const [copied, setCopied] = useState(false);
   const [copiedStore, setCopiedStore] = useState<string | null>(null);
 
-  const showBank = true;
-  const showRegistry = true;
+  const showBank = giftType === 'both' || giftType === 'bank';
+  const showRegistry = giftType === 'both' || giftType === 'registry';
 
   const handleCopyAccount = async () => {
     try {
