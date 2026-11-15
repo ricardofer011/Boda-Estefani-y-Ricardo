@@ -361,18 +361,27 @@ export async function saveGuestInvite(
   if (isSupabaseConfigured()) {
     const supabase = getSupabaseAdmin();
     if (supabase) {
-      const basePayload = {
+      const basePayload: Record<string, unknown> = {
         code: cleanCode,
         full_name: guest.full_name.trim(),
         phone: guest.phone || null,
         max_guests: guest.max_guests,
-        status: guest.status || 'pending',
         group_name: guest.group || null,
         notes: encodedNotes,
         gift_type: guest.gift_type || 'bank',
         invitation_scope: guest.invitation_scope || 'church_and_reception',
         invitation_role: guest.invitation_role || 'standard',
       };
+
+      if (guest.status) {
+        basePayload.status = guest.status;
+      } else if (!guest.id) {
+        basePayload.status = 'pending';
+      }
+
+      if (guest.confirmed_count !== undefined) {
+        basePayload.confirmed_count = guest.confirmed_count;
+      }
 
       if (guest.id) {
         let res = await supabase
@@ -560,14 +569,39 @@ export async function saveRSVP(formData: RSVPFormData): Promise<{ record: RSVPRe
 
     savedRecord = data as RSVPRecord;
 
+    const rsvpStatus = isAttending ? 'confirmed' : 'declined';
+    const rsvpConfirmedCount = isAttending ? count : 0;
+
     if (formData.invitation_code) {
+      const codeClean = formData.invitation_code.trim();
+      const { data: updatedByCode } = await supabase
+        .from('guests')
+        .update({
+          status: rsvpStatus,
+          confirmed_count: rsvpConfirmedCount,
+        })
+        .ilike('code', codeClean)
+        .select();
+
+      // Si no hubo coincidencia por código o fue un código genérico de grupo (como 'damas'), sincronizar por nombre
+      if (!updatedByCode || updatedByCode.length === 0 || codeClean.toLowerCase() === 'damas') {
+        await supabase
+          .from('guests')
+          .update({
+            status: rsvpStatus,
+            confirmed_count: rsvpConfirmedCount,
+          })
+          .ilike('full_name', `%${cleanName}%`);
+      }
+    } else {
+      // Sin código: sincronizar por nombre completo
       await supabase
         .from('guests')
         .update({
-          status: isAttending ? 'confirmed' : 'declined',
-          confirmed_count: isAttending ? count : 0,
+          status: rsvpStatus,
+          confirmed_count: rsvpConfirmedCount,
         })
-        .eq('code', formData.invitation_code.trim());
+        .ilike('full_name', `%${cleanName}%`);
     }
   } else {
     const currentRecords = await ensureLocalDataFile();

@@ -235,6 +235,8 @@ export default function AdminPage() {
           id: editingGuest.id,
           full_name: editingGuest.full_name.trim(),
           max_guests: Number(editingGuest.max_guests) || 1,
+          status: editingGuest.status,
+          confirmed_count: editingGuest.confirmed_count,
           group: editingGuest.group || undefined,
           phone: editingGuest.phone || undefined,
           notes: editingGuest.notes || undefined,
@@ -292,6 +294,49 @@ export default function AdminPage() {
     }
   };
 
+  // Mapa de confirmaciones para vincular de forma reactiva en la vista
+  const rsvpMap = useMemo(() => {
+    const byCode = new Map<string, RSVPRecord>();
+    const byName = new Map<string, RSVPRecord>();
+    for (const r of rsvps) {
+      if (r.invitation_code && r.invitation_code.trim()) {
+        byCode.set(r.invitation_code.trim().toLowerCase(), r);
+      }
+      if (r.guest_name && r.guest_name.trim()) {
+        byName.set(r.guest_name.trim().toLowerCase(), r);
+      }
+    }
+    return { byCode, byName };
+  }, [rsvps]);
+
+  const getGuestStatus = React.useCallback(
+    (g: GuestInvite) => {
+      const codeMatch = g.code ? rsvpMap.byCode.get(g.code.trim().toLowerCase()) : undefined;
+      const nameMatch = g.full_name ? rsvpMap.byName.get(g.full_name.trim().toLowerCase()) : undefined;
+      const rsvp = codeMatch || nameMatch;
+
+      if (rsvp) {
+        const isAttending = rsvp.attendance_status === 'attending';
+        return {
+          isConfirmed: isAttending,
+          isDeclined: !isAttending,
+          confirmedCount: isAttending ? Number(rsvp.guest_count) || 1 : 0,
+          hasRSVP: true,
+          rsvp,
+        };
+      }
+
+      return {
+        isConfirmed: g.status === 'confirmed',
+        isDeclined: g.status === 'declined',
+        confirmedCount: Number(g.confirmed_count) || 0,
+        hasRSVP: false,
+        rsvp: undefined,
+      };
+    },
+    [rsvpMap]
+  );
+
   // KPIs
   const stats = useMemo(() => {
     const totalResponses = rsvps.length;
@@ -308,7 +353,10 @@ export default function AdminPage() {
     );
 
     const totalAssignedPasses = guests.reduce((sum, g) => sum + (Number(g.max_guests) || 1), 0);
-    const pendingGuests = guests.filter((g) => g.status === 'pending');
+    const pendingGuests = guests.filter((g) => {
+      const { isConfirmed, isDeclined } = getGuestStatus(g);
+      return !isConfirmed && !isDeclined;
+    });
 
     // Desglose por quién invita (Estefani vs Ricardo vs Ambos)
     const estefaniGuests = guests.filter((g) => (g.invited_by || 'estefani') === 'estefani');
@@ -1043,8 +1091,7 @@ export default function AdminPage() {
                       </tr>
                     ) : (
                       filteredGuests.map((g) => {
-                        const isConfirmed = g.status === 'confirmed';
-                        const isDeclined = g.status === 'declined';
+                        const { isConfirmed, isDeclined, confirmedCount } = getGuestStatus(g);
                         const isBridesmaid = g.invitation_role === 'bridesmaid';
                         const invitedBy = g.invited_by || 'estefani';
 
@@ -1130,7 +1177,7 @@ export default function AdminPage() {
                               {isConfirmed ? (
                                 <span className="inline-flex items-center gap-1 text-xs text-emerald-700 font-medium">
                                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                                  <span>Confirmó ({g.confirmed_count || g.max_guests})</span>
+                                  <span>Confirmó ({confirmedCount || g.confirmed_count || g.max_guests})</span>
                                 </span>
                               ) : isDeclined ? (
                                 <span className="inline-flex items-center gap-1 text-xs text-stone-500 font-medium">
