@@ -13,6 +13,7 @@ import {
   Utensils,
   Search,
   Download,
+  FileSpreadsheet,
   LogOut,
   RefreshCw,
   Clock,
@@ -538,6 +539,16 @@ export default function AdminPage() {
           </div>
 
           <div className="flex items-center gap-2">
+            <a
+              href="/api/admin/export"
+              download
+              className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border border-emerald-600/40 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 hover:border-emerald-600 transition-colors cursor-pointer font-sans-clean font-medium shadow-2xs"
+              title="Descargar libro de Excel completo (.xlsx) con 8 hojas organizadas y filtros"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
+              <span className="hidden sm:inline">Exportar Excel (.xlsx)</span>
+            </a>
+
             <button
               onClick={() => {
                 fetchRSVPs();
@@ -944,9 +955,9 @@ export default function AdminPage() {
                   Lista de Invitados y Enlaces Generados
                 </h3>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                   {/* Buscador */}
-                  <div className="relative w-full sm:w-64">
+                  <div className="relative w-full sm:w-56">
                     <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#8C6A35]" />
                     <input
                       type="text"
@@ -995,6 +1006,17 @@ export default function AdminPage() {
                     <option value="ricardo">🤵 De Ricardo ({stats.ricardoCount})</option>
                     <option value="both">🕊️ De Ambos ({stats.bothCount})</option>
                   </select>
+
+                  {/* Botón Exportar Excel */}
+                  <a
+                    href="/api/admin/export"
+                    download
+                    className="shrink-0 px-3 py-1.5 rounded-lg border border-emerald-600/30 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-sans-clean font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                    title="Descargar libro de Excel completo (.xlsx) con 8 hojas y filtros automáticos"
+                  >
+                    <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>Exportar Excel</span>
+                  </a>
                 </div>
               </div>
 
@@ -1205,9 +1227,10 @@ export default function AdminPage() {
                   href="/api/admin/export"
                   download
                   className="gold-button px-4 py-2.5 rounded-lg font-serif-luxury text-xs tracking-wider uppercase inline-flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                  title="Descargar libro de Excel completo (.xlsx) con 8 hojas organizadas y filtros automáticos"
                 >
-                  <Download className="w-4 h-4" />
-                  <span>Exportar a Excel (CSV)</span>
+                  <FileSpreadsheet className="w-4 h-4" />
+                  <span>Exportar a Excel (.xlsx)</span>
                 </a>
               </div>
             </div>
