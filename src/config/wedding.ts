@@ -213,8 +213,8 @@ export const WEDDING_CONFIG: WeddingConfig = {
         {
           name: "Casa Cuesta",
           description: "Mesa de Bodas Oficial • Estefani & Ricardo",
-          code: "ESTEFANI-RICARDO",
-          link: "https://listaderegalos.casacuesta.com/Event/ESTEFANI-RICARDO?utm_source=share",
+          code: "5753284",
+          link: "https://casacuesta.myregistry.com/wedding-registry/estefani-cede-o-santo-domingo-este-santo-domingo/5753284",
         },
       ],
       notice: "Al pulsar «Ver lista» accederás directamente a nuestra mesa de regalos en el portal de Casa Cuesta.",
