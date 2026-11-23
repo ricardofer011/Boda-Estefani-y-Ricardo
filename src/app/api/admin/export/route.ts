@@ -198,9 +198,6 @@ export async function GET(request: NextRequest) {
     }
   });
 
-  // Ordenar lista maestra alfabéticamente (A-Z) para un listado completamente predecible y ordenado
-  masterList.sort((a, b) => a.fullName.localeCompare(b.fullName, 'es', { sensitivity: 'base' }));
-
   // Mapear filas para formato de tabla maestra
   const formatMasterRow = (item: UnifiedRow, i: number) => ({
     'No.': i + 1,

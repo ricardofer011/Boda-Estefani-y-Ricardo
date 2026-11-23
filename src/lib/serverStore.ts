@@ -264,8 +264,7 @@ export async function getAllGuests(): Promise<{ records: GuestInvite[]; isDemoMo
       const { data, error } = await supabase
         .from('guests')
         .select('*')
-        .order('created_at', { ascending: false })
-        .order('id', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (!error && data) {
         return { records: data.map((r) => mapSupabaseGuest(r as Record<string, unknown>)), isDemoMode: false };
@@ -652,8 +651,7 @@ export async function getAllRSVPs(): Promise<{ records: RSVPRecord[]; isDemoMode
       const { data, error } = await supabase
         .from('rsvps')
         .select('*')
-        .order('created_at', { ascending: false })
-        .order('id', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (!error && data) {
         return { records: data as RSVPRecord[], isDemoMode: false };
