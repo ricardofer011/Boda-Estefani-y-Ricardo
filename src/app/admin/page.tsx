@@ -50,6 +50,7 @@ export default function AdminPage() {
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'attending' | 'declined' | 'dietary'>('all');
+  const [rsvpSortBy, setRsvpSortBy] = useState<'recent' | 'oldest' | 'name-asc' | 'people-desc'>('recent');
   const [selectedRsvpForDetail, setSelectedRsvpForDetail] = useState<RSVPRecord | null>(null);
 
   // Datos de invitados y asignación de pases
@@ -59,6 +60,7 @@ export default function AdminPage() {
   const [guestGroupFilter, setGuestGroupFilter] = useState<string>('all');
   const [guestRoleFilter, setGuestRoleFilter] = useState<'all' | 'standard' | 'bridesmaid'>('all');
   const [guestInvitedByFilter, setGuestInvitedByFilter] = useState<'all' | 'estefani' | 'ricardo' | 'both'>('all');
+  const [guestSortBy, setGuestSortBy] = useState<'recent' | 'name-asc' | 'name-desc' | 'confirmed-first' | 'pending-first' | 'passes-desc'>('recent');
 
   // Formulario nuevo invitado
   const [newGuestName, setNewGuestName] = useState('');
@@ -394,9 +396,9 @@ export default function AdminPage() {
     return Array.from(set);
   }, [guests]);
 
-  // Filtrado de invitados pre-registrados
+  // Filtrado y ordenamiento de invitados pre-registrados
   const filteredGuests = useMemo(() => {
-    return guests.filter((g) => {
+    const list = guests.filter((g) => {
       const matchesSearch =
         g.full_name.toLowerCase().includes(guestSearchTerm.toLowerCase()) ||
         (g.phone && g.phone.includes(guestSearchTerm)) ||
@@ -416,11 +418,41 @@ export default function AdminPage() {
 
       return true;
     });
-  }, [guests, guestSearchTerm, guestGroupFilter, guestRoleFilter, guestInvitedByFilter]);
 
-  // Filtrado de confirmaciones (RSVPs)
+    return [...list].sort((a, b) => {
+      if (guestSortBy === 'name-asc') {
+        return a.full_name.localeCompare(b.full_name, 'es', { sensitivity: 'base' });
+      }
+      if (guestSortBy === 'name-desc') {
+        return b.full_name.localeCompare(a.full_name, 'es', { sensitivity: 'base' });
+      }
+      if (guestSortBy === 'confirmed-first') {
+        const aConfirmed = getGuestStatus(a).isConfirmed ? 1 : 0;
+        const bConfirmed = getGuestStatus(b).isConfirmed ? 1 : 0;
+        if (aConfirmed !== bConfirmed) return bConfirmed - aConfirmed;
+        return a.full_name.localeCompare(b.full_name, 'es');
+      }
+      if (guestSortBy === 'pending-first') {
+        const aPending = !getGuestStatus(a).isConfirmed && !getGuestStatus(a).isDeclined ? 1 : 0;
+        const bPending = !getGuestStatus(b).isConfirmed && !getGuestStatus(b).isDeclined ? 1 : 0;
+        if (aPending !== bPending) return bPending - aPending;
+        return a.full_name.localeCompare(b.full_name, 'es');
+      }
+      if (guestSortBy === 'passes-desc') {
+        if (b.max_guests !== a.max_guests) return b.max_guests - a.max_guests;
+        return a.full_name.localeCompare(b.full_name, 'es');
+      }
+      // 'recent' (por defecto: fecha de registro/actualización)
+      const dateA = new Date(a.created_at).getTime() || 0;
+      const dateB = new Date(b.created_at).getTime() || 0;
+      if (dateB !== dateA) return dateB - dateA;
+      return a.id.localeCompare(b.id);
+    });
+  }, [guests, guestSearchTerm, guestGroupFilter, guestRoleFilter, guestInvitedByFilter, guestSortBy, getGuestStatus]);
+
+  // Filtrado y ordenamiento de confirmaciones (RSVPs)
   const filteredRsvps = useMemo(() => {
-    return rsvps.filter((r) => {
+    const list = rsvps.filter((r) => {
       const matchesSearch =
         r.guest_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (r.phone && r.phone.includes(searchTerm)) ||
@@ -436,7 +468,30 @@ export default function AdminPage() {
 
       return true;
     });
-  }, [rsvps, searchTerm, statusFilter]);
+
+    return [...list].sort((a, b) => {
+      if (rsvpSortBy === 'oldest') {
+        const dateA = new Date(a.created_at).getTime() || 0;
+        const dateB = new Date(b.created_at).getTime() || 0;
+        if (dateA !== dateB) return dateA - dateB;
+        return a.id.localeCompare(b.id);
+      }
+      if (rsvpSortBy === 'name-asc') {
+        return a.guest_name.localeCompare(b.guest_name, 'es', { sensitivity: 'base' });
+      }
+      if (rsvpSortBy === 'people-desc') {
+        const countA = a.attendance_status === 'attending' ? (Number(a.guest_count) || 1) : 0;
+        const countB = b.attendance_status === 'attending' ? (Number(b.guest_count) || 1) : 0;
+        if (countB !== countA) return countB - countA;
+        return a.guest_name.localeCompare(b.guest_name, 'es');
+      }
+      // 'recent' (por defecto: confirmaciones más recientes primero)
+      const dateA = new Date(a.created_at).getTime() || 0;
+      const dateB = new Date(b.created_at).getTime() || 0;
+      if (dateB !== dateA) return dateB - dateA;
+      return a.id.localeCompare(b.id);
+    });
+  }, [rsvps, searchTerm, statusFilter, rsvpSortBy]);
 
   const getPersonalizedUrl = (code: string, role?: string, giftType?: string, scope?: string) => {
     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://boda-estefani-y-ricardo.vercel.app';
@@ -1055,6 +1110,21 @@ export default function AdminPage() {
                     <option value="both">🕊️ De Ambos ({stats.bothCount})</option>
                   </select>
 
+                  {/* Criterio de ordenación */}
+                  <select
+                    value={guestSortBy}
+                    onChange={(e) => setGuestSortBy(e.target.value as 'recent' | 'name-asc' | 'name-desc' | 'confirmed-first' | 'pending-first' | 'passes-desc')}
+                    className="px-2.5 py-1.5 rounded-lg border border-[#DFC088]/40 bg-white text-xs font-sans-clean text-[#2A2118] font-medium"
+                    title="Criterio de ordenación de invitados"
+                  >
+                    <option value="recent">🕒 Más recientes primero</option>
+                    <option value="name-asc">🔤 Nombre (A - Z)</option>
+                    <option value="name-desc">🔤 Nombre (Z - A)</option>
+                    <option value="confirmed-first">✅ Confirmados primero</option>
+                    <option value="pending-first">⏳ Pendientes primero</option>
+                    <option value="passes-desc">🎫 Más pases primero</option>
+                  </select>
+
                   {/* Botón Exportar Excel */}
                   <a
                     href="/api/admin/export"
@@ -1269,7 +1339,19 @@ export default function AdminPage() {
                 />
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  value={rsvpSortBy}
+                  onChange={(e) => setRsvpSortBy(e.target.value as 'recent' | 'oldest' | 'name-asc' | 'people-desc')}
+                  className="px-3 py-2.5 rounded-lg border border-[#DFC088]/40 bg-white text-xs font-sans-clean text-[#2A2118] font-medium"
+                  title="Criterio de ordenación de confirmaciones"
+                >
+                  <option value="recent">🕒 Más recientes primero</option>
+                  <option value="oldest">🕒 Más antiguas primero</option>
+                  <option value="name-asc">🔤 Nombre (A - Z)</option>
+                  <option value="people-desc">👥 Más asistentes primero</option>
+                </select>
+
                 <a
                   href="/api/admin/export"
                   download
